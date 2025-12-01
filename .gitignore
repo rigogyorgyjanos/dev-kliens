@@ -1,0 +1,7 @@
+# Minden .ddl kiterjesztésű fájl ignorálása
+*.ddl
+
+# Konkrét exe fájl ignorálása
+EterNexus.exe
+syserr.txt
+syslog.txt
