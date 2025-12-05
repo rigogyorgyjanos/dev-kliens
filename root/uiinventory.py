@@ -96,7 +96,8 @@ class CostumeWindow(ui.ScriptWindow):
 		for i in xrange(item.COSTUME_SLOT_COUNT):
 			slotNumber = item.COSTUME_SLOT_START + i
 			self.wndEquip.SetItemSlot(slotNumber, getItemVNum(slotNumber), 0)
-
+			print("RefreshCostumeSlot: slotnum: %d, vnum %d" % (slotNumber, getItemVNum(slotNumber)) )
+			
 		self.wndEquip.RefreshSlot()
 		
 class BeltInventoryWindow(ui.ScriptWindow):
@@ -629,15 +630,17 @@ class InventoryWindow(ui.ScriptWindow):
 				itemCount = 0
 			setItemVNum(slotNumber, getItemVNum(slotNumber), itemCount)
 
-		if app.ENABLE_NEW_EQUIPMENT_SYSTEM:
-			for i in xrange(player.NEW_EQUIPMENT_SLOT_COUNT):
-				slotNumber = player.NEW_EQUIPMENT_SLOT_START + i
-				itemCount = getItemCount(slotNumber)
-				if itemCount <= 1:
-					itemCount = 0
-				setItemVNum(slotNumber, getItemVNum(slotNumber), itemCount)
-				print "ENABLE_NEW_EQUIPMENT_SYSTEM", slotNumber, itemCount, getItemVNum(slotNumber)
-				
+		# if app.ENABLE_NEW_EQUIPMENT_SYSTEM:
+			# for i in xrange(player.NEW_EQUIPMENT_SLOT_COUNT):
+				# slotNumber = player.NEW_EQUIPMENT_SLOT_START + i
+				# itemCount = getItemCount(slotNumber)
+				# if itemCount <= 1:
+					# itemCount = 0
+				# setItemVNum(slotNumber, getItemVNum(slotNumber), itemCount)
+				# print "ENABLE_NEW_EQUIPMENT_SYSTEM", slotNumber, itemCount, getItemVNum(slotNumber)
+		setItemVNum(item.EQUIPMENT_RING1, getItemVNum(item.EQUIPMENT_RING1), 0)
+		setItemVNum(item.EQUIPMENT_RING2, getItemVNum(item.EQUIPMENT_RING2), 0)
+		setItemVNum(item.EQUIPMENT_BELT, getItemVNum(item.EQUIPMENT_BELT), 0)
 
 
 		self.wndEquip.RefreshSlot()

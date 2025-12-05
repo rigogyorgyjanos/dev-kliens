@@ -3896,6 +3896,7 @@ VNUM	LOCALE_NAME
 40005	Harangzúgás
 40006	Vadak szállítólevele
 40007	Vadak levele
+41000	Costume Weapon (test)
 41001	Nyúl jelmez (barna)
 41002	Nyuszi jelmez (barna)
 41003	Sivatagi harcos (f)

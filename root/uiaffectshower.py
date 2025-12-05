@@ -505,9 +505,11 @@ class AffectShower(ui.Window):
 		if pointIdx == player.POINT_MALL_ITEMBONUS or pointIdx == player.POINT_MALL_GOLDBONUS:
 			value = 1 + float(value) / 100.0
 
-		#try:
-		if affect != chr.NEW_AFFECT_AUTO_SP_RECOVERY and affect != chr.NEW_AFFECT_AUTO_HP_RECOVERY:
-			description = description(float(value))
+		try:
+			if affect != chr.NEW_AFFECT_AUTO_SP_RECOVERY and affect != chr.NEW_AFFECT_AUTO_HP_RECOVERY:
+				description = description(float(value))
+		except:
+			return
 
 		image = AffectImage()
 		image.SetParent(self)

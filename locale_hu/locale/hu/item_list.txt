@@ -6061,6 +6061,7 @@
 71164	ETC	icon/item/71131.tga
 38200	ETC	icon/item/53001.tga
 38201	ETC	icon/item/53001.tga
+41000	WEAPON	icon/item/00010.tga	d:/ymir work/item/weapon/00010.gr2
 41001	ARMOR	icon/item/41002.tga
 41002	ARMOR	icon/item/41001.tga
 51501	ETC	icon/item/51501.tga
