@@ -372,7 +372,7 @@ window = {
 
 						{
 							"name" : "Money",
-							"type" : "text",
+							"type" : "cool_text",
 
 							"x" : 3,
 							"y" : 3,

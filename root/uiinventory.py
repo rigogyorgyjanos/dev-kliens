@@ -619,6 +619,8 @@ class InventoryWindow(ui.ScriptWindow):
 				else:
 					self.tooltipInfo[i].Hide()
 					
+		self.GetChild("Money").OnUpdateCool()
+					
 	def RefreshEquipSlotWindow(self):
 		getItemVNum=player.GetItemIndex
 		getItemCount=player.GetItemCount
@@ -654,7 +656,7 @@ class InventoryWindow(ui.ScriptWindow):
 
 	def RefreshStatus(self):
 		money = player.GetElk()
-		self.wndMoney.SetText(localeInfo.NumberToMoneyString(money))
+		self.GetChild("Money").SetText(player.GetElk())
 
 	def SetItemToolTip(self, tooltipItem):
 		self.tooltipItem = tooltipItem

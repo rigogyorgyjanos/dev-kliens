@@ -3148,6 +3148,45 @@ class ListBox2(ListBox):
 		else:
 			self.barWidth = self.width
 
+class CoolRefreshTextLine(TextLine):
+	def __del__(self):
+		TextLine.__del__(self)
+	def Destroy(self):
+		self.currentValue = 0
+		self.newValue = 0
+		self.valueRange = 0
+		self.status = False
+		self.perSize = 0
+		self.MAX_LOOP_COUNT = 0
+	
+	def __init__(self):
+		TextLine.__init__(self)
+		self.Destroy()
+		self.SetWindowName("CoolRefreshTextLine")
+		self.MAX_LOOP_COUNT = 15
+	
+	def SetText(self, newValue):
+		self.newValue = long(newValue)
+		if self.newValue != self.currentValue:
+			self.status = True
+			self.valueRange = self.newValue - self.currentValue
+			self.perSize = 0
+		else:
+			self.status = False
+			self.currentValue = newValue
+			TextLine.SetText(self, localeInfo.NumberToMoneyString(self.currentValue))
+	
+	def OnUpdateCool(self):
+		if self.status == True:
+			if self.newValue > self.currentValue:
+				self.currentValue += long(math.floor(float(self.valueRange)/float(self.MAX_LOOP_COUNT)))
+			else:
+				self.currentValue -= long(math.floor(float(self.valueRange)/float(self.MAX_LOOP_COUNT)))
+			self.perSize += 1
+			if self.perSize > self.MAX_LOOP_COUNT:
+				self.currentValue = self.newValue
+				self.status = False
+			TextLine.SetText(self, localeInfo.NumberToMoneyString(self.currentValue))
 
 class ComboBox(Window):
 
@@ -3521,6 +3560,11 @@ class PythonScriptLoader(object):
 
 			elif Type == "text":
 				parent.Children[Index] = TextLine()
+				parent.Children[Index].SetParent(parent)
+				self.LoadElementText(parent.Children[Index], ElementValue, parent)
+			
+			elif Type == "cool_text":
+				parent.Children[Index] = CoolRefreshTextLine()
 				parent.Children[Index].SetParent(parent)
 				self.LoadElementText(parent.Children[Index], ElementValue, parent)
 
