@@ -367,7 +367,7 @@ class RefineDialogNew(ui.ScriptWindow):
 
 		thinBoard = self.__MakeThinBoard()
 		thinBoard.SetPosition(50, self.dialogHeight)
-		thinBoard.SetSize(191, 20)
+		thinBoard.SetSize(self.toolTip.GetWidth(), 20)
 
 		textLine = ui.TextLine()
 		textLine.SetParent(thinBoard)

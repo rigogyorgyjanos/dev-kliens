@@ -79,6 +79,7 @@ class AttachMetinDialog(ui.ScriptWindow):
 		self.newToolTip.ClearToolTip()
 
 		item.SelectItem(metinIndex)
+		metinSubType = item.GetItemSubType()
 
 		## Metin Image
 		try:
@@ -86,16 +87,7 @@ class AttachMetinDialog(ui.ScriptWindow):
 		except:
 			dbg.TraceError("AttachMetinDialog.Open.LoadImage - Failed to find item data")
 
-		## Old Item ToolTip
-		metinSlot = []
-		for i in xrange(player.METIN_SOCKET_MAX_NUM):
-			metinSlot.append(player.GetItemMetinSocket(targetItemPos, i))
-		self.oldToolTip.AddItemData(itemIndex, metinSlot)
-
 		## New Item ToolTip
-		item.SelectItem(metinIndex)
-		metinSubType = item.GetItemSubType()
-
 		metinSlot = []
 		for i in xrange(player.METIN_SOCKET_MAX_NUM):
 			metinSlot.append(player.GetItemMetinSocket(targetItemPos, i))
@@ -106,13 +98,22 @@ class AttachMetinDialog(ui.ScriptWindow):
 				break
 		self.newToolTip.AddItemData(itemIndex, metinSlot)
 
+		## Old Item ToolTip
+		item.SelectItem(metinIndex)
+		metinSlot = []
+		for i in xrange(player.METIN_SOCKET_MAX_NUM):
+			metinSlot.append(player.GetItemMetinSocket(targetItemPos, i))
+		self.oldToolTip.ResizeToolTipWidth(self.newToolTip.GetWidth())
+		self.oldToolTip.AddItemData(itemIndex, metinSlot)
+
 		self.UpdateDialog()
 		self.SetTop()
 		self.Show()
 
 	def UpdateDialog(self):
-		newWidth = self.newToolTip.GetWidth() + 230 + 15 + 20
+		newWidth = 15 + self.oldToolTip.GetWidth() + 45 + self.newToolTip.GetWidth() + 15
 		newHeight = self.newToolTip.GetHeight() + 98
+		self.newToolTip.SetPosition(15 + self.oldToolTip.GetWidth() + 45, 38)
 
 		if localeInfo.IsARABIC():
 			self.board.SetPosition( newWidth, 0 )

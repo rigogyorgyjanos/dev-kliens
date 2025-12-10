@@ -180,6 +180,14 @@ class ToolTip(ui.ThinBoard):
 		self.toolTipHeight += self.TEXT_LINE_HEIGHT
 		self.AlignHorizonalCenter()
 		return textLine
+	
+	def AlignTextLineHorizonalCenter(self):
+		for child in self.childrenList:
+			if type(child).__name__ == "TextLine":
+				(x, y) = child.GetLocalPosition()
+				child.SetPosition(self.toolTipWidth / 2, y)
+
+		self.ResizeToolTip()
 		
 	def AutoAppendTextLine(self, text, color = FONT_COLOR, centerAlign = True):
 		textLine = ui.TextLine()
@@ -494,6 +502,7 @@ class ItemToolTip(ToolTip):
 	def __init__(self, *args, **kwargs):
 		ToolTip.__init__(self, *args, **kwargs)
 		self.itemVnum = 0
+		self.metinSlot = []
 		self.isShopItem = False
 
 		# 아이템 툴팁을 표시할 때 현재 캐릭터가 착용할 수 없는 아이템이라면 강제로 Disable Color로 설정 (이미 그렇게 작동하고 있으나 꺼야 할 필요가 있어서)
@@ -501,6 +510,8 @@ class ItemToolTip(ToolTip):
 
 	def __del__(self):
 		ToolTip.__del__(self)
+		self.metinSlot = None
+		
 
 	def SetCannotUseItemForceSetDisableColor(self, enable):
 		self.bCannotUseItemForceSetDisableColor = enable
@@ -887,10 +898,14 @@ class ItemToolTip(ToolTip):
 
 	def AddItemData(self, itemVnum, metinSlot, attrSlot = 0, flags = 0, unbindTime = 0):
 		self.itemVnum = itemVnum
+		self.metinSlot = metinSlot
 		item.SelectItem(itemVnum)
 		itemType = item.GetItemType()
 		itemSubType = item.GetItemSubType()
-
+		
+		if not item.GetItemDescription():
+			self.__CalculateToolTipWidth()
+			
 		if 50026 == itemVnum:
 			if 0 != metinSlot:
 				name = item.GetItemName()
@@ -1438,7 +1453,34 @@ class ItemToolTip(ToolTip):
 			return self.toolTipWidth
 	
 		return DESC_WESTERN_MAX_WIDTH
+	
+	def ResizeToolTipWidth(self, width):
+		self.toolTipWidth = width
 
+	def __CalculateToolTipWidth(self):
+		affectTextLineLenList = []
+
+		metinSocket = self.metinSlot
+		if metinSocket:
+			for socketIndex in metinSocket:
+				if socketIndex:
+					item.SelectItem(socketIndex)
+
+					affectType, affectValue = item.GetAffect(0)
+					affectString = self.__GetAffectString(affectType, affectValue)
+					if affectString:
+						affectTextLineLenList.append(len(affectString))
+
+			if self.itemVnum:
+				item.SelectItem(self.itemVnum)
+			self.metinSlot = None
+
+		if self.toolTipWidth == self.TOOL_TIP_WIDTH:
+			if affectTextLineLenList:
+				self.toolTipWidth += max(affectTextLineLenList) + 10
+
+		self.AlignTextLineHorizonalCenter()
+		
 	def __SetSkillBookToolTip(self, skillIndex, bookName, skillGrade):
 		skillName = skill.GetSkillName(skillIndex)
 
