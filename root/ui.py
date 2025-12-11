@@ -2507,7 +2507,6 @@ class ThinBoard(Window):
 		Window.__del__(self)
 
 	def SetSize(self, width, height):
-
 		width = max(self.CORNER_WIDTH*2, width)
 		height = max(self.CORNER_HEIGHT*2, height)
 		Window.SetSize(self, width, height)
