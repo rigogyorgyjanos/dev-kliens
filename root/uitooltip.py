@@ -995,6 +995,7 @@ class ItemToolTip(ToolTip):
 		isCostumeHair = 0
 		isCostumeBody = 0
 		isCostumeWeapon = 0
+		isCostumeMount = 0
 			
 		if app.ENABLE_COSTUME_SYSTEM:
 			if item.ITEM_TYPE_COSTUME == itemType:
@@ -1003,9 +1004,8 @@ class ItemToolTip(ToolTip):
 				isCostumeBody = item.COSTUME_TYPE_BODY == itemSubType
 				if app.ENABLE_WEAPON_COSTUME_SYSTEM:
 					isCostumeWeapon = item.COSTUME_TYPE_WEAPON == itemSubType
+				isCostumeMount = item.COSTUME_TYPE_MOUNT == itemSubType
 				
-				#dbg.TraceError("IS_COSTUME_ITEM! body(%d) hair(%d)" % (isCostumeBody, isCostumeHair))
-
 		self.__AdjustMaxWidth(attrSlot, itemDesc)
 		self.__SetItemTitle(itemVnum, metinSlot, attrSlot)
 		
