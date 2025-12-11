@@ -1035,13 +1035,18 @@ class ChatLogWindow(ui.Window):
 	def ToggleChatMode(self, mode):
 		if self.allChatMode:
 			self.allChatMode = False
+			
 			for i in self.CHAT_MODE_INDEX:
 				chat.DisableChatMode(self.chatID, i)
+				
 			chat.EnableChatMode(self.chatID, mode)
 			self.btnAll.SetUp()
-
 		else:
 			chat.ToggleChatMode(self.chatID, mode)
+			
+			if not chat.GetChatMode(self.chatID):
+				self.btnAll.Down()
+				self.ToggleAllChatMode()
 
 	def SetSize(self, width, height):
 		self.imgCenter.SetRenderingRect(0.0, 0.0, float((width - self.BLOCK_WIDTH*2) - self.BLOCK_WIDTH) / self.BLOCK_WIDTH, 0.0)
