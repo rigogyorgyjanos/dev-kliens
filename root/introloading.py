@@ -217,7 +217,7 @@ class LoadingWindow(ui.ScriptWindow):
 		self.__RegisterTitleName()
 		self.__RegisterColor()
 		self.__InitData()
-		self.__LoadMap()
+		# self.__LoadMap()
 		self.__LoadSound()
 		self.__LoadEffect()
 		self.__LoadWarrior()
@@ -241,7 +241,7 @@ class LoadingWindow(ui.ScriptWindow):
 
 		self.loadStepList=[
 			(0, ui.__mem_func__(self.__InitData)),
-			(10, ui.__mem_func__(self.__LoadMap)),
+			# (10, ui.__mem_func__(self.__LoadMap)),
 			(30, ui.__mem_func__(self.__LoadSound)),
 			(40, ui.__mem_func__(self.__LoadEffect)),
 			(50, ui.__mem_func__(self.__LoadWarrior)),
@@ -354,8 +354,8 @@ class LoadingWindow(ui.ScriptWindow):
 	def __RegisterEmotionIcon(self):
 		emotion.RegisterEmotionIcons()
 
-	def __LoadMap(self):
-		net.Warp(self.playerX, self.playerY)
+	# def __LoadMap(self):
+		# net.Warp(self.playerX, self.playerY)
 
 	def __LoadSound(self):
 		playerSettingModule.LoadGameData("SOUND")
