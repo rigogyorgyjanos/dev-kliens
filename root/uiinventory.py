@@ -23,8 +23,6 @@ if app.ENABLE_SORT_INVEN:
 
 ITEM_MALL_BUTTON_ENABLE = True
 
-
-
 ITEM_FLAG_APPLICABLE = 1 << 14
 
 class CostumeWindow(ui.ScriptWindow):

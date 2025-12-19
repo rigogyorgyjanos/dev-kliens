@@ -48,7 +48,8 @@ import interfaceModule
 import musicInfo
 import debugInfo
 import stringCommander
-
+if app.__BL_SHADER__:
+	import shaderMgr
 from _weakref import proxy
 
 # TEXTTAIL_LIVINGTIME_CONTROL
@@ -1525,8 +1526,16 @@ class GameWindow(ui.ScriptWindow):
 		#self.TextureNum.SetText("TN : %s" % (sTextureNum))
 		#self.ObjectNum.SetText("GTI : %d, CRC : %d" % (dwRenderedThing, dwRenderedCRC))
 		self.ViewDistance.SetText("Num : %d, FS : %f, FE : %f, FC : %f" % (iNum, fFogStart, fFogEnd, fFarCilp))
-
+	
+	if app.__BL_SHADER__:
+		def OnRenderEnd(self):
+			grp.SetGameRenderState()
+			shaderMgr.End(shaderMgr.SHADER_RENDER_TYPE_GAME_SCREEN)
+			grp.SetInterfaceRenderState()
+			
 	def OnRender(self):
+		if app.__BL_SHADER__:
+			shaderMgr.Begin()
 		app.RenderGame()
 		
 		if self.console.Console.collision:
