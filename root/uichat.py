@@ -5,6 +5,7 @@ import wndMgr
 import net
 import app
 import ime
+import chr
 import localeInfo
 import colorInfo
 import constInfo
@@ -165,6 +166,17 @@ class ChatLine(ui.EditLine):
 
 		self.__CheckChatMark()
 
+	
+	def GetLink(self, text):
+		link = ""
+		start = text.find("http://")
+		if start == -1:
+			start = text.find("https://")
+		if start == -1:
+			return ""
+
+		return text[start:len(text)].split(" ")[0]
+			
 	def GetCurrentChatModeName(self):
 		try:
 			return self.CHAT_MODE_NAME[self.chatMode]
@@ -209,15 +221,14 @@ class ChatLine(ui.EditLine):
 		
 
 	def __SendChatPacket(self, text, type):
-#		if text[0] == '/':
-#			if ENABLE_CHAT_COMMAND or constInfo.CONSOLE_ENABLE:
-#				pass
-#			else:
-#				return
-
 		if net.IsChatInsultIn(text):
 			chat.AppendChat(chat.CHAT_TYPE_INFO, localeInfo.CHAT_INSULT_STRING)
 		else:
+			link = self.GetLink(text)
+			if link != "":
+				text = text.replace(link, "|cFF00C0FC|h|Hsysweb:" + link.replace("://", "XxX") + "|h" + link + "|h|r")
+				
+					
 			net.SendChatPacket(text, type)
 		
 	def __SendPartyChatPacket(self, text):

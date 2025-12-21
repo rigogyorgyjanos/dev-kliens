@@ -166,8 +166,9 @@ class LoginWindow(ui.ScriptWindow):
 	IS_TEST = net.IsTest()
 
 	def __init__(self, stream):
-		print "NEW LOGIN WINDOW  ----------------------------------------------------------------------------"
+		# print "NEW LOGIN WINDOW  ----------------------------------------------------------------------------"
 		ui.ScriptWindow.__init__(self)
+		
 		net.SetPhaseWindow(net.PHASE_WINDOW_LOGIN, self)
 		net.SetAccountConnectorHandler(self)
 
@@ -198,7 +199,7 @@ class LoginWindow(ui.ScriptWindow):
 	def Open(self):
 		ServerStateChecker.Create(self)
 
-		print "LOGIN WINDOW OPEN ----------------------------------------------------------------------------"
+		# print "LOGIN WINDOW OPEN ----------------------------------------------------------------------------"
 
 		self.loginFailureMsgDict={
 			#"DEFAULT" : localeInfo.LOGIN_FAILURE_UNKNOWN,
@@ -439,6 +440,7 @@ class LoginWindow(ui.ScriptWindow):
 		if not IsLoginDelay():
 			snd.PlaySound("sound/ui/loginok.wav")
 			self.PopupDisplayMessage(localeInfo.LOGIN_CONNECT_SUCCESS)
+			constInfo.ACCOUNT_NAME = str(self.idEditLine.GetText())
 
 	def OnLoginStart(self):
 		if not IsLoginDelay():

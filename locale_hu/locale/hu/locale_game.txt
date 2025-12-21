@@ -851,3 +851,14 @@ YENILE_BUTTON_TITLE	Inventory Sorting:
 YENILE_BUTTON	|Eemoji/key_lclick|e - Name
 YENILE_BUTTON2	|Eemoji/key_ctrl|e + |Eemoji/key_lclick|e - Level
 YENILE_BUTTON3	|Eemoji/key_alt|e + |Eemoji/key_lclick|e - Custom Sort
+EMPIRE_SELECT	Válassz
+EMPIRE_SELECT_MODE	Birodalom választás
+CHARACTER_CREATE_MODE	Karakter létrehozás
+CHARACTER_SELECT_MODE	Karakter választás
+CHARACTER_CREATE_MALE	Férfi
+CHARACTER_CREATE_FEMALE	Nõ
+CHARACTER_CREATE_APPEARANCE1	Kinézet 1
+CHARACTER_CREATE_APPEARANCE2	Kinézet 2
+INTRO_SELECT_LEVEL	Szint %d
+CHAT_OPEN_LINK_DANGER	Figyelem: Ez a link vírust tartalmazhat!
+CHAT_OPEN_LINK	Szeretnéd megnyitni ezt a linket?

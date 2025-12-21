@@ -639,26 +639,20 @@ class QuestDialog(ui.ScriptWindow):
 		return True
 		
 	def OnPressEscapeKey(self):
-
-		# ESC키가 눌린 경우 "다음" 버튼을 누른 것과 같은 효과를 내도록 함.
 		if None != self.btnNext:
-		    ##퀘스트문자들이 전부다 나왔을경우의 ESC버튼
 			if event.BUTTON_TYPE_CANCEL == self.nextButtonType:
 				event.SelectAnswer(self.descIndex, 254)
 				self.CloseSelf()
-			## 아무 작업을 하지 않을때
 			elif event.BUTTON_TYPE_DONE == self.nextButtonType:
 				self.CloseSelf()
-			## 엔터나 다음화면으로 넘어가려고 할경우 
 			elif event.BUTTON_TYPE_NEXT == self.nextButtonType:
 				event.SelectAnswer(self.descIndex, 254)
 				self.CloseSelf()
 		else:
-		## 도중에 꺼버리거나, ESC버튼이 나왓을경우 
 			event.SelectAnswer(self.descIndex, entire_questbutton_number -1 )		
 			self.nextbutton = None
 			self.prevbutton = None
-			self.OnCancel()	
+			self.OnCancel()
 		return True
 
 	def OnIMEReturn(self):

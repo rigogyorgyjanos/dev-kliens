@@ -278,22 +278,37 @@ class WhisperDialog(ui.ScriptWindow):
 	def OnScroll(self):
 		chat.SetWhisperPosition(self.targetName, self.scrollBar.GetPos())
 
-	def SendWhisper(self):
+	def GetLink(self, text):
+		link = ""
+		start = text.find("http://")
+		if start == -1:
+			start = text.find("https://")
+		
+		if start == -1:
+			return ""
+		
+		return text[start:len(text)].split(" ")[0]
 
+	def SendWhisper(self):
 		text = self.chatLine.GetText()
 		textLength = len(text)
 
 		if textLength > 0:
+			link = self.GetLink(text)
+			if link != "":
+				import chr
+				if not chr.IsGameMaster():
+					text = text.replace(link, "|cFF00C0FC|h|Hweb:" + link.replace("://", "XxX") + "|h" + link + "|h|r")
+				else:
+					text = text.replace(link, "|cFF00C0FC|h|Hsysweb:" + link.replace("://", "XxX") + "|h" + link + "|h|r")
+						
 			if net.IsInsultIn(text):
 				chat.AppendChat(chat.CHAT_TYPE_INFO, localeInfo.CHAT_INSULT_STRING)
 				return
 
 			net.SendWhisperPacket(self.targetName, text)
 			self.chatLine.SetText("")
-			if app.ENABLE_MULTI_LANGUAGE_SYSTEM:
-				chat.AppendWhisper(chat.WHISPER_TYPE_CHAT, self.targetName, player.GetName() + " : " + text, app.GetLocaleName())
-			else:
-				chat.AppendWhisper(chat.WHISPER_TYPE_CHAT, self.targetName, player.GetName() + " : " + text)
+			chat.AppendWhisper(chat.WHISPER_TYPE_CHAT, self.targetName, player.GetName() + " : " + text)
 
 	def OnTop(self):
 		self.chatLine.SetFocus()

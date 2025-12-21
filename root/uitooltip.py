@@ -220,6 +220,31 @@ class ToolTip(ui.ThinBoard):
 
 		return textLine
 
+	def AutoAppendNewTextLine(self, text, color = FONT_COLOR, centerAlign = True):
+		textLine = ui.TextLine()
+		textLine.SetParent(self)
+		textLine.SetFontName(self.defFontName)
+		textLine.SetPackedFontColor(color)
+		textLine.SetText(text)
+		textLine.SetOutline()
+		textLine.SetFeather(False)
+		textLine.Show()
+		textLine.SetPosition(15, self.toolTipHeight)
+
+		self.childrenList.append(textLine)
+		(textWidth, textHeight) = textLine.GetTextSize()
+
+		textWidth += 30
+		textHeight += 10
+
+		if self.toolTipWidth < textWidth:
+			self.toolTipWidth = textWidth
+
+		self.toolTipHeight += textHeight
+		self.ResizeToolTipText(textWidth, self.toolTipHeight)
+
+		return textLine
+		
 	def AppendTextLine(self, text, color = FONT_COLOR, centerAlign = True):
 		textLine = ui.TextLine()
 		textLine.SetParent(self)
@@ -274,6 +299,9 @@ class ToolTip(ui.ThinBoard):
 	def ResizeToolTip(self):
 		self.SetSize(self.toolTipWidth, self.TOOL_TIP_HEIGHT + self.toolTipHeight)
 
+	def ResizeToolTipText(self, x, y):
+		self.SetSize(x, y)
+	
 	def SetTitle(self, name):
 		self.AppendTextLine(name, self.TITLE_COLOR)
 

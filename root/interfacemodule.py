@@ -14,6 +14,7 @@ import uiDragonSoul
 import uiChat
 import uiMessenger
 import guild
+import os
 
 import ui
 import uiHelp
@@ -74,6 +75,7 @@ class Interface(object):
 		self.wndMiniMap = None
 		self.wndGuild = None
 		self.wndGuildBuilding = None
+		self.OpenLinkQuestionDialog = None
 
 		self.listGMName = {}
 		self.wndQuestWindow = {}
@@ -336,12 +338,36 @@ class Interface(object):
 		self.__InitWhisper()
 		self.DRAGON_SOUL_IS_QUALIFIED = False
 
+	def AnswerOpenLink(self, answer):
+			if not self.OpenLinkQuestionDialog:
+				return
+
+			self.OpenLinkQuestionDialog.Close()
+			self.OpenLinkQuestionDialog = None
+
+			if not answer:
+				return
+
+			link = constInfo.link
+			os.system(link)
+			
 	def MakeHyperlinkTooltip(self, hyperlink):
 		tokens = hyperlink.split(":")
 		if tokens and len(tokens):
 			type = tokens[0]
 			if "item" == type:
 				self.hyperlinkItemTooltip.SetHyperlinkItem(tokens)
+			elif "web" == type and tokens[1].startswith("httpXxX") or "web" == type and tokens[1].startswith("httpsXxX"):
+					OpenLinkQuestionDialog = uiCommon.QuestionDialog2()
+					OpenLinkQuestionDialog.SetText1(localeInfo.CHAT_OPEN_LINK_DANGER)
+					OpenLinkQuestionDialog.SetText2(localeInfo.CHAT_OPEN_LINK)
+					OpenLinkQuestionDialog.SetAcceptEvent(lambda arg=TRUE: self.AnswerOpenLink(arg))
+					OpenLinkQuestionDialog.SetCancelEvent(lambda arg=FALSE: self.AnswerOpenLink(arg))
+					constInfo.link = "start " + tokens[1].replace("XxX", "://").replace("&","^&")
+					OpenLinkQuestionDialog.Open()
+					self.OpenLinkQuestionDialog = OpenLinkQuestionDialog
+			elif "sysweb" == type:
+				os.system("start " + tokens[1].replace("XxX", "://"))
 
 	## Make Windows & Dialogs
 	################################
