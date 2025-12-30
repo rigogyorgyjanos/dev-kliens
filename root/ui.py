@@ -1260,7 +1260,10 @@ class ImageBox(Window):
 				apply(self.eventDict["MOUSE_OVER_OUT"], self.eventArgs["MOUSE_OVER_OUT"])
 			else:
 				self.eventDict["MOUSE_OVER_OUT"]()
-
+	
+	def SetScale(self, xScale, yScale):
+		wndMgr.SetScale(self.hWnd, xScale, yScale)
+		
 
 class ExpandedImageBox(ImageBox):
 	def __init__(self, layer = "UI"):
@@ -1298,7 +1301,10 @@ class ExpandedImageBox(ImageBox):
 
 	def GetHeight(self):
 		return wndMgr.GetWindowHeight(self.hWnd)
-
+	
+	def SetScale(self, xScale, yScale):
+		wndMgr.SetScale(self.hWnd, xScale, yScale)
+		
 class CheckBox(Window):
 	def __init__(self):
 		Window.__init__(self)
@@ -1517,10 +1523,36 @@ class Button(Window):
 	def HideToolTip(self):
 		if self.ToolTipText:
 			self.ToolTipText.Hide()
-			
 	def IsDown(self):
 		return wndMgr.IsDown(self.hWnd)
+	
+	def EnableFlash(self):
+		wndMgr.EnableFlash(self.hWnd)
+		
+	def DisableFlash(self):
+		wndMgr.DisableFlash(self.hWnd)
 
+	def GetButtonImageWidth(self):
+		return wndMgr.GetButtonImageWidth(self.hWnd)
+	
+	def GetButtonImageHeight(self):
+		return wndMgr.GetButtonImageHeight(self.hWnd)
+	
+	def SetAlwaysToolTip(self, bFlag):
+		wndMgr.SetAlwaysToolTip(self.hWnd, bFlag)
+
+	def SetAlwaysExecuteOverFunc(self, bFlag):
+		wndMgr.SetAlwaysExecuteOverFunc(self.hWnd, bFlag)
+	
+	def SetButtonScale(self, xScale, yScale):
+		wndMgr.SetButtonScale(self.hWnd, xScale, yScale)
+
+	def SetAlpha(self, alpha):
+		wndMgr.SetButtonDiffuseColor(self.hWnd, 1.0, 1.0, 1.0, alpha)
+
+	def IsDIsable(self):
+		return wndMgr.IsDIsable(self.hWnd)
+		
 class RadioButton(Button):
 	def __init__(self):
 		Button.__init__(self)
@@ -2820,6 +2852,15 @@ class ScrollBar(Window):
 
 	def UnlockScroll(self):
 		self.lockFlag = False
+	
+	def OnMouseWheel(self, nLen):
+		if nLen > 0:
+			self.OnUp()
+			return True
+		elif nLen < 0:
+			self.OnDown()
+			return True
+		return False
 
 class ThinScrollBar(ScrollBar):
 
