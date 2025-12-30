@@ -608,6 +608,9 @@ class InventoryWindow(ui.ScriptWindow):
 
 		if self.wndBelt:
 			self.wndBelt.RefreshSlot()
+		
+		if self.tooltipItem and self.tooltipItem.IsShow():
+				self.tooltipItem.RefreshNeededItemCounts()
 			
 	def OnUpdate(self):
 		if app.ENABLE_SORT_INVEN and self.tooltipInfo:

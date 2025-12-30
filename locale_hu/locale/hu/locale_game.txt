@@ -862,3 +862,8 @@ CHARACTER_CREATE_APPEARANCE2	Kinézet 2
 INTRO_SELECT_LEVEL	Szint %d
 CHAT_OPEN_LINK_DANGER	Figyelem: Ez a link vírust tartalmazhat!
 CHAT_OPEN_LINK	Szeretnéd megnyitni ezt a linket?
+ITEM_VNUM_TOOLTIP	ID: %d
+SHOP_NOT_ENOUGH_ITEM	Nincs elegendõ tárgyad.
+SHOP_NOT_ENOUGH_EXP	Nincs elegendõ tapasztalat pontod.
+BUY_COUNT	%s darab | %s
+BUY_CRAFT_PERCENT	Elkészítés esélye: %s%%!

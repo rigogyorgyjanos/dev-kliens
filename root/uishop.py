@@ -201,7 +201,7 @@ class ShopDialog(ui.ScriptWindow):
 				self.__HideMiddleTabs()
 				self.__ShowSmallTabs()
 				self.__SetTabNames()
-				self.middleRadioButtonGroup.OnClick(1)
+				self.smallRadioButtonGroup.OnClick(0)
 
 		self.Refresh()
 		self.SetTop()
@@ -446,11 +446,15 @@ class ShopDialog(ui.ScriptWindow):
 		if mouseModule.mouseController.isAttached():
 			return
 
-		if 0 != self.tooltipItem:
-			if shop.SHOP_COIN_TYPE_GOLD == shop.GetTabCoinType(self.tabIdx):
+		if self.tooltipItem:
+			PriceType = shop.GetItemPriceType(slotIndex)
+			if PriceType == shop.SHOPEX_GOLD:
 				self.tooltipItem.SetShopItem(slotIndex)
-			else: 
+			elif PriceType == shop.SHOPEX_SECONDCOIN:
 				self.tooltipItem.SetShopItemBySecondaryCoin(slotIndex)
+			else:
+				self.tooltipItem.SetShopItemByShopEx(slotIndex, PriceType)
+
 	def OverOutItem(self):
 		if 0 != self.tooltipItem:
 			self.tooltipItem.HideToolTip()

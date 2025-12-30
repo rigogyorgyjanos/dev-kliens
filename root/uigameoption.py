@@ -489,3 +489,4 @@ class OptionDialog(ui.ScriptWindow):
 
 	def Close(self):
 		self.Hide()
+		systemSetting.SaveCharConfig()

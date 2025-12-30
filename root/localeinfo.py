@@ -634,8 +634,27 @@ SHOP_ERROR_DICT = {
 	"INVENTORY_FULL" : SHOP_INVENTORY_FULL,
 	"INVALID_POS" : SHOP_INVALID_POS,
 	"NOT_ENOUGH_MONEY_EX" : SHOP_NOT_ENOUGH_MONEY_EX,
+	"NOT_ENOUGH_ITEM" : SHOP_NOT_ENOUGH_ITEM,
+	"NOT_ENOUGH_EXP" : SHOP_NOT_ENOUGH_EXP,
 }
 
+def NumberToShopEXP(n):
+	if n <= 0 :
+		return "0 %s" % ("EXP")
+	n = str(n)
+	return "%s %s" % ('.'.join([ i-3<0 and str(n)[:i] or str(n)[i-3:i] for i in range(len(str(n))%3, len(str(n))+1, 3) if i ]), "EXP")
+		
+def NumberToWithItemString(n,c) :
+	if n <= 0 :
+		return "0 %s" % (c)
+	return BUY_COUNT % ('.'.join([ i-3<0 and str(n)[:i] or str(n)[i-3:i] for i in range(len(str(n))%3, len(str(n))+1, 3) if i ]), c)
+
+def NumberFormat(n) :
+	if int(n) <= 0 :
+		return "0"
+	return "%s" % ('.'.join([ i-3<0 and str(n)[:i] or str(n)[i-3:i] for i in range(len(str(n))%3, len(str(n))+1, 3) if i ]))
+	
+	
 STAT_MINUS_DESCRIPTION = {
 	"HTH-" : STAT_MINUS_CON,
 	"INT-" : STAT_MINUS_INT,
@@ -648,8 +667,10 @@ TITLE_NAME_LIST = ( PVP_LEVEL0, PVP_LEVEL1, PVP_LEVEL2, PVP_LEVEL3, PVP_LEVEL4, 
 
 def GetLetterImageName():
 	return "season1/icon/scroll_close.tga"
+	
 def GetLetterOpenImageName():
 	return "season1/icon/scroll_open.tga"
+	
 def GetLetterCloseImageName():
 	return "season1/icon/scroll_close.tga"
 

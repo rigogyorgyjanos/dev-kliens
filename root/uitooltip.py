@@ -688,6 +688,134 @@ class ItemToolTip(ToolTip):
 		self.AddItemData(itemVnum, metinSlot, attrSlot)
 		self.AppendPriceBySecondaryCoin(price)
 
+	def SetShopItemByShopEx(self, slotIndex, type):
+		itemVnum = shop.GetItemID(slotIndex)
+		if itemVnum == 0:
+			return
+		price = shop.GetItemPrice(slotIndex)
+		self.ClearToolTip()
+		self.isShopItem = True
+		metinSlot = []
+		for i in xrange(player.METIN_SOCKET_MAX_NUM):
+			metinSlot.append(shop.GetItemMetinSocket(slotIndex, i))
+		attrSlot = []
+		for i in xrange(player.ATTRIBUTE_SLOT_MAX_NUM):
+			attrSlot.append(shop.GetItemAttribute(slotIndex, i))
+		self.AddItemData(itemVnum, metinSlot, attrSlot)
+		self.AppendSpace(5)
+		
+		buyWithItemPrice = []
+		for i in xrange(5):
+			buyWithItemPrice.append(shop.GetBuyWithItemList(slotIndex, i))
+			
+		if type == shop.SHOPEX_ITEM:
+			self.AddSHOPEXItem(buyWithItemPrice, price)
+			self.AppendTextLine(localeInfo.TOOLTIP_BUYPRICE  % (localeInfo.NumberFormat(price)), self.GetPriceColor(price))
+		else:
+			self.AppendTextLine(localeInfo.TOOLTIP_BUYPRICE  % (localeInfo.NumberToShopEXP(price)), self.GetPriceColor(price))
+
+	def AddSHOPEXItem(self, buyWithItemPriceList, price):
+		for i in xrange(len(buyWithItemPriceList)):
+			(itemID, itemCount ) = buyWithItemPriceList[i]
+			
+			if itemID > 0 and itemCount > 0:
+				self.AppendPrice_WithItem(int(itemID), int(itemCount))
+				
+	def AppendPrice_WithItem(self, itemVnum , price):
+		item.SelectItem(itemVnum)
+		itemName = item.GetItemName()
+		itemIcon = item.GetIconImageFileName()
+		(w, h) = item.GetItemSize()
+		itemCount = int(player.GetItemCountByVnum(itemVnum))
+		self.AppendTextLine_WithItem((localeInfo.NumberToWithItemString(price, itemName)), itemIcon, self.GetPriceColor(price), 32 * h, itemCount, price, itemVnum)
+	
+	def AppendTextLine_WithItem(self, text, img, color = FONT_COLOR, itemsize = 32, itemCount = 0, needCount = 0, itemVnum = 0):
+		ayraC = text.split("|")
+		if (len(ayraC) < 2):
+			return
+
+		priceText = ui.TextLine()
+		priceText.SetParent(self)
+		priceText.SetPackedFontColor(color)
+		priceText.SetOutline(True)
+		priceText.Show()
+		priceText.SetText("%s" % ayraC[0])
+		self.childrenList.append(priceText)
+		
+		tw, th = priceText.GetTextSize() 
+		
+		image = ui.ImageBox()
+		image.SetParent(self)
+		image.Show()
+		image.LoadImage(img)
+		self.childrenList.append(image)
+		
+		priceItemText = ui.TextLine()
+		priceItemText.SetParent(self)
+		# priceItemText.SetPackedFontColor(color)
+		priceItemText.SetOutline(True)
+
+		priceItemText.superitemVnum = itemVnum
+		priceItemText.superneedCount = needCount
+		priceItemText.superneedText = ayraC[1]
+
+		priceItemText.Show()
+
+		if needCount > 0:
+			if chr.IsGameMaster(player.GetMainCharacterIndex()):
+				priceItemText.SetText(ayraC[1] + " %s(%s)|r ItemID: %d" % ("|cFFE57B76" if needCount > itemCount else "|cFF76E581", localeInfo.NumberFormat(itemCount), itemVnum))
+				# priceItemText.SetText(ayraC[1] + " (%s) ItemID: %d" % (localeInfo.NumberFormat(itemCount), itemVnum))
+			else:
+				priceItemText.SetText(ayraC[1] + " %s(%s)|r" % ("|cFFE57B76" if needCount > itemCount else "|cFF76E581", localeInfo.NumberFormat(itemCount)))
+				# priceItemText.SetText(ayraC[1] + " (%s)" % (localeInfo.NumberFormat(itemCount)))
+		else:
+			priceItemText.SetText(ayraC[1])
+		self.childrenList.append(priceItemText)
+		
+		tiw0, tih0 = priceText.GetTextSize() 
+		tiw, tih = priceItemText.GetTextSize() 
+
+		if self.toolTipWidth < tiw + tiw0 + 20 + 32:
+			self.toolTipWidth = tiw + tiw0 + 20 + 32
+
+			for e in self.childrenList:
+				if hasattr(e, 'center') and e.center:
+					(x, y) = e.GetLocalPosition()
+					e.SetPosition(self.toolTipWidth/2, y)
+
+		topPos = int(self.toolTipHeight + 12)
+		leftPos = int(self.toolTipWidth/2 - (tw + tiw + 32) / 2)
+		priceText.SetPosition(leftPos, topPos)
+		image.SetPosition(leftPos + tw, topPos - 12)
+		priceItemText.SetPosition(leftPos + tw + 32, topPos)
+		self.toolTipHeight += itemsize
+		self.ResizeToolTip()
+	
+	def RefreshNeededItemCounts(self):
+		if self.IsShow():
+			for obj in self.childrenList:
+				if obj and hasattr(obj, "superitemVnum") and hasattr(obj, "superneedCount") and hasattr(obj, "superneedText"):
+					
+					needCount = obj.superneedCount
+					itemVnum = obj.superitemVnum
+					itemCount = player.GetSwitcherCount(itemVnum) if itemVnum == 71084 else player.GetItemCountByVnum(itemVnum)
+
+					if needCount > 0:
+						if chr.IsGameMaster(player.GetMainCharacterIndex()):
+							obj.SetText(obj.superneedText + " %s(%s)|r ItemID: %d" % ("|cFFE57B76" if needCount > itemCount else "|cFF76E581", localeInfo.NumberFormat(itemCount), itemVnum))
+						else:
+							obj.SetText(obj.superneedText + " %s(%s)|r" % ("|cFFE57B76" if needCount > itemCount else "|cFF76E581", localeInfo.NumberFormat(itemCount)))
+
+						tiw, tih = obj.GetTextSize() 
+
+						if self.toolTipWidth < tiw + 32:
+							self.toolTipWidth = tiw + 32
+
+							for e in self.childrenList:
+								if hasattr(e, 'center') and e.center:
+									(x, y) = e.GetLocalPosition()
+									e.SetPosition(self.toolTipWidth/2, y)
+									
 	def SetExchangeOwnerItem(self, slotIndex):
 		itemVnum = exchange.GetItemVnumFromSelf(slotIndex)
 		if 0 == itemVnum:
@@ -1363,8 +1491,13 @@ class ItemToolTip(ToolTip):
 			elif item.LIMIT_TIMER_BASED_ON_WEAR == limitType:
 				self.AppendTimerBasedOnWearLastTime(metinSlot)
 				#dbg.TraceError("1) REAL_TIME flag On ")
-
-
+		
+		# GM uitooltip helper 
+		if chr.IsGameMaster(player.GetMainCharacterIndex()):
+			self.AppendSpace(5)
+			self.AppendTextLine(localeInfo.ITEM_VNUM_TOOLTIP % (int(itemVnum)), self.HIGH_PRICE_COLOR)
+			self.AppendTextLine("Type: %d SubType: %d" % (item.GetItemType(), item.GetItemSubType()))
+			self.AppendTextLine("Sockets0-2:  %d, %d ,%d " % (metinSlot[0], metinSlot[1], metinSlot[2]) )
 				
 		self.ShowToolTip()
 
