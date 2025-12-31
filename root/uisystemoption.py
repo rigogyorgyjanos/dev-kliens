@@ -24,6 +24,7 @@ class OptionDialog(ui.ScriptWindow):
 		self.__Initialize()
 		
 		self.__Load()
+		self.RefreshCameraMode()
 
 	def __del__(self):
 		ui.ScriptWindow.__del__(self)
@@ -191,9 +192,14 @@ class OptionDialog(ui.ScriptWindow):
 		self.__ClickRadioButton(self.tilingModeButtonList, index)
 		self.tilingMode=index
 
-	def __SetCameraMode(self, index):
+	def RefreshCameraMode(self):
+		index = systemSetting.GetCameraMode()
 		constInfo.SET_CAMERA_MAX_DISTANCE_INDEX(index)
 		self.__ClickRadioButton(self.cameraModeButtonList, index)
+	
+	def __SetCameraMode(self, index):
+		systemSetting.SetCameraMode(index)
+		self.RefreshCameraMode()
 
 	def __SetFogLevel(self, index):
 		constInfo.SET_FOG_LEVEL_INDEX(index)
