@@ -5,6 +5,8 @@ import snd
 import wndMgr
 import uiScriptLocale
 import localeInfo
+from resizeexpr import Expr
+
 
 # 대부분의 실제 구현은 PythonApplicationLogo.cpp에 있다.
 
@@ -32,6 +34,7 @@ class LogoWindow(ui.ScriptWindow):
 		
 	def Open(self):
 		self.SetSize(wndMgr.GetScreenWidth(), wndMgr.GetScreenHeight())
+		self.SetResizeDic({"size" : (Expr("SCREEN_WIDTH"), Expr("SCREEN_HEIGHT"))})
 		self.SetWindowName("SelectLogoWindow")
 		self.Show()
 		

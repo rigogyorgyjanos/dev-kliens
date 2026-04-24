@@ -10,6 +10,8 @@ import localeInfo
 import colorInfo
 import constInfo
 import systemSetting
+from resizeexpr import Expr
+
 
 ENABLE_CHAT_COMMAND = True
 ENABLE_LAST_SENTENCE_STACK = True
@@ -743,6 +745,8 @@ class ChatWindow(ui.Window):
 	def SetHeight(self, height):
 		gxChat, gyChat = self.btnChatSizing.GetGlobalPosition()
 		self.btnChatSizing.SetPosition(gxChat, wndMgr.GetScreenHeight() - height)
+		self.btnChatSizing.SetResizeDic({"position" : (Expr("SCREEN_WIDTH")/2 - self.CHAT_WINDOW_WIDTH/2, Expr("SCREEN_HEIGHT") - height)})
+
 
 	###########
 	## Refresh
@@ -751,6 +755,7 @@ class ChatWindow(ui.Window):
 			self.RefreshBoardEditState()
 		elif self.boardState == chat.BOARD_STATE_VIEW:
 			self.RefreshBoardViewState()
+		self.btnChatSizing.SetRestrictMovementArea(0, 0, Expr("SCREEN_WIDTH")*5, Expr("SCREEN_HEIGHT")*5)
 
 	def RefreshBoardEditState(self):
 

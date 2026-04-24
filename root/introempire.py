@@ -9,6 +9,8 @@ import _weakref
 import uiToolTip
 import localeInfo
 import uiScriptLocale
+from resizeexpr import Expr
+
 
 LOCALE_PATH = "uiscript/"+uiScriptLocale.CODEPAGE+"_"
 
@@ -94,9 +96,8 @@ class SelectEmpireWindow(ui.ScriptWindow):
 		event.Destroy()
 
 	def Open(self):
-		print "OPEN EMPIRE WINDOW ----------------------------------------------------------------------------"
-
 		self.SetSize(wndMgr.GetScreenWidth(), wndMgr.GetScreenHeight())
+		self.SetResizeDic({"size" : (Expr("SCREEN_WIDTH"), Expr("SCREEN_HEIGHT"))})
 		self.SetWindowName("SelectEmpireWindow")
 		self.Show()	
 

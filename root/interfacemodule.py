@@ -45,6 +45,7 @@ import uiScriptLocale
 
 import event
 import localeInfo
+from resizeexpr import Expr
 
 IsQBHide = 0
 class Interface(object):
@@ -94,6 +95,7 @@ class Interface(object):
 	def __MakeUICurtain(self):
 		wndUICurtain = ui.Bar("TOP_MOST")
 		wndUICurtain.SetSize(wndMgr.GetScreenWidth(), wndMgr.GetScreenHeight())
+		wndUICurtain.SetResizeDic({"size" : (Expr("SCREEN_WIDTH"), Expr("SCREEN_HEIGHT"))})
 		wndUICurtain.SetColor(0x77000000)
 		wndUICurtain.Hide()
 		self.wndUICurtain = wndUICurtain
@@ -109,11 +111,11 @@ class Interface(object):
 		self.wndGuild = uiGuild.GuildWindow()
 
 	def __MakeChatWindow(self):
-		
 		wndChat = uiChat.ChatWindow()
 		
 		wndChat.SetSize(wndChat.CHAT_WINDOW_WIDTH, 0)
 		wndChat.SetPosition(wndMgr.GetScreenWidth()/2 - wndChat.CHAT_WINDOW_WIDTH/2, wndMgr.GetScreenHeight() - wndChat.EDIT_LINE_HEIGHT - 37)
+		wndChat.SetResizeDic({"position" : (Expr("SCREEN_WIDTH")/2 - wndChat.CHAT_WINDOW_WIDTH/2, Expr("SCREEN_HEIGHT") - wndChat.EDIT_LINE_HEIGHT-37)})
 		wndChat.SetHeight(200)
 		wndChat.Refresh()
 		wndChat.Show()
@@ -276,7 +278,13 @@ class Interface(object):
 		self.wndCubeResult = uiCube.CubeResultWindow()
 		self.wndCubeResult.LoadWindow()
 		self.wndCubeResult.Hide()
-
+	
+	def UpdateUI(self):
+		self.__ArrangeQuestButton()
+		self.__ArrangeWhisperButton()
+		if self.wndChat:
+			self.wndChat.Refresh()
+			
 	# ACCESSORY_REFINE_ADD_METIN_STONE
 	def __MakeItemSelectWindow(self):
 		self.wndItemSelect = uiselectitem.SelectItemWindow()

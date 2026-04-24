@@ -3,6 +3,8 @@ import grp
 import app
 
 import wndMgr
+from resizeexpr import Expr
+	
 
 class TextBar(ui.Window):
 	def __init__(self, width, height):
@@ -31,6 +33,22 @@ class TextBar(ui.Window):
 
 	def GetTextExtent(self, text):
 		return grp.TextBarGetTextExtent(self.handle, text)
+	
+	def OnResize(self):
+		if self.resizeDic:
+			for k, v in self.resizeDic.items():
+				if k == "position":
+					self.SetPosition(int(v[0]), int(v[1]))
+				elif k == "size":
+					self.SetSize(int(v[0]), int(v[1]))
+				elif k == "scale":
+					wndMgr.SetScale(self.hWnd, float(v[0]), float(v[1]))
+				elif k == "rect":
+					wndMgr.SetRenderingRect(self.hWnd, float(v[0]), float(v[1]), float(v[2]), float(v[3]))
+				elif k == "clipRect":
+					self.SetClipRect(float(v[0]), float(v[1]), float(v[2]), float(v[3]))
+
+
 
 class TipBoard(ui.Bar):
 
@@ -67,6 +85,8 @@ class TipBoard(ui.Bar):
 		self.textBar.SetParent(self)
 		self.textBar.SetPosition(3, 5)		
 		self.textBar.SetClipRect(0, y, wndMgr.GetScreenWidth(), y+18)
+		self.textBar.SetResizeDic({ "clipRect" : (0, y, Expr("SCREEN_WIDTH"), y+18) })
+			
 		self.textBar.Show()
 
 	def __CleanOldTip(self):
@@ -211,6 +231,7 @@ class BigBoard(ui.Bar):
 		self.textBar.SetPosition(6, 8)
 		self.textBar.SetTextColor(242, 231, 193)
 		self.textBar.SetClipRect(0, y+8, wndMgr.GetScreenWidth(), y+8+self.STEP_HEIGHT)
+		self.textBar.SetResizeDic({ "clipRect" : (0, y+8, Expr("SCREEN_WIDTH"), y+8+self.STEP_HEIGHT) })
 		self.textBar.Show()
 
 	def __CleanOldTip(self):

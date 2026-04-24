@@ -9,6 +9,8 @@ import constInfo
 import mouseModule
 import uiScriptLocale
 import app
+from resizeexpr import Expr
+
 
 MOUSE_SETTINGS = [0, 0]
 
@@ -487,8 +489,11 @@ class TaskBar(ui.ScriptWindow):
 		(xRight, yRight) = mouseRightButtonModeButton.GetGlobalPosition()
 		leftModeButtonList = self.mouseModeButtonList[self.MOUSE_BUTTON_LEFT]
 		leftModeButtonList.SetPosition(xLeft, yLeft - leftModeButtonList.GetHeight()-5)
+		leftModeButtonList.SetResizeDic({ "position": (Expr("SCREEN_WIDTH")/2 - 128, Expr("SCREEN_HEIGHT") - 34 - leftModeButtonList.GetHeight()-5) })
 		rightModeButtonList = self.mouseModeButtonList[self.MOUSE_BUTTON_RIGHT]
 		rightModeButtonList.SetPosition(xRight - rightModeButtonList.GetWidth() + 32, yRight - rightModeButtonList.GetHeight()-5)
+		rightModeButtonList.SetResizeDic({ "position": (Expr("SCREEN_WIDTH")/2 + 128 + 66 + 11 - rightModeButtonList.GetWidth() + 32, Expr("SCREEN_HEIGHT") - 34 - rightModeButtonList.GetHeight()-5) })
+
 		rightModeButtonList.GetChild("button_skill").SetEvent(lambda adir=self.MOUSE_BUTTON_RIGHT, aevent=self.EVENT_SKILL: self.SelectMouseButtonEvent(adir, aevent))
 		rightModeButtonList.GetChild("button_skill").Hide()
 
@@ -496,6 +501,7 @@ class TaskBar(ui.ScriptWindow):
 		mouseImage.AddFlag("float")
 		mouseImage.LoadImage("d:/ymir work/ui/game/taskbar/mouse_button_camera_01.sub")
 		mouseImage.SetPosition(xRight, wndMgr.GetScreenHeight() - 34)
+		mouseImage.SetResizeDic({ "position": (Expr("SCREEN_WIDTH")/2 + 128 + 66 + 11, Expr("SCREEN_HEIGHT") - 34) })
 		mouseImage.Hide()
 		self.mouseImage = mouseImage
 

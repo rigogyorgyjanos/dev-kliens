@@ -8,6 +8,8 @@ import time
 import wndMgr
 import net
 import sys
+from resizeexpr import Expr
+
 
 QUEST_BOARD_IMAGE_DIR = 'd:/ymir work/ui/game/questboard/'
 
@@ -70,9 +72,15 @@ class QuestCurtain(ui.Window):
 
 		self.TopBar.SetPosition(0,-self.BarHeight)
 		self.TopBar.SetSize(wndMgr.GetScreenWidth(),self.BarHeight)
+		
+		newBarHeight = (Expr("SCREEN_HEIGHT")-Expr("SCREEN_WIDTH")*9/16)/2
+		self.TopBar.SetResizeDic({"size" : (Expr("SCREEN_WIDTH"), newBarHeight), "position" : (0, 0-newBarHeight) })
+
 
 		self.BottomBar.SetPosition(0,wndMgr.GetScreenHeight())
 		self.BottomBar.SetSize(wndMgr.GetScreenWidth(),self.BarHeight)
+		self.BottomBar.SetResizeDic({"size" : (Expr("SCREEN_WIDTH"), newBarHeight), "position" : (0, Expr("SCREEN_HEIGHT")) })
+
 
 		self.CurtainMode = 0
 
@@ -123,6 +131,7 @@ class EventCurtain(ui.Bar):
 		self.SetWindowName("EventCurtain")
 		self.AddFlag("float")
 		self.SetSize(wndMgr.GetScreenWidth(), wndMgr.GetScreenHeight())
+		self.SetResizeDic({"size" : (Expr("SCREEN_WIDTH"), Expr("SCREEN_HEIGHT"))})
 		self.Hide()
 
 		self.fadeColor = 1.0

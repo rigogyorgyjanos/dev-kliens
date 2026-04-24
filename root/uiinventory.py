@@ -248,6 +248,7 @@ class InventoryWindow(ui.ScriptWindow):
 	wndCostume = None
 	wndBelt = None
 	dlgPickMoney = None
+	interface = None
 	
 	sellingSlotNumber = -1
 	isLoaded = 0
@@ -374,7 +375,7 @@ class InventoryWindow(ui.ScriptWindow):
 		dlgPickMoney.Hide()
 
 		## RefineDialog
-		self.refineDialog = uiRefine.RefineDialog()
+		self.refineDialog = uiRefine.RefineDialogNew()
 		self.refineDialog.Hide()
 
 		## AttachMetinDialog
@@ -608,6 +609,10 @@ class InventoryWindow(ui.ScriptWindow):
 
 		if self.wndBelt:
 			self.wndBelt.RefreshSlot()
+		
+		if self.interface:
+				if self.interface.dlgRefineNew.IsShow():
+					self.interface.dlgRefineNew.RecalcMaterials()
 		
 		if self.tooltipItem and self.tooltipItem.IsShow():
 				self.tooltipItem.RefreshNeededItemCounts()

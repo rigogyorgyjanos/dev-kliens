@@ -1052,6 +1052,24 @@ class ItemToolTip(ToolTip):
 		self.AppendDescription(itemDesc, 26)
 		self.AppendDescription(itemSummary, 26, self.CONDITION_COLOR)
 
+	def AppendAntiflagInformation(self):
+		antiFlagDict = {
+			localeInfo.TOOLTIP_ANTIFLAG_DROP	: item.ITEM_ANTIFLAG_DROP,
+			localeInfo.TOOLTIP_ANTIFLAG_SELL	: item.ITEM_ANTIFLAG_SELL,
+			localeInfo.TOOLTIP_ANTIFLAG_GIVE	: item.ITEM_ANTIFLAG_GIVE,
+			localeInfo.TOOLTIP_ANTIFLAG_PKDROP	: item.ITEM_ANTIFLAG_PKDROP,
+			localeInfo.TOOLTIP_ANTIFLAG_STACK	: item.ITEM_ANTIFLAG_STACK,
+			localeInfo.TOOLTIP_ANTIFLAG_MYSHOP	: item.ITEM_ANTIFLAG_MYSHOP,
+			#localeInfo.TOOLTIP_ANTIFLAG_SAFEBOX	: item.ITEM_ANTIFLAG_SAFEBOX,
+		}
+		
+		antiFlagNames = [name for name, flag in antiFlagDict.iteritems() if item.IsAntiFlag(flag)]
+		if antiFlagNames:
+			self.AppendSpace(5)
+
+			textLine = self.AppendTextLine('{} {}'.format(', '.join(antiFlagNames), localeInfo.NOT_POSSIBLE), self.CONDITION_COLOR)
+			textLine.SetFeather()
+		
 	def AddItemData(self, itemVnum, metinSlot, attrSlot = 0, flags = 0, unbindTime = 0):
 		self.itemVnum = itemVnum
 		self.metinSlot = metinSlot
@@ -1234,6 +1252,7 @@ class ItemToolTip(ToolTip):
 			self.__AppendLimitInformation()
 			self.__AppendAffectInformation()
 			self.__AppendAttributeInformation(attrSlot)
+			
 
 			self.__AppendAccessoryMetinSlotInfo(metinSlot, constInfo.GET_BELT_MATERIAL_VNUM(itemVnum))
 
@@ -1493,6 +1512,9 @@ class ItemToolTip(ToolTip):
 				#dbg.TraceError("1) REAL_TIME flag On ")
 		
 		# GM uitooltip helper 
+		
+		self.AppendAntiflagInformation()
+		
 		if chr.IsGameMaster(player.GetMainCharacterIndex()):
 			self.AppendSpace(5)
 			self.AppendTextLine(localeInfo.ITEM_VNUM_TOOLTIP % (int(itemVnum)), self.HIGH_PRICE_COLOR)
@@ -1710,17 +1732,6 @@ class ItemToolTip(ToolTip):
 				color = self.GetLimitTextLineColor(player.GetStatus(player.HT), limitValue)
 				self.AppendTextLine(localeInfo.TOOLTIP_ITEM_LIMIT_CON % (limitValue), color)
 			"""
-
-
-
-
-
-
-
-
-
-
-
 
 	def __GetAffectString(self, affectType, affectValue):
 		if 0 == affectType:
@@ -2290,6 +2301,7 @@ class SkillToolTip(ToolTip):
 			## Description
 			description = skill.GetSkillDescription(skillIndex)
 			self.AppendDescription(description, 25)
+			
 
 			if skillLevel == 10:
 				self.AppendSpace(5)
@@ -2375,6 +2387,29 @@ class SkillToolTip(ToolTip):
 		## Description
 		description = skill.GetSkillDescription(skillIndex)
 		self.AppendDescription(description, 25)
+		## Coeffs
+		STATS = (
+			localeInfo.DETAILS_CON,
+			localeInfo.DETAILS_INT,
+			localeInfo.DETAILS_STR,
+			localeInfo.DETAILS_DEX,
+		)
+
+		coeffs = skill.GetCoefficients(skillIndex)
+
+		if any(coeffs):
+			self.AppendSpace(5)
+
+			stat_string = ", ".join(
+				stat
+				for stat, val in sorted(
+					((s, v) for s, v in zip(STATS, coeffs) if v),
+					key=lambda x: x[1],
+					reverse=True,
+				)
+			)
+			self.AppendTextLine(localeInfo.SKILL_STAT_COEFFICIENTS)
+			self.AppendTextLine(stat_string)
 
 	def AppendSupportSkillDefaultData(self, skillIndex, skillGrade, skillLevel, maxLevel):
 		self.ClearToolTip()

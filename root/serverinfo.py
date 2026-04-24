@@ -1,17 +1,41 @@
-SERVER_NAME			= "dev-Krikal"
-SERVER_NAME_TEST	= "Test"
-SERVER_IP			= "192.168.0.75"
-SERVER_IP_TEST		= "127.0.0.1"
-CH1_NAME			= "CH1"
-CH2_NAME			= "CH2"
-CH3_NAME			= "CH3"
-CH4_NAME			= "CH4"
-PORT_1				= 13000
-PORT_2				= 13010
-PORT_3				= 13020
-PORT_4				= 13030
-PORT_AUTH			= 11000
-PORT_MARK			= 13000
+import app
+import localeInfo
+
+SRV1 = {
+	"name":"dev-Krikal",
+	"host":"192.168.0.75", #vps
+	"auth1":11000,
+	"ch1":13000,
+	"ch2":13010,
+	"ch3":13020,
+	"ch4":13030,
+
+}
+
+SRV_TESTE = {
+	"name": "Oriole2 - DEV",
+	"host":"192.168.0.117", #local ip
+	"auth1":11000,
+	"ch1":13000,
+	"ch2":13010,
+	"ch3":13020,
+	"ch4":13030,
+}
+
+# SERVER_NAME			= "dev-Krikal"
+# SERVER_NAME_TEST	= "Test"
+# SERVER_IP			= "192.168.0.75"
+# SERVER_IP_TEST		= "127.0.0.1"
+# CH1_NAME			= "CH1"
+# CH2_NAME			= "CH2"
+# CH3_NAME			= "CH3"
+# CH4_NAME			= "CH4"
+# PORT_1				= 13000
+# PORT_2				= 13010
+# PORT_3				= 13020
+# PORT_4				= 13030
+# PORT_AUTH			= 11000
+# PORT_MARK			= 13000
 
 STATE_NONE = "..."
 
@@ -21,39 +45,55 @@ STATE_DICT = {
 	2 : "BUSY",
 	3 : "FULL"
 }
-
-SERVER01_CHANNEL_DICT = {
-	1:{"key":11,"name":CH1_NAME,"ip":SERVER_IP,"tcp_port":PORT_1,"udp_port":PORT_1,"state":STATE_NONE,},
-	2:{"key":12,"name":CH2_NAME,"ip":SERVER_IP,"tcp_port":PORT_2,"udp_port":PORT_2,"state":STATE_NONE,},
-	3:{"key":13,"name":CH3_NAME,"ip":SERVER_IP,"tcp_port":PORT_3,"udp_port":PORT_3,"state":STATE_NONE,},
-	4:{"key":14,"name":CH4_NAME,"ip":SERVER_IP,"tcp_port":PORT_4,"udp_port":PORT_4,"state":STATE_NONE,},
+STATE_DICT_NAME = {
+	"...." : "Offline",
+	"NORM" : "Normál",
+	"BUSY" : "Majdnem tele",
+	"FULL" : "Tele"
+}
+STATE_DICT_IMAGES = {
+	"...." : "channel_offline.tga",
+	"NORM" : "channel_normal.tga",
+	"BUSY": "channel_busy.tga",
+	"FULL" : "channel_full.tga"
 }
 
-SERVER02_CHANNEL_DICT = {
-	1:{"key":21,"name":CH1_NAME,"ip":SERVER_IP_TEST,"tcp_port":PORT_1,"udp_port":PORT_1,"state":STATE_NONE,},
-	2:{"key":22,"name":CH2_NAME,"ip":SERVER_IP_TEST,"tcp_port":PORT_2,"udp_port":PORT_2,"state":STATE_NONE,},
+we = {
+	1:{"key":11,"name":"Csatorna 1","ip":SRV1["host"],"tcp_port":SRV1["ch1"],"udp_port":SRV1["ch1"],"state":STATE_NONE,},
+	2:{"key":12,"name":"Csatorna 2","ip":SRV1["host"],"tcp_port":SRV1["ch2"],"udp_port":SRV1["ch2"],"state":STATE_NONE,},
+	3:{"key":13,"name":"Csatorna 3","ip":SRV1["host"],"tcp_port":SRV1["ch3"],"udp_port":SRV1["ch3"],"state":STATE_NONE,},
+	4:{"key":14,"name":"Csatorna 4","ip":SRV1["host"],"tcp_port":SRV1["ch4"],"udp_port":SRV1["ch4"],"state":STATE_NONE,},
 }
+we_teste = {
+	1:{"key":21,"name":"Csatorna 1","ip":SRV_TESTE["host"],"tcp_port":SRV_TESTE["ch1"],"udp_port":SRV_TESTE["ch1"],"state":STATE_NONE,},
+	2:{"key":22,"name":"Csatorna 2","ip":SRV_TESTE["host"],"tcp_port":SRV_TESTE["ch2"],"udp_port":SRV_TESTE["ch2"],"state":STATE_NONE,},
+	# 3:{"key":23,"name":"Channel 3","ip":SRV_TESTE["host"],"tcp_port":SRV_TESTE["ch3"],"udp_port":SRV_TESTE["ch3"],"state":STATE_NONE,},
+	# 4:{"key":24,"name":"Channel 4","ip":SRV_TESTE["host"],"tcp_port":SRV_TESTE["ch4"],"udp_port":SRV_TESTE["ch4"],"state":STATE_NONE,},
+}
+
+
 
 REGION_NAME_DICT = {
-	0 : "",		
+	0 : SRV1["name"],
+	1 : SRV_TESTE["name"],
 }
-
 REGION_AUTH_SERVER_DICT = {
 	0 : {
-		1 : { "ip":SERVER_IP, "port":PORT_AUTH, },
-		2 : { "ip":SERVER_IP_TEST, "port":PORT_AUTH, },
-
-	}		
+		1 : { "ip":SRV1["host"], "port":SRV1["auth1"], },
+		2 : { "ip":SRV_TESTE["host"], "port":SRV_TESTE["auth1"], },
+	}
 }
-
 REGION_DICT = {
 	0 : {
-		1 : { "name" :SERVER_NAME, "channel" : SERVER01_CHANNEL_DICT, },						
-		2 : { "name" :SERVER_NAME_TEST, "channel" : SERVER02_CHANNEL_DICT, },						
+		1 : { "name" :SRV1["name"], "channel" : we, },
+		2 : { "name" :SRV_TESTE["name"], "channel" : we_teste, },
 	},
 }
-
 MARKADDR_DICT = {
-	10 : { "ip" : SERVER_IP, "tcp_port" : PORT_MARK, "mark" : "10.tga", "symbol_path" : "10", },
-	20 : { "ip" : SERVER_IP_TEST, "tcp_port" : PORT_MARK, "mark" : "20.tga", "symbol_path" : "20", },
+	10 : { "ip" : SRV1["host"], "tcp_port" : SRV1["ch1"], "mark" : "10.tga", "symbol_path" : "10", },
+	11 : { "ip" : SRV1["host"], "tcp_port" : SRV1["ch2"], "mark" : "10.tga", "symbol_path" : "11", },
+	12 : { "ip" : SRV1["host"], "tcp_port" : SRV1["ch3"], "mark" : "10.tga", "symbol_path" : "12", },
+	13 : { "ip" : SRV1["host"], "tcp_port" : SRV1["ch4"], "mark" : "10.tga", "symbol_path" : "13", },
+	20 : { "ip" : SRV_TESTE["host"], "tcp_port" : SRV_TESTE["ch1"], "mark" : "10.tga", "symbol_path" : "10", },
 }
+TESTADDR = { "ip" : SRV1["host"], "tcp_port" : SRV1["ch1"], "udp_port" : SRV1["ch1"], }

@@ -51,6 +51,7 @@ import stringCommander
 if app.__BL_SHADER__:
 	import shaderMgr
 from _weakref import proxy
+from resizeexpr import Expr
 
 # TEXTTAIL_LIVINGTIME_CONTROL
 #if localeInfo.IsJAPAN():
@@ -136,7 +137,8 @@ class GameWindow(ui.ScriptWindow):
 		app.SetFrameSkip(1)
 
 		self.SetSize(wndMgr.GetScreenWidth(), wndMgr.GetScreenHeight())
-
+		self.SetResizeDic({"size" : (Expr("SCREEN_WIDTH"), Expr("SCREEN_HEIGHT"))})
+			
 		self.quickSlotPageIndex = 0
 		self.PickingCharacterIndex = -1
 		self.PickingItemIndex = -1
@@ -2279,4 +2281,7 @@ class GameWindow(ui.ScriptWindow):
 			net.SetChannelName(_chNum)
 			net.SetMapIndex(_mapIdx)
 			self.interface.RefreshServerInfo()
-
+	
+	def BINARY_UpdateUI(self):
+		if self.interface:
+			self.interface.UpdateUI()

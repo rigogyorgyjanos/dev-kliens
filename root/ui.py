@@ -13,6 +13,7 @@ import guild
 import math
 
 from _weakref import proxy
+from resizeexpr import Expr
 
 BACKGROUND_COLOR = grp.GenerateColor(0.0, 0.0, 0.0, 1.0)
 DARK_COLOR = grp.GenerateColor(0.2, 0.2, 0.2, 1.0)
@@ -99,6 +100,7 @@ class Window(object):
 		self.hWnd = None
 		self.parentWindow = 0
 		self.onMouseLeftButtonUpEvent = None
+		self.resizeDic = {}
 		self.RegisterWindow(layer)
 		self.Hide()
 		if app.ENABLE_SEND_TARGET_INFO:
@@ -132,9 +134,6 @@ class Window(object):
 		self.mouseOverOutEvent = None
 		self.mouseOverOutArgs = None
 
-	def SetMouseLeftButtonUpEvent(self, event, *args):
-		self.mouseLeftButtonUpEvent = event
-		self.mouseLeftButtonUpArgs = args
 
 	def SetMouseOverInEvent(self, event, *args):
 		self.mouseOverInEvent = event
@@ -292,8 +291,8 @@ class Window(object):
 
 	def SetCenterPosition(self, x = 0, y = 0):
 		self.SetPosition((wndMgr.GetScreenWidth() - self.GetWidth()) / 2 + x, (wndMgr.GetScreenHeight() - self.GetHeight()) / 2 + y)
+		self.SetResizeDic({"position" : ((Expr("SCREEN_WIDTH") - self.GetWidth())/2+x, (Expr("SCREEN_HEIGHT") - self.GetHeight())/2+y)})
 
-	
 	if app.ENABLE_SEND_TARGET_INFO:
 		def SavePosition(self):
 			self.baseX = self.GetLeft()
@@ -338,7 +337,7 @@ class Window(object):
 			self.mouseLeftButtonUpArgs = args
 	else:
 		def SetOnMouseLeftButtonUpEvent(self, event):
-			self.onMouseLeftButtonUpEvent = ev
+			self.onMouseLeftButtonUpEvent = event
 
 	if app.ENABLE_SEND_TARGET_INFO:
 		def SetMouseLeftButtonDoubleClickEvent(self, event):
@@ -402,7 +401,22 @@ class Window(object):
 	def OnMouseLeftButtonUp(self):
 		if self.onMouseLeftButtonUpEvent:
 			self.onMouseLeftButtonUpEvent()
+	
+	def SetResizeDic(self, dic):
+		self.resizeDic.update(dic)
 
+	def OnResize(self):
+		if self.resizeDic:
+			for k, v in self.resizeDic.items():
+				if k == "position":
+					self.SetPosition(int(v[0]), int(v[1]))
+				elif k == "size":
+					self.SetSize(int(v[0]), int(v[1]))
+				elif k == "scale":
+					wndMgr.SetScale(self.hWnd, float(v[0]), float(v[1]))
+				elif k == "rect":
+					wndMgr.SetRenderingRect(self.hWnd, float(v[0]), float(v[1]), float(v[2]), float(v[3]))
+		
 class ListBoxEx(Window):
 
 	class Item(Window):
@@ -867,7 +881,7 @@ class EmptyCandidateWindow(Window):
 		Window.__init__(self)
 
 	def __del__(self):
-		Window.__init__(self)
+		Window.__del__(self)
 
 	def Load(self):
 		pass
@@ -914,7 +928,6 @@ class EditLine(TextLine):
 		self.eventReturn = Window.NoneMethod
 		self.eventEscape = Window.NoneMethod
 		self.eventTab = None
-
 
 	def SetCodePage(self, codePage):
 		candidateWindowClass=EditLine.candidateWindowClassDict.get(codePage, EmptyCandidateWindow)
@@ -1168,8 +1181,8 @@ class ImageBox(Window):
 		Window.__init__(self, layer)
 
 		self.eventDict={}
-		self.eventFunc = {"mouse_click" : None, "mouse_over_in" : None, "mouse_over_out" : None}
-		self.eventArgs = {"mouse_click" : None, "mouse_over_in" : None, "mouse_over_out" : None}
+		self.eventFunc = {"mouse_click_l" : None, "mouse_click_r" : None, "mouse_click" : None, "mouse_over_in" : None, "mouse_over_out" : None}
+		self.eventArgs = {"mouse_click_l" : None, "mouse_click_r" : None, "mouse_click" : None, "mouse_over_in" : None, "mouse_over_out" : None}
 		self.ToolTipText = None
 
 		self.showtooltipevent = None
@@ -1238,8 +1251,6 @@ class ImageBox(Window):
 	def OnMouseLeftButtonDown(self):
 		if self.eventFunc["mouse_click"]:
 			apply(self.eventFunc["mouse_click"], self.eventArgs["mouse_click"])
-
-		
 			
 	def OnMouseOverIn(self):
 		if self.eventFunc["mouse_over_in"]:
@@ -1552,6 +1563,12 @@ class Button(Window):
 
 	def IsDIsable(self):
 		return wndMgr.IsDIsable(self.hWnd)
+	
+	def GetText(self):
+			if self.ButtonText:
+				return self.ButtonText.GetText()
+			else:
+				return ""
 		
 class RadioButton(Button):
 	def __init__(self):
@@ -2534,8 +2551,12 @@ class ThinBoard(Window):
 
 		self.Lines[self.L].SetPosition(0, self.CORNER_HEIGHT)
 		self.Lines[self.T].SetPosition(self.CORNER_WIDTH, 0)
+		self.eventFunc = None
+		self.eventArgs = None
 
 	def __del__(self):
+		self.eventFunc = None
+		self.eventArgs = None
 		Window.__del__(self)
 
 	def SetSize(self, width, height):
@@ -2578,7 +2599,17 @@ class ThinBoard(Window):
 			wnd.SetAlpha(alpha)
 		for wnd in self.Corners:
 			wnd.SetAlpha(alpha)
-
+	
+	def SetEvent(self, func, *args):
+		self.eventFunc = func
+		self.eventArgs = args
+		
+	def OnMouseLeftButtonDown(self):
+		if self.eventFunc:
+			apply(self.eventFunc, self.eventArgs)
+			return True
+		return False
+		
 class ThinBoardGold(Window):
 	CORNER_WIDTH = 16
 	CORNER_HEIGHT = 16
@@ -3540,6 +3571,10 @@ class PythonScriptLoader(object):
 	def Clear(self):
 		self.ScriptDictionary = { "SCREEN_WIDTH" : wndMgr.GetScreenWidth(), "SCREEN_HEIGHT" : wndMgr.GetScreenHeight() }
 		self.InsertFunction = 0
+		self.ScriptDictionary["SCREEN_WIDTH"] = Expr("SCREEN_WIDTH")
+		self.ScriptDictionary["SCREEN_HEIGHT"] = Expr("SCREEN_HEIGHT")
+		self.ScriptDictionary["int"] = SandboxInt
+		self.ScriptDictionary["float"] = SandboxFloat
 
 	def LoadScriptFile(self, window, FileName):
 		import exception
@@ -3603,14 +3638,12 @@ class PythonScriptLoader(object):
 				for StyleList in Body["style"]:
 					window.AddFlag(StyleList)
 		
-
+		resizeDic = ExtractWindowScaling(Body)
+		window.SetResizeDic(resizeDic)
+			
 		self.LoadChildren(window, Body)
 
 	def LoadChildren(self, parent, dicChildren):
-
-		if localeInfo.IsARABIC():
-			parent.AddFlag( "rtl" )
-
 		if True == dicChildren.has_key("style"):
 			for style in dicChildren["style"]:
 				parent.AddFlag(style)
@@ -3806,6 +3839,8 @@ class PythonScriptLoader(object):
 				continue
 
 			parent.Children[Index].SetWindowName(Name)
+			resizeDic = ExtractWindowScaling(ElementValue)
+			parent.Children[Index].SetResizeDic(resizeDic)
 			if 0 != self.InsertFunction:
 				self.InsertFunction(Name, parent.Children[Index])
 
@@ -4559,5 +4594,66 @@ def EnablePaste(flag):
 
 def GetHyperlink():
 	return wndMgr.GetHyperlink()
+
+def IsDependOnScreen(expr):
+	if not isinstance(expr, Expr):
+		return False
+
+	if expr.name in ("SCREEN_WIDTH", "SCREEN_HEIGHT"):
+		return True
+
+	return (IsDependOnScreen(expr.left) or IsDependOnScreen(expr.right))
+
+def ScanValue(value):
+	if isinstance(value, Expr):
+		return IsDependOnScreen(value)
+	elif isinstance(value, (tuple, list)):
+		for v in value:
+			if ScanValue(v):
+				return True
+	return False
+
+def CheckPair(dic, x, y):
+	x = dic.get(x)
+	y = dic.get(y)
+
+	if x is None or y is None:
+		return None
+
+	if (ScanValue(x) or ScanValue(y)):
+		return (x, y)
+
+	return None
+
+def ExtractWindowScaling(dic):
+	scaling = {}
+
+	position = CheckPair(dic, "x", "y")
+	if position:
+		scaling["position"] = position
+
+	size = CheckPair(dic, "width", "height")
+	if size:
+		scaling["size"] = size
+
+	scale = CheckPair(dic, "x_scale", "y_scale")
+	if scale:
+		scaling["scale"] = scale
+
+	rect = dic.get("rect")
+	if rect and ScanValue(rect):
+		scaling["rect"] = rect
+
+	return scaling
+
+def SandboxInt(x):
+	if isinstance(x, Expr):
+		return Expr(op='int', left=x)
+	return int(x)
+
+def SandboxFloat(x):
+	if isinstance(x, Expr):
+		return Expr(op='float', left=x)
+	return float(x)
 
 RegisterToolTipWindow("TEXT", TextLine)
