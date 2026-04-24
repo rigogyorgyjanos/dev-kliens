@@ -1096,6 +1096,8 @@ class ItemToolTip(ToolTip):
 			if 50300 == itemVnum and not self.isBook:
 				if 0 != metinSlot and not self.isBook:
 					self.__SetSkillBookToolTip(metinSlot[0], localeInfo.TOOLTIP_SKILLBOOK_NAME, 1)
+					if app.__BL_SKILL_BOOK_NEXT_READ_TIME__:
+						self.__AppendSkillNextReadTime(metinSlot[0])
 					self.ShowToolTip()
 				elif self.isBook:
 					self.SetTitle(item.GetItemName())
@@ -1520,6 +1522,22 @@ class ItemToolTip(ToolTip):
 			self.AppendTextLine(localeInfo.ITEM_VNUM_TOOLTIP % (int(itemVnum)), self.HIGH_PRICE_COLOR)
 			self.AppendTextLine("Type: %d SubType: %d" % (item.GetItemType(), item.GetItemSubType()))
 			self.AppendTextLine("Sockets0-2:  %d, %d ,%d " % (metinSlot[0], metinSlot[1], metinSlot[2]) )
+		
+		if app.__BL_SKILL_BOOK_NEXT_READ_TIME__:
+			if itemType == item.ITEM_TYPE_SKILLBOOK:
+				self.__AppendSkillNextReadTime(item.GetValue(0))
+			elif itemVnum in (50311, 50312, 50313, 50061):
+				self.__AppendSkillNextReadTime(item.GetValue(0))
+			elif itemVnum in (50301, 50302, 50303):
+				self.__AppendSkillNextReadTime(player.SKILL_INDEX_TONGSOL)
+			elif itemVnum in (50304, 50305, 50306):
+				self.__AppendSkillNextReadTime(player.SKILL_INDEX_COMBO)
+			elif itemVnum == 50600:
+				self.__AppendSkillNextReadTime(player.SKILL_INDEX_MINING)
+			elif itemVnum == 50060:
+				self.__AppendSkillNextReadTime(player.SKILL_INDEX_RIDING)
+			elif itemVnum in (50314, 50315, 50316):
+				self.__AppendSkillNextReadTime(player.SKILL_INDEX_POLYMORPH)
 				
 		self.ShowToolTip()
 
@@ -1663,7 +1681,20 @@ class ItemToolTip(ToolTip):
 				self.toolTipWidth += max(affectTextLineLenList) + 10
 
 		self.AlignTextLineHorizonalCenter()
-		
+	
+	if app.__BL_SKILL_BOOK_NEXT_READ_TIME__:
+		def __AppendSkillNextReadTime(self, skillIndex):
+			next_read_time = player.GetSkillBookNextReadTime(skillIndex)
+			if next_read_time <= 0:
+				return
+			
+			hour = next_read_time / 3600
+			minute = (next_read_time / 60) % 60
+			sec = next_read_time % 60
+
+			self.AppendSpace(5)
+			self.AppendTextLine(localeInfo.SKILL_BOOK_NEXT_READ_TIME % (hour, minute, sec), self.NEGATIVE_COLOR)
+			
 	def __SetSkillBookToolTip(self, skillIndex, bookName, skillGrade):
 		skillName = skill.GetSkillName(skillIndex)
 
@@ -2369,6 +2400,19 @@ class SkillToolTip(ToolTip):
 		self.AppendSkillConditionData(skillIndex)		
 		self.ShowToolTip()
 
+	if app.__BL_SKILL_BOOK_NEXT_READ_TIME__:
+		def __AppendSkillNextReadTime(self, skillIndex):
+			next_read_time = player.GetSkillBookNextReadTime(skillIndex)
+			if next_read_time <= 0:
+				return
+			
+			hour = next_read_time / 3600
+			minute = (next_read_time / 60) % 60
+			sec = next_read_time % 60
+
+			self.AppendSpace(5)
+			self.AppendTextLine(localeInfo.SKILL_BOOK_NEXT_READ_TIME % (hour, minute, sec), self.NEGATIVE_COLOR)
+			
 	def AppendDefaultData(self, skillIndex, skillGrade = 0):
 		self.ClearToolTip()
 		self.__SetSkillTitle(skillIndex, skillGrade)
@@ -2387,6 +2431,7 @@ class SkillToolTip(ToolTip):
 		## Description
 		description = skill.GetSkillDescription(skillIndex)
 		self.AppendDescription(description, 25)
+		
 		## Coeffs
 		STATS = (
 			localeInfo.DETAILS_CON,
@@ -2410,6 +2455,9 @@ class SkillToolTip(ToolTip):
 			)
 			self.AppendTextLine(localeInfo.SKILL_STAT_COEFFICIENTS)
 			self.AppendTextLine(stat_string)
+		
+		self.AppendSpace(5)
+		self.__AppendSkillNextReadTime(skillIndex)
 
 	def AppendSupportSkillDefaultData(self, skillIndex, skillGrade, skillLevel, maxLevel):
 		self.ClearToolTip()
@@ -2428,6 +2476,8 @@ class SkillToolTip(ToolTip):
 
 		self.AppendSpace(5)
 		self.AppendTextLine(localeInfo.TOOLTIP_SKILL_LEVEL_WITH_MAX % (skillLevel, maxLevel), self.NORMAL_COLOR)
+		self.AppendSpace(5)
+		self.__AppendSkillNextReadTime(skillIndex)
 
 	def AppendSkillConditionData(self, skillIndex):
 		conditionDataCount = skill.GetSkillConditionDescriptionCount(skillIndex)
