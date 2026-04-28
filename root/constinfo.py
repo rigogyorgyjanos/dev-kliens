@@ -14,6 +14,7 @@ def SetInterfaceInstance(instance):
 
 if app.ENABLE_SEND_TARGET_INFO:
 	MONSTER_INFO_DATA = {}
+	
 if app.ENABLE_REFINE_RENEWAL:
 	IS_AUTO_REFINE = False
 	AUTO_REFINE_TYPE = 0

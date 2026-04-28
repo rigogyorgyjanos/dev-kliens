@@ -33,6 +33,57 @@ import uiRestart
 from resizeexpr import Expr
 	
 ####################################
+if app.ENABLE_LOADING_PERFORMANCE:
+	class NewLoadingWindow(ui.ScriptWindow):
+		def __init__(self, stream):
+			ui.ScriptWindow.__init__(self)
+			self.stream = stream
+			net.SendSelectCharacterPacket(self.stream.GetCharacterSlot())
+			self.loadingImage = None
+
+		def __del__(self):
+			ui.ScriptWindow.__del__(self)
+
+		def Open(self):
+			imgFileNameDict = {
+				0 : uiScriptLocale.LOCALE_UISCRIPT_PATH + "loading/loading0.sub",
+				1 : uiScriptLocale.LOCALE_UISCRIPT_PATH + "loading/loading1.sub",
+				2 : uiScriptLocale.LOCALE_UISCRIPT_PATH + "loading/loading2.sub",
+				3 : uiScriptLocale.LOCALE_UISCRIPT_PATH + "loading/loading3.sub",
+			}
+			try:
+				imgFileName = imgFileNameDict[app.GetRandom(0, len(imgFileNameDict) - 1)]
+
+				imgBox = ui.ExpandedImageBox()
+				imgBox.SetParent(self)
+				imgBox.LoadImage(imgFileName)
+				imgBox.SetPosition(0, 0)
+
+				width = float(wndMgr.GetScreenWidth()) / float(imgBox.GetWidth())
+				height = float(wndMgr.GetScreenHeight()) / float(imgBox.GetHeight())
+
+				imgBox.SetScale(width, height)
+				imgBox.Show()
+
+				self.loadingImage = imgBox
+				self.SetResizeDic({"scale" : ( Expr("SCREEN_WIDTH") / float(self.loadingImage.GetWidth()), Expr("SCREEN_HEIGHT") /float(self.loadingImage.GetHeight()) )})
+
+			except:
+				print "NewLoadingWindow.Open.LoadImage - %s File Load Error" % (imgFileName)
+
+			self.Show()
+			app.SetFrameSkip(0)
+
+		def Close(self):
+			app.SetFrameSkip(1)
+			self.loadingImage = None
+
+			self.ClearDictionary()
+			self.Hide()
+
+		def OnPressEscapeKey(self):
+			self.stream.SetLoginPhase()
+			return True
 
 class LoadingWindow(ui.ScriptWindow):
 	def __init__(self, stream):
@@ -121,7 +172,6 @@ class LoadingWindow(ui.ScriptWindow):
 		height = float(wndMgr.GetScreenHeight()) / float(self.loadingImage.GetHeight())
 
 		self.loadingImage.SetScale(width, height)
-		self.SetResizeDic({"scale" : ( Expr("SCREEN_WIDTH") / float(self.loadingImage.GetWidth()), Expr("SCREEN_HEIGHT") /float(self.loadingImage.GetHeight()) )})
 
 		self.loadingGage.SetPercentage(2, 100)
 

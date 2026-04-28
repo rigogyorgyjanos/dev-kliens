@@ -377,8 +377,6 @@ class DragonSoulWindow(ui.ScriptWindow):
 				self.wndItem.SetUseMode(False)
 				snd.PlaySound("sound/ui/pick.wav")
 	
-	## 상점에 팔기
-	## 2014.02.20 추가
 	def __SellItem(self, itemSlotPos):
 		if not player.IsDSEquipmentSlot(player.DRAGON_SOUL_INVENTORY, itemSlotPos):
 			self.sellingSlotNumber = itemSlotPos
@@ -398,9 +396,9 @@ class DragonSoulWindow(ui.ScriptWindow):
 			itemPrice = item.GetISellItemPrice()
 
 			if item.Is1GoldItem():
-				itemPrice = itemCount / itemPrice / 5
+				itemPrice = itemCount / itemPrice 
 			else:
-				itemPrice = itemPrice * itemCount / 5
+				itemPrice = itemPrice * itemCount 
 
 			item.GetItemName(itemIndex)
 			itemName = item.GetItemName()
@@ -412,14 +410,12 @@ class DragonSoulWindow(ui.ScriptWindow):
 			self.questionDialog.Open()
 			self.questionDialog.count = itemCount
 
-	## 상점에 팔기
 	def SellItem(self):
 
 		net.SendShopSellPacketNew(self.sellingSlotNumber, self.questionDialog.count, player.DRAGON_SOUL_INVENTORY)
 		snd.PlaySound("sound/ui/money.wav")
 		self.OnCloseQuestionDialog()
 
-	## 상점에 팔기
 	def OnCloseQuestionDialog(self):
 		if self.questionDialog:
 			self.questionDialog.Close()

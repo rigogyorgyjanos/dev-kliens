@@ -42,6 +42,8 @@ import miniMap
 import uiselectitem
 # END_OF_ACCESSORY_REFINE_ADD_METIN_STONE
 import uiScriptLocale
+if app.ENABLE_LOADING_PERFORMANCE:
+	import uiWarpShower
 
 import event
 import localeInfo
@@ -84,6 +86,8 @@ class Interface(object):
 		self.privateShopAdvertisementBoardDict = {}
 		self.guildScoreBoardDict = {}
 		self.equipmentDialogDict = {}
+		if app.ENABLE_LOADING_PERFORMANCE:
+			self.wndWarpShower = None
 		event.SetInterfaceWindow(self)
 
 	def __del__(self):
@@ -198,6 +202,8 @@ class Interface(object):
 		self.wndMiniMap = wndMiniMap
 		self.wndSafebox = wndSafebox
 		self.wndChatLog = wndChatLog
+		if app.ENABLE_LOADING_PERFORMANCE:
+			self.wndWarpShower = uiWarpShower.WarpShowerWindow()
 		
 		if app.ENABLE_DRAGON_SOUL_SYSTEM:
 			self.wndDragonSoul.SetDragonSoulRefineWindow(self.wndDragonSoulRefine)
@@ -458,6 +464,11 @@ class Interface(object):
 
 		if self.wndCube:
 			self.wndCube.Destroy()
+		
+		if app.ENABLE_LOADING_PERFORMANCE:
+			if self.wndWarpShower:
+				self.wndWarpShower.Destroy()
+				del self.wndWarpShower
 			
 		if self.wndCubeResult:
 			self.wndCubeResult.Destroy()
@@ -1714,7 +1725,28 @@ class Interface(object):
 		def RefreshServerInfo(self):
 			if self.wndMiniMap:
 				self.wndMiniMap.RefreshServerInfo()
-				
+	
+	if app.ENABLE_LOADING_PERFORMANCE:
+		def OpenWarpShowerWindow(self):
+			constInfo.SavePMInfo = False
+			if self.wndMiniMap and self.wndMiniMap.IsShowingAtlas():
+				self.wndMiniMap.ToggleAtlasWindow()
+
+			if self.dlgSystem:
+				self.dlgSystem.Close()
+				self.dlgSystem.Destroy()
+
+			self.HideAllQuestButton()
+			self.HideAllWhisperButton()
+
+			self.HideAllWindows()
+
+			self.wndWarpShower.Open()
+
+		def CloseWarpShowerWindow(self):
+			if self.wndWarpShower:
+				self.wndWarpShower.Close()
+	
 	def EmptyFunction(self):
 		pass
 	

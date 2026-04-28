@@ -12,6 +12,7 @@ import constInfo
 import uiToolTip
 import item
 import uiToolTip
+import math
 
 
 if app.ENABLE_VIEW_ELEMENT:
@@ -20,9 +21,11 @@ if app.ENABLE_VIEW_ELEMENT:
 if app.ENABLE_SEND_TARGET_INFO:
 	def HAS_FLAG(value, flag):
 		return (value & flag) == flag
-		
+
+BASIC_SKILL_BOOKS = [50401, 50402, 50403, 50404, 50405, 50406, 50416, 50417, 50418, 50419, 50420, 50421, 50431, 50432, 50433, 50434, 50435, 50436, 50446, 50447, 50448, 50449, 50450, 50451, 50461, 50462, 50463, 50464, 50465, 50466, 50476, 50477, 50478, 50479, 50480, 50481, 50491, 50492, 50493, 50494, 50495, 50496, 50506, 50507, 50508, 50509, 50510, 50511]
+
+
 class TargetBoard(ui.ThinBoard):
-	
 	if app.ENABLE_SEND_TARGET_INFO:
 		class InfoBoard(ui.ThinBoard):
 			class ItemListBoxItem(ui.ListBoxExNew.Item):
@@ -39,12 +42,14 @@ class TargetBoard(ui.ThinBoard):
 					nameLine.SetPosition(32 + 5, 0)
 					nameLine.Show()
 					self.nameLine = nameLine
+					self.itemScrollBarB = None
 
 					self.SetSize(width, 32 + 5)
-
+					
 				def LoadImage(self, image, name = None):
 					self.image.LoadImage(image)
 					self.SetSize(self.GetWidth(), self.image.GetHeight() + 5 * (self.image.GetHeight() / 32))
+					self.nameLine.SetPosition(32 + 5, self.GetHeight() / 2 - 10)
 					if name != None:
 						self.SetText(name)
 
@@ -55,6 +60,7 @@ class TargetBoard(ui.ThinBoard):
 					ui.ListBoxExNew.Item.RefreshHeight(self)
 					self.image.SetRenderingRect(0.0, 0.0 - float(self.removeTop) / float(self.GetHeight()), 0.0, 0.0 - float(self.removeBottom) / float(self.GetHeight()))
 					self.image.SetPosition(0, - self.removeTop)
+					self.nameLine.SetPosition(32 + 5, self.GetHeight() / 2 - 10 - self.removeTop)
 
 			MAX_ITEM_COUNT = 5
 
@@ -132,8 +138,14 @@ class TargetBoard(ui.ThinBoard):
 				self.stoneVnum = None
 				self.lastStoneVnum = 0
 				self.nextStoneIconChange = 0
-
+				self.itemScrollBarB = None
+				self.itemSlotS = None
+				self.itemslotInfos = []
+				self.extraSlots = [0, 0]
+				self.LastSlot = -1
+				
 				self.SetSize(self.BOARD_WIDTH, 0)
+
 
 			def __del__(self):
 				ui.ThinBoard.__del__(self)
@@ -154,7 +166,15 @@ class TargetBoard(ui.ThinBoard):
 				self.SetSize(self.BOARD_WIDTH, self.yPos + 10)
 
 			def Close(self):
+				if self.itemScrollBarB:
+					self.itemScrollBarB.Hide()
+				self.itemScrollBarB = None
+				if self.itemSlotS:
+					self.itemSlotS.Hide()
+				self.itemSlotS = None	
 				self.itemTooltip.HideToolTip()
+				self.itemslotInfos = []
+				self.extraSlots = [0, 0]
 				self.Hide()
 
 			def __LoadInformation(self, race):
@@ -164,6 +184,10 @@ class TargetBoard(ui.ThinBoard):
 				self.stoneImg = None
 				self.stoneVnum = None
 				self.nextStoneIconChange = 0
+				self.itemslotInfos = []
+				self.extraSlots = [0, 0]
+				self.LastSlot = -1
+
 
 				self.__LoadInformation_Default(race)
 				self.__LoadInformation_Race(race)
@@ -234,35 +258,123 @@ class TargetBoard(ui.ThinBoard):
 
 				self.AppendTextLine(localeInfo.TARGET_INFO_MAINRACE % mainrace)
 				self.AppendTextLine(localeInfo.TARGET_INFO_SUBRACE % subrace)
+			
+			def __ItemSortFunc(self, elem):
+				vnum = 0
+				if type(elem["vnum"]) == int:
+					vnum = elem["vnum"]
+				else:
+					vnum = elem["vnum"][0]
+				if elem["type"] == 1: # Fegyver
+					if elem["itemheight"] == 1:
+						vnum += 400000
+					elif elem["itemheight"] == 2:
+						vnum += 300000
+					elif elem["itemheight"] == 3:
+						vnum += 150000
+				elif elem["type"] == 2: # Vért
+					vnum += 300000
+				elif elem["type"] == 3: # Accesory
+					vnum += 400000
+				return vnum
 
 			def __LoadInformation_Drops(self, race):
 				self.AppendSeperator()
-
+				
 				if race in constInfo.MONSTER_INFO_DATA:
 					if len(constInfo.MONSTER_INFO_DATA[race]["items"]) == 0:
+						if self.itemScrollBarB:
+							self.itemScrollBarB.Hide()
+							self.itemScrollBarB = None
 						self.AppendTextLine(localeInfo.TARGET_INFO_NO_ITEM_TEXT)
 					else:
-						itemListBox = ui.ListBoxExNew(32 + 5, self.MAX_ITEM_COUNT)
-						itemListBox.SetSize(self.GetWidth() - 15 * 2 - ui.ScrollBar.SCROLLBAR_WIDTH, (32 + 5) * self.MAX_ITEM_COUNT)
-						height = 0
-						for curItem in constInfo.MONSTER_INFO_DATA[race]["items"]:
-							if curItem.has_key("vnum_list"):
-								height += self.AppendItem(itemListBox, curItem["vnum_list"], curItem["count"])
-							else:
-								height += self.AppendItem(itemListBox, curItem["vnum"], curItem["count"])
-						if height < itemListBox.GetHeight():
-							itemListBox.SetSize(itemListBox.GetWidth(), height)
-						self.AppendWindow(itemListBox, 15)
-						itemListBox.SetBasePos(0)
 
-						if len(constInfo.MONSTER_INFO_DATA[race]["items"]) > itemListBox.GetViewItemCount():
-							itemScrollBar = ui.ScrollBar()
-							itemScrollBar.SetParent(self)
-							itemScrollBar.SetPosition(itemListBox.GetRight(), itemListBox.GetTop())
-							itemScrollBar.SetScrollBarSize(32 * self.MAX_ITEM_COUNT + 5 * (self.MAX_ITEM_COUNT - 1))
-							itemScrollBar.SetMiddleBarSize(float(self.MAX_ITEM_COUNT) / float(height / (32 + 5)))
-							itemScrollBar.Show()
-							itemListBox.SetScrollBar(itemScrollBar)
+						itemNeed = {}
+						addedItemID = []
+						seperationNeed = False
+						for curItem in constInfo.MONSTER_INFO_DATA[race]["items"]:
+							if not seperationNeed and curItem["itemheight"] > 1:
+								seperationNeed = True
+							if curItem.__contains__("vnum_list"):
+								curItem["vnum"] = curItem["vnum_list"]
+								curItem["countmin"] = curItem["count"]
+								curItem["countmax"] = curItem["count"]
+								itemNeed[curItem["vnum"][0]] = curItem
+								#height += self.AppendItem(itemListBox, curItem["vnum_list"], curItem["count"])
+							else:
+								if curItem["vnum"] in BASIC_SKILL_BOOKS:
+									curItem["vnum"] = 50300
+								if curItem["vnum"] not in addedItemID:
+									curItem["countmin"] = curItem["count"]
+									curItem["countmax"] = curItem["count"]
+									itemNeed[curItem["vnum"]] = curItem
+									addedItemID.append(curItem["vnum"])
+								else:
+									if (curItem["count"] < itemNeed[curItem["vnum"]]["countmin"]):
+										itemNeed[curItem["vnum"]]["countmin"] = curItem["count"]
+									if (curItem["count"] > itemNeed[curItem["vnum"]]["countmax"]):
+										itemNeed[curItem["vnum"]]["countmax"] = curItem["count"]
+
+						sortable = []
+						for x in itemNeed:
+							sortable.append(itemNeed[x])
+						sortable.sort(key = self.__ItemSortFunc)
+
+						forbiddenSlots = []
+						slotNumber = 0
+						for curItem in sortable:
+							if curItem.__contains__("vnum") and type(curItem["vnum"]) == int:
+								itemVnum = curItem["vnum"]
+							elif curItem.__contains__("vnum_list"):
+								itemVnum = curItem["vnum_list"][0]
+
+							while slotNumber in forbiddenSlots:
+								slotNumber += 1
+
+							if curItem["itemheight"] > 1:
+								if curItem["itemheight"] > 2:
+									forbiddenSlots.append(slotNumber+7)
+									forbiddenSlots.append(slotNumber+14)
+								else:
+									forbiddenSlots.append(slotNumber+7)
+							curItem["appendSlot"] = slotNumber
+							slotNumber += 1
+
+						self.itemSlotS = ui.GridSlotWindow()
+						self.itemSlotS.SetParent(self)
+						heightSlots	= math.ceil(float((float(max(forbiddenSlots)+1 if len(forbiddenSlots) > 0 else slotNumber) / float(7))))
+						if len(forbiddenSlots) > 0:
+							if slotNumber < max(forbiddenSlots):
+								slotNumber =  max(forbiddenSlots)
+								heightSlots	= math.ceil(float((float(max(forbiddenSlots)+1) / float(7))))
+
+						self.itemSlotS.ArrangeSlot(0, 7, heightSlots, 32, 32, 0, 0)
+						self.itemSlotS.SetSlotBaseImage("d:/ymir work/ui/public/slot_base.sub", 1.0, 1.0, 1.0, 1.0)
+						self.itemSlotS.SetWindowHorizontalAlignCenter()
+						self.itemSlotS.SetPosition(0, 82)
+						self.itemSlotS.SetOverInItemEvent(self.OnShowItemTooltip)
+						self.itemSlotS.SetOverOutItemEvent(self.OnHideItemTooltip)
+						self.yPos += (heightSlots*32)
+						self.itemSlotS.Show()
+
+						self.SetSize(self.BOARD_WIDTH, self.yPos + 10)
+
+						for curItem in sortable:
+							if curItem.__contains__("vnum") and type(curItem["vnum"]) == int:
+								itemVnum = curItem["vnum"]
+							elif curItem.__contains__("vnum_list"):
+								itemVnum = curItem["vnum_list"][0]
+								if curItem["type"] == 4:
+									self.extraSlots[1] = curItem["appendSlot"]
+									self.lastStoneVnum = self.STONE_LAST_VNUM + int(curItem["vnum_list"][len(curItem["vnum_list"]) - 1] % 1000 // 100 * 100)
+
+							if itemVnum == 50300:
+								self.extraSlots[0] = curItem["appendSlot"]
+
+							# self.itemSlotS.ActivateSlot(5)
+							self.itemslotInfos.append({"slot":curItem["appendSlot"], "itemVnum":itemVnum, "countmax":curItem["countmax"], "countmin":curItem["countmin"]})
+							self.itemSlotS.SetItemSlot(curItem["appendSlot"], itemVnum, 0 if curItem["countmax"] <= 1 else curItem["countmax"])
+
 				else:
 					self.AppendTextLine(localeInfo.TARGET_INFO_NO_ITEM_TEXT)
 
@@ -319,19 +431,26 @@ class TargetBoard(ui.ThinBoard):
 					self.lastStoneVnum = self.STONE_LAST_VNUM + vnums[len(vnums) - 1] % 1000 / 100 * 100
 
 				return myItem.GetHeight()
+			
 
-			def OnShowItemTooltip(self, vnum):
-				item.SelectItem(vnum)
-				if item.GetItemType() == item.ITEM_TYPE_METIN:
-					self.itemTooltip.isStone = True
-					self.itemTooltip.isBook = False
-					self.itemTooltip.isBook2 = False
-					self.itemTooltip.SetItemToolTip(self.lastStoneVnum)
-				else:
-					self.itemTooltip.isStone = False
-					self.itemTooltip.isBook = True
-					self.itemTooltip.isBook2 = True
-					self.itemTooltip.SetItemToolTip(vnum)
+			def OnShowItemTooltip(self, slot, replace = False, newID = 0, refresh = True):
+				if refresh:
+					self.LastSlot = slot
+				vnum = 0
+				chosenItem = -1
+				for items in self.itemslotInfos:
+					if items["slot"] == slot:
+						if replace and newID != 0:
+							items["itemVnum"] = newID
+						vnum = items["itemVnum"]
+						chosenItem = items
+				if vnum != 0 and refresh:
+					if chosenItem != -1:
+						# self.itemTooltip.SetItemToolTip(vnum, iLink = True, countmins = chosenItem["countmin"], countmaxs = chosenItem["countmax"])
+						self.itemTooltip.SetItemToolTip(vnum)
+					else:
+						# self.itemTooltip.SetItemToolTip(vnum, iLink = True)
+						self.itemTooltip.SetItemToolTip(vnum)
 
 			def OnHideItemTooltip(self):
 				self.itemTooltip.HideToolTip()
@@ -353,21 +472,28 @@ class TargetBoard(ui.ThinBoard):
 				self.yPos += height + 5
 
 			def OnUpdate(self):
-				if self.stoneImg != None and self.stoneVnum != None and app.GetTime() >= self.nextStoneIconChange:
-					nextImg = self.lastStoneVnum + 1
-					if nextImg % 100 > self.STONE_LAST_VNUM % 100:
-						nextImg -= (self.STONE_LAST_VNUM - self.STONE_START_VNUM) + 1
-					self.lastStoneVnum = nextImg
+				if self.IsShow() and app.GetTime() >= self.nextStoneIconChange:
+					if self.extraSlots[1] != 0:
+						nextImg = self.lastStoneVnum + 1
+						if nextImg % 100 > self.STONE_LAST_VNUM % 100:
+							nextImg -= (self.STONE_LAST_VNUM - self.STONE_START_VNUM) + 1
+						self.lastStoneVnum = nextImg
+						
+						self.OnShowItemTooltip(self.extraSlots[1], replace = True, newID = nextImg, refresh = self.LastSlot == self.extraSlots[1])
+						
+						if self.itemSlotS:
+							self.itemSlotS.ClearSlot(self.extraSlots[1])
+							self.itemSlotS.SetItemSlot(self.extraSlots[1], nextImg, 0)
 					self.nextStoneIconChange = app.GetTime() + 2.5
 
-					item.SelectItem(nextImg)
-					itemName = item.GetItemName()
-					realName = itemName[:itemName.find("+")]
-					realName = realName + "+0 - +4"
-					self.stoneImg.LoadImage(item.GetIconImageFileName(), realName)
+					# item.SelectItem(nextImg)
+					# itemName = item.GetItemName()
+					# realName = itemName[:itemName.find("+")]
+					# realName = realName + "+0 - +4"
+					# self.stoneImg.LoadImage(item.GetIconImageFileName(), realName)
 
-					if self.itemTooltip.IsShow() and self.itemTooltip.isStone:
-						self.itemTooltip.SetItemToolTip(nextImg)
+					# if self.itemTooltip.IsShow() and self.itemTooltip.isStone:
+						# self.itemTooltip.SetItemToolTip(nextImg)
 						
 	BUTTON_NAME_LIST = ( 
 		localeInfo.TARGET_BUTTON_WHISPER, 

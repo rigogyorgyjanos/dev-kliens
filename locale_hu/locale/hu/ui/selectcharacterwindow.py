@@ -3,11 +3,11 @@ import uiScriptLocale
 ROOT_PATH = "d:/ymir work/ui/public/"
 LOCALE_PATH = uiScriptLocale.SELECT_PATH
 
-BOARD_X = SCREEN_WIDTH * (25) / 800
-BOARD_Y = SCREEN_HEIGHT * (156) / 600
+BOARD_X = SCREEN_WIDTH * (65) / 800
+BOARD_Y = SCREEN_HEIGHT * (220) / 600
 
 PLUS_BUTTON_WIDTH = 20
-TEMPORARY_HEIGHT = 30
+TEMPORARY_HEIGHT = 40
 BOARD_ITEM_ADD_POSITION = -40
 
 X_GAP = 11
@@ -43,8 +43,8 @@ DESC_FACE_Y = -23
 FACE_X = 7
 FACE_Y = 4
 SELECT_BTN_X = X_GAP + 4
-SELECT_BTN_Y = 10
-SELECT_BTN_GAP = 44
+SELECT_BTN_Y = 14
+SELECT_BTN_GAP = 47
 
 window = {
 	"name" : "New_SelectCharacterWindow",
@@ -147,7 +147,7 @@ window = {
 			"x" : BOARD_X,
 			"y" : BOARD_Y,
 			"width" : THINBOARD_CIRCLE_LEFT_WIDTH + (X_GAP * 2) + 1,
-			"height" : 305,
+			"height" : 315,
 			"children" :
 			(
 				{
@@ -203,7 +203,7 @@ window = {
 					"x" : X_GAP,
 					"y" : 61,
 					"width" : THINBOARD_CIRCLE_LEFT_WIDTH,
-					"height" : 231,
+					"height" : 259,
 					"children" :
 					(
 						{
@@ -232,6 +232,13 @@ window = {
 							"type" : "image",
 							"x" : SELECT_BTN_X,
 							"y" : SELECT_BTN_Y + SELECT_BTN_GAP*3,
+							"image" : ROOT_PATH + "public_intro_btn/emptySlot_btn.sub"
+						},
+						{
+							"name" : "NoneButton_4", 
+							"type" : "image",
+							"x" : SELECT_BTN_X,
+							"y" : SELECT_BTN_Y + SELECT_BTN_GAP*4,
 							"image" : ROOT_PATH + "public_intro_btn/emptySlot_btn.sub"
 						},
 						{
@@ -271,6 +278,15 @@ window = {
 							"down_image" : ROOT_PATH + "public_intro_btn/150x35_Selectbtn_03.sub",
 						},
 						{
+							"name" : "CharacterSlot_4",
+							"type" : "radio_button",
+							"x" : SELECT_BTN_X,
+							"y" : SELECT_BTN_Y + SELECT_BTN_GAP*4,
+							"default_image" : ROOT_PATH + "public_intro_btn/150x35_Selectbtn_01.sub",
+							"over_image" : ROOT_PATH + "public_intro_btn/150x35_Selectbtn_02.sub",
+							"down_image" : ROOT_PATH + "public_intro_btn/150x35_Selectbtn_03.sub",
+						},
+						{
 							"name" : "CharacterFace_0",
 							"type" : "image",
 							"x" : SELECT_BTN_X - FACE_X,
@@ -296,6 +312,13 @@ window = {
 							"type" : "image",
 							"x" : SELECT_BTN_X - FACE_X,
 							"y" : SELECT_BTN_Y + SELECT_BTN_GAP*3 - FACE_Y,
+							"image" : "D:/ymir work/ui/intro/public_intro/face/face_warrior_m_01.sub"
+						},
+						{
+							"name" : "CharacterFace_4",
+							"type" : "image",
+							"x" : SELECT_BTN_X - FACE_X,
+							"y" : SELECT_BTN_Y + SELECT_BTN_GAP*4 - FACE_Y,
 							"image" : "D:/ymir work/ui/intro/public_intro/face/face_warrior_m_01.sub"
 						},
 					),

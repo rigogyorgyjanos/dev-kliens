@@ -191,6 +191,8 @@ def SetIntroMotions(mode, folder):
 
 
 def __InitData():
+	if app.ENABLE_LOADING_PERFORMANCE:
+		return
 	global isInitData
 
 	if isInitData:
@@ -317,6 +319,9 @@ def __InitData():
 
 
 def __LoadGameSound():
+	if app.ENABLE_LOADING_PERFORMANCE:
+		return
+		
 	item.SetUseSoundFileName(item.USESOUND_DEFAULT, "sound/ui/drop.wav")
 	item.SetUseSoundFileName(item.USESOUND_ACCESSORY, "sound/ui/equip_ring_amulet.wav")
 	item.SetUseSoundFileName(item.USESOUND_ARMOR, "sound/ui/equip_metal_armor.wav")
@@ -332,6 +337,8 @@ def __LoadGameSound():
 	item.SetDropSoundFileName(item.DROPSOUND_WEAPON, "sound/ui/equip_metal_weapon.wav")
 
 def __LoadGameEffect():
+	if app.ENABLE_LOADING_PERFORMANCE:
+		return
 	chrmgr.RegisterEffect(chrmgr.EFFECT_SPAWN_APPEAR, "Bip01", "d:/ymir work/effect/etc/appear_die/monster_appear.mse")
 	chrmgr.RegisterEffect(chrmgr.EFFECT_SPAWN_DISAPPEAR, "Bip01", "d:/ymir work/effect/etc/appear_die/monster_die.mse")		
 	chrmgr.RegisterEffect(chrmgr.EFFECT_FLAME_ATTACK, "equip_right_hand", "d:/ymir work/effect/hit/blow_flame/flame_3_weapon.mse")
@@ -478,18 +485,26 @@ def __LoadGameEffect():
 
 
 def __LoadGameWarrior():
+	if app.ENABLE_LOADING_PERFORMANCE:
+		return
 	__LoadGameWarriorEx(RACE_WARRIOR_M, "d:/ymir work/pc/warrior/")
 	__LoadGameWarriorEx(RACE_WARRIOR_W, "d:/ymir work/pc2/warrior/")
 
 def __LoadGameAssassin():
+	if app.ENABLE_LOADING_PERFORMANCE:
+		return
 	__LoadGameAssassinEx(RACE_ASSASSIN_W, "d:/ymir work/pc/assassin/")
 	__LoadGameAssassinEx(RACE_ASSASSIN_M, "d:/ymir work/pc2/assassin/")
 
 def __LoadGameSura():
+	if app.ENABLE_LOADING_PERFORMANCE:
+		return
 	__LoadGameSuraEx(RACE_SURA_M, "d:/ymir work/pc/sura/")
 	__LoadGameSuraEx(RACE_SURA_W, "d:/ymir work/pc2/sura/")
 
 def __LoadGameShaman():
+	if app.ENABLE_LOADING_PERFORMANCE:
+		return
 	__LoadGameShamanEx(RACE_SHAMAN_W, "d:/ymir work/pc/shaman/")
 	__LoadGameShamanEx(RACE_SHAMAN_M, "d:/ymir work/pc2/shaman/")
 
@@ -1211,6 +1226,7 @@ def __LoadGameSkill():
 
 	try:
 		skill.LoadSkillData()
+		pass
 	except:
 		import exception
 		exception.Abort("__LoadGameSkill")
@@ -1251,6 +1267,8 @@ def __LoadGameNPC():
 
 # GUILD_BUILDING
 def LoadGuildBuildingList(filename):
+	if app.ENABLE_LOADING_PERFORMANCE:
+		return
 	import uiGuild
 	uiGuild.BUILDING_DATA_LIST = []
 

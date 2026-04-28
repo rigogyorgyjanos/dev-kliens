@@ -15,21 +15,25 @@ import uiToolTip
 import constInfo
 import emotion
 import chr
+if app.ENABLE_LOADING_PERFORMANCE:
+	import loading
+
 
 SHOW_ONLY_ACTIVE_SKILL = False
-SHOW_LIMIT_SUPPORT_SKILL_LIST = []
 HIDE_SUPPORT_SKILL_POINT = False
 
-if localeInfo.IsYMIR():
-	SHOW_LIMIT_SUPPORT_SKILL_LIST = [121, 122, 123, 124, 126, 127, 129, 128, 131, 137, 138, 139, 140,141,142]
-	if not localeInfo.IsCHEONMA():
-		HIDE_SUPPORT_SKILL_POINT = True 
-		SHOW_LIMIT_SUPPORT_SKILL_LIST = [121, 122, 123, 124, 126, 127, 129, 128, 131, 137, 138, 139, 140,141,142]
-elif localeInfo.IsJAPAN() or   (localeInfo.IsEUROPE() and app.GetLocalePath() != "locale/ca") and (localeInfo.IsEUROPE() and app.GetLocalePath() != "locale/br"):
-	HIDE_SUPPORT_SKILL_POINT = True	
-	SHOW_LIMIT_SUPPORT_SKILL_LIST = [121, 122, 123, 124, 126, 127, 129, 128, 131, 137, 138, 139, 140]
-else:
-	HIDE_SUPPORT_SKILL_POINT = True
+# if localeInfo.IsYMIR():
+	# SHOW_LIMIT_SUPPORT_SKILL_LIST = [121, 122, 123, 124, 126, 127, 129, 128, 131, 137, 138, 139, 140,141,142]
+	# if not localeInfo.IsCHEONMA():
+		# HIDE_SUPPORT_SKILL_POINT = True 
+		# SHOW_LIMIT_SUPPORT_SKILL_LIST = [121, 122, 123, 124, 126, 127, 129, 128, 131, 137, 138, 139, 140,141,142]
+# elif localeInfo.IsJAPAN() or   (localeInfo.IsEUROPE() and app.GetLocalePath() != "locale/ca") and (localeInfo.IsEUROPE() and app.GetLocalePath() != "locale/br"):
+	# HIDE_SUPPORT_SKILL_POINT = True	
+	# SHOW_LIMIT_SUPPORT_SKILL_LIST = [121, 122, 123, 124, 126, 127, 129, 128, 131, 137, 138, 139, 140]
+# else:
+	# HIDE_SUPPORT_SKILL_POINT = True
+SHOW_LIMIT_SUPPORT_SKILL_LIST = [122, 121, 123, 124, 131]
+
 
 FACE_IMAGE_DICT = {
 	playerSettingModule.RACE_WARRIOR_M	: "icon/face/warrior_m.tga",
@@ -1149,7 +1153,10 @@ class CharacterWindow(ui.ScriptWindow):
 	def __SetSkillSlotData(self, race, group, empire=0):
 
 		## SkillIndex
-		playerSettingModule.RegisterSkill(race, group, empire)
+		if app.ENABLE_LOADING_PERFORMANCE:
+			loading.RegisterSkill(race, group, empire)
+		else:
+			playerSettingModule.RegisterSkill(race, group, empire)
 
 		## Event
 		self.__SetSkillSlotEvent()

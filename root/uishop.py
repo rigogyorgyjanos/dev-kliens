@@ -274,7 +274,6 @@ class ShopDialog(ui.ScriptWindow):
 		self.pop = None
 		constInfo.SET_ITEM_QUESTION_DIALOG_STATUS(0)
 
-	## ¿ëÈ¥¼® ÆÈ¸®´Â ±â´É Ãß°¡.
 	def SellAttachedItem(self):
 
 		if shop.IsPrivateShop():
@@ -284,18 +283,9 @@ class ShopDialog(ui.ScriptWindow):
 		attachedSlotType = mouseModule.mouseController.GetAttachedType()
 		attachedSlotPos = mouseModule.mouseController.GetAttachedSlotNumber()
 		attachedCount = mouseModule.mouseController.GetAttachedItemCount()
-		if localeInfo.IsBRAZIL() == 0:
-			attachedItemIndex = mouseModule.mouseController.GetAttachedItemIndex()
 		
-		# if player.SLOT_TYPE_INVENTORY == attachedSlotType or player.SLOT_TYPE_DRAGON_SOUL_INVENTORY == attachedSlotType:
 		if player.SLOT_TYPE_INVENTORY == attachedSlotType:
 
-			# if localeInfo.IsBRAZIL():
-				# itemIndex = player.GetItemIndex(attachedSlotPos)
-				# item.SelectItem(itemIndex)
-			# else:
-				# item.SelectItem(attachedItemIndex)
-				
 			itemIndex = player.GetItemIndex(attachedSlotPos)
 			item.SelectItem(itemIndex)
 			
@@ -309,19 +299,14 @@ class ShopDialog(ui.ScriptWindow):
 				
 			itemtype = player.INVENTORY
 
-			if localeInfo.IsBRAZIL() == 0:
-				if player.SLOT_TYPE_DRAGON_SOUL_INVENTORY == attachedSlotType:
-					itemtype = player.DRAGON_SOUL_INVENTORY
-			
-			# if player.IsValuableItem(itemtype, attachedSlotPos):
 			if player.IsValuableItem(attachedSlotPos):
 
 				itemPrice = item.GetISellItemPrice()
 
 				if item.Is1GoldItem():
-					itemPrice = attachedCount / itemPrice / 5
+					itemPrice = attachedCount / itemPrice 
 				else:
-					itemPrice = itemPrice * max(1, attachedCount) / 5
+					itemPrice = itemPrice * max(1, attachedCount) 
 
 				itemName = item.GetItemName()
 

@@ -505,3 +505,7 @@ class MiniMap(ui.ScriptWindow):
 			self.AtlasWindow.Hide()
 		else:
 			self.AtlasWindow.Show()
+	
+	if app.ENABLE_LOADING_PERFORMANCE:
+		def IsShowingAtlas(self):
+			return self.AtlasWindow.IsShow()

@@ -42,7 +42,11 @@ MATERIAL_STONE_ID = 90010
 MATERIAL_LOG_ID = 90011
 MATERIAL_PLYWOOD_ID = 90012
 
-BUILDING_DATA_LIST = []
+if app.ENABLE_LOADING_PERFORMANCE:
+	# BUILDING_DATA_LIST = guild.GetGuildBuildingList()
+	BUILDING_DATA_LIST = []
+else:
+	BUILDING_DATA_LIST = []
 
 def GetGVGKey(srcGuildID, dstGuildID):
 	minID = min(srcGuildID, dstGuildID)
@@ -2003,9 +2007,9 @@ class BuildGuildBuildingWindow(ui.ScriptWindow):
 
 	if localeInfo.IsJAPAN():
 		GUILD_CATEGORY_LIST = (
-				("HEADQUARTER", "Šî‘bŒš’z•¨"),
-				("FACILITY", "Šg’£Œš’z•¨"),
-				("OBJECT", "‚»‚Ì‘¼"),
+				("HEADQUARTER", localeInfo.GUILD_HEADQUARTER),
+				("FACILITY", 	localeInfo.GUILD_FACILITY),
+				("OBJECT", 	localeInfo.GUILD_OBJECT),
 			)
 	elif localeInfo.IsYMIR() or localeInfo.IsWE_KOREA():
 		GUILD_CATEGORY_LIST = (

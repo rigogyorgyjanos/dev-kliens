@@ -1635,33 +1635,50 @@ class GameWindow(ui.ScriptWindow):
 
 			isUpgradeable = False
 			isMetin = False
+			itemType = 0
 			item.SelectItem(itemVnum)
+			itemWidth, itemHeight = item.GetItemSize() 
 			if item.GetItemType() == item.ITEM_TYPE_WEAPON or item.GetItemType() == item.ITEM_TYPE_ARMOR:
 				isUpgradeable = True
 			elif item.GetItemType() == item.ITEM_TYPE_METIN:
 				isMetin = True
-
+			
+			if item.GetItemType() == item.ITEM_TYPE_WEAPON:
+					itemType = 1
+			if item.GetItemType() == item.ITEM_TYPE_ARMOR:
+				if item.GetItemSubType() == item.ARMOR_BODY:
+					itemType = 2
+				else:
+					itemType = 3
+			if item.GetItemType() == item.ITEM_TYPE_METIN:
+					itemType = 4
+			processThisPart = True
 			for curItem in curList:
 				if isUpgradeable:
-					if curItem.has_key("vnum_list") and curItem["vnum_list"][0] / 10 * 10 == itemVnum / 10 * 10:
+					if curItem.__contains__("vnum_list") and curItem["vnum_list"][0] // 10 * 10 == itemVnum // 10 * 10:
 						if not (itemVnum in curItem["vnum_list"]):
 							curItem["vnum_list"].append(itemVnum)
-						return
+						processThisPart = False
+						break
 				elif isMetin:
-					if curItem.has_key("vnum_list"):
+					if curItem.__contains__("vnum_list"):
 						baseVnum = curItem["vnum_list"][0]
-					if curItem.has_key("vnum_list") and (baseVnum - baseVnum%1000) == (itemVnum - itemVnum%1000):
+					if curItem.__contains__("vnum_list") and (baseVnum - baseVnum % 1000) == (itemVnum - itemVnum % 1000):
 						if not (itemVnum in curItem["vnum_list"]):
 							curItem["vnum_list"].append(itemVnum)
-						return
+						processThisPart = False
+						break
 				else:
-					if curItem.has_key("vnum") and curItem["vnum"] == itemVnum and curItem["count"] == itemCount:
-						return
+					if curItem.__contains__("vnum") and curItem["vnum"] == itemVnum and curItem["count"] == itemCount:
+						processThisPart = False
+						break
 
-			if isUpgradeable or isMetin:
-				curList.append({"vnum_list":[itemVnum], "count":itemCount})
-			else:
-				curList.append({"vnum":itemVnum, "count":itemCount})
+			if processThisPart:
+				if isUpgradeable or isMetin:
+					curList.append({"vnum_list":[itemVnum], "count":itemCount, "itemheight":itemHeight, "type":itemType})
+				else:
+					curList.append({"vnum":itemVnum, "count":itemCount, "itemheight":itemHeight, "type":itemType})
+
 
 		def BINARY_RefreshTargetMonsterDropInfo(self, raceNum):
 			self.targetBoard.RefreshMonsterInfoBoard()
@@ -2282,6 +2299,15 @@ class GameWindow(ui.ScriptWindow):
 			net.SetMapIndex(_mapIdx)
 			self.interface.RefreshServerInfo()
 	
+	if app.ENABLE_LOADING_PERFORMANCE:
+		def OpenWarpShowerWindow(self):
+			if self.interface:
+				self.interface.OpenWarpShowerWindow()
+
+		def CloseWarpShowerWindow(self):
+			if self.interface:
+				self.interface.CloseWarpShowerWindow()
+				
 	def BINARY_UpdateUI(self):
 		if self.interface:
 			self.interface.UpdateUI()

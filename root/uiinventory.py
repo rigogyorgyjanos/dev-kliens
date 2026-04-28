@@ -855,9 +855,9 @@ class InventoryWindow(ui.ScriptWindow):
 			itemPrice = item.GetISellItemPrice()
 
 			if item.Is1GoldItem():
-				itemPrice = itemCount / itemPrice / 5
+				itemPrice = itemCount / itemPrice
 			else:
-				itemPrice = itemPrice * itemCount / 5
+				itemPrice = itemPrice * itemCount
 
 			item.GetItemName(itemIndex)
 			itemName = item.GetItemName()

@@ -35,7 +35,7 @@ ENABLE_ENGNUM_DELETE_CODE = True
 
 class SelectCharacterWindow(ui.Window):
 
-	SLOT_COUNT = 4
+	SLOT_COUNT = app.PLAYER_PER_ACCOUNT
 	CHARACTER_TYPE_COUNT = 4
 	EMPIRE_NAME = {
 		net.EMPIRE_A : localeInfo.EMPIRE_A,
@@ -333,10 +333,10 @@ class SelectCharacterWindow(ui.Window):
 		self.CharacterFace_3.Hide()
 		self.CharacterSlot_3_Lv.Hide()
 		self.CharacterSlot_3_Name.Hide()
-		#self.CharacterSlot_4.Hide()
-		#self.CharacterFace_4.Hide()
-		#self.CharacterSlot_4_Lv.Hide()
-		#self.CharacterSlot_4_Name.Hide()
+		self.CharacterSlot_4.Hide()
+		self.CharacterFace_4.Hide()
+		self.CharacterSlot_4_Lv.Hide()
+		self.CharacterSlot_4_Name.Hide()
 		for i in xrange(self.SLOT_COUNT):
 			id = net.GetAccountCharacterSlotDataInteger(i, net.ACCOUNT_CHARACTER_SLOT_ID)
 			race = net.GetAccountCharacterSlotDataInteger(i, net.ACCOUNT_CHARACTER_SLOT_RACE)
@@ -379,15 +379,15 @@ class SelectCharacterWindow(ui.Window):
 					self.CharacterSlot_3_Lv.SetText(localeInfo.INTRO_SELECT_LEVEL % (level))
 					self.CharacterSlot_3_Lv.SetFontColor(30, 72, 168)
 					self.CharacterSlot_3_Lv.Show()
-				#elif i == 4:
-				#	self.CharacterFace_4.LoadImage(self.FACE_IMAGE_DICT_2[race])
-				#	self.CharacterFace_4.Show()
-				#	self.CharacterSlot_4.Show()
-				#	self.CharacterSlot_4_Name.SetText(name)
-				#	self.CharacterSlot_4_Name.Show()
-				#	self.CharacterSlot_4_Lv.SetText(localeInfo.INTRO_SELECT_LEVEL % (level))
-				#	self.CharacterSlot_4_Lv.SetFontColor(30, 72, 168)
-				#	self.CharacterSlot_4_Lv.Show()
+				elif i == 4:
+					self.CharacterFace_4.LoadImage(self.FACE_IMAGE_DICT_2[race])
+					self.CharacterFace_4.Show()
+					self.CharacterSlot_4.Show()
+					self.CharacterSlot_4_Name.SetText(name)
+					self.CharacterSlot_4_Name.Show()
+					self.CharacterSlot_4_Lv.SetText(localeInfo.INTRO_SELECT_LEVEL % (level))
+					self.CharacterSlot_4_Lv.SetFontColor(30, 72, 168)
+					self.CharacterSlot_4_Lv.Show()
 
 	def GetCharacterSlotID(self, slotIndex):
 		return net.GetAccountCharacterSlotDataInteger(slotIndex, net.ACCOUNT_CHARACTER_SLOT_ID)
@@ -485,18 +485,18 @@ class SelectCharacterWindow(ui.Window):
 			self.CharacterSlot_3_Name.SetPosition(140, 3)
 			self.CharacterSlot_3_Name.SetHorizontalAlignRight()
 			self.CharacterSlot_3_Name.SetText("")
-			#self.CharacterSlot_4 = GetObject("CharacterSlot_4")
-			#self.CharacterFace_4 = GetObject("CharacterFace_4")
-			#self.CharacterSlot_4_Lv = ui.TextLine()
-			#self.CharacterSlot_4_Lv.SetParent(self.CharacterSlot_4)
-			#self.CharacterSlot_4_Lv.SetPosition(108, 19)
-			#self.CharacterSlot_4_Lv.SetHorizontalAlignLeft()
-			#self.CharacterSlot_4_Lv.SetText("")
-			#self.CharacterSlot_4_Name = ui.TextLine()
-			#self.CharacterSlot_4_Name.SetParent(self.CharacterSlot_4)
-			#self.CharacterSlot_4_Name.SetPosition(140, 3)
-			#self.CharacterSlot_4_Name.SetHorizontalAlignRight()
-			#self.CharacterSlot_4_Name.SetText("")
+			self.CharacterSlot_4 = GetObject("CharacterSlot_4")
+			self.CharacterFace_4 = GetObject("CharacterFace_4")
+			self.CharacterSlot_4_Lv = ui.TextLine()
+			self.CharacterSlot_4_Lv.SetParent(self.CharacterSlot_4)
+			self.CharacterSlot_4_Lv.SetPosition(108, 19)
+			self.CharacterSlot_4_Lv.SetHorizontalAlignLeft()
+			self.CharacterSlot_4_Lv.SetText("")
+			self.CharacterSlot_4_Name = ui.TextLine()
+			self.CharacterSlot_4_Name.SetParent(self.CharacterSlot_4)
+			self.CharacterSlot_4_Name.SetPosition(140, 3)
+			self.CharacterSlot_4_Name.SetHorizontalAlignRight()
+			self.CharacterSlot_4_Name.SetText("")
 			self.DiscFace = GetObject("DiscFace")
 			self.raceName = GetObject("raceName_Text")
 			
@@ -541,35 +541,26 @@ class SelectCharacterWindow(ui.Window):
 		self.textBoardNext.SetEvent(ui.__mem_func__(self.NextDescriptionPage))
 		GetObject("start_button").ShowToolTip = lambda arg=1: self.OverInButton(arg)
 		GetObject("start_button").HideToolTip = lambda arg=1: self.OverOutButton()
-		
 		GetObject("exit_button").ShowToolTip = lambda arg=2: self.OverInButton(arg)
 		GetObject("exit_button").HideToolTip = lambda arg=2: self.OverOutButton()
-		
 		GetObject("delete_button").ShowToolTip = lambda arg=3: self.OverInButton(arg)
 		GetObject("delete_button").HideToolTip = lambda arg=3: self.OverOutButton()
-		
 		GetObject("create_button").ShowToolTip = lambda arg=4: self.OverInButton(arg)
 		GetObject("create_button").HideToolTip = lambda arg=4: self.OverOutButton()
-		
 		GetObject("CharacterSlot_0").ShowToolTip = lambda arg=5: self.OverInButton(arg)
 		GetObject("CharacterSlot_0").HideToolTip = lambda arg=5: self.OverOutButton()
-		
 		GetObject("CharacterSlot_1").ShowToolTip = lambda arg=6: self.OverInButton(arg)
 		GetObject("CharacterSlot_1").HideToolTip = lambda arg=6: self.OverOutButton()
-		
 		GetObject("CharacterSlot_2").ShowToolTip = lambda arg=7: self.OverInButton(arg)
 		GetObject("CharacterSlot_2").HideToolTip = lambda arg=7: self.OverOutButton()
-		
 		GetObject("CharacterSlot_3").ShowToolTip = lambda arg=8: self.OverInButton(arg)
 		GetObject("CharacterSlot_3").HideToolTip = lambda arg=8: self.OverOutButton()
-		
-		#GetObject("CharacterSlot_4").ShowToolTip = lambda arg=9: self.OverInButton(arg)
-		#GetObject("CharacterSlot_4").HideToolTip = lambda arg=9: self.OverOutButton()
-		GetObject("prev_button").ShowToolTip = lambda arg=9: self.OverInButton(arg)
-		GetObject("prev_button").HideToolTip = lambda arg=9: self.OverOutButton()
-		
-		GetObject("next_button").ShowToolTip = lambda arg=10: self.OverInButton(arg)
-		GetObject("next_button").HideToolTip = lambda arg=10: self.OverOutButton()
+		GetObject("CharacterSlot_4").ShowToolTip = lambda arg=9: self.OverInButton(arg)
+		GetObject("CharacterSlot_4").HideToolTip = lambda arg=9: self.OverOutButton()
+		GetObject("prev_button").ShowToolTip = lambda arg=10: self.OverInButton(arg)
+		GetObject("prev_button").HideToolTip = lambda arg=10: self.OverOutButton()
+		GetObject("next_button").ShowToolTip = lambda arg=11: self.OverInButton(arg)
+		GetObject("next_button").HideToolTip = lambda arg=11: self.OverOutButton()
 		
 		for name in self.NameList:
 			name.SetAlpha(0.0)
@@ -582,7 +573,7 @@ class SelectCharacterWindow(ui.Window):
 		self.CharacterSlot_1.SAFE_SetEvent(self.SelectSlot, 1)
 		self.CharacterSlot_2.SAFE_SetEvent(self.SelectSlot, 2)
 		self.CharacterSlot_3.SAFE_SetEvent(self.SelectSlot, 3)
-		#self.CharacterSlot_4.SAFE_SetEvent(self.SelectSlot, 4)
+		self.CharacterSlot_4.SAFE_SetEvent(self.SelectSlot, 4)
 		
 		if NOT_NEED_DELETE_CODE:
 			self.btnDelete.SetEvent(ui.__mem_func__(self.PopupDeleteQuestion))
@@ -841,7 +832,7 @@ class SelectCharacterWindow(ui.Window):
 		chr.DeleteInstance(1)
 		chr.DeleteInstance(2)
 		chr.DeleteInstance(3)
-		#chr.DeleteInstance(4)
+		chr.DeleteInstance(4)
 		self.DiscFace.Hide()
 		self.raceName.Hide()
 		id = net.GetAccountCharacterSlotDataInteger(index, net.ACCOUNT_CHARACTER_SLOT_ID)
@@ -862,11 +853,11 @@ class SelectCharacterWindow(ui.Window):
 			self.CharacterSlot_1.SetUp()
 			self.CharacterSlot_2.SetUp()
 			self.CharacterSlot_3.SetUp()
-			#self.CharacterSlot_4.SetUp()
+			self.CharacterSlot_4.SetUp()
 			self.CharacterSlot_1_Name.SetFontColor(0.8549, 0.8549, 0.8549)
 			self.CharacterSlot_2_Name.SetFontColor(0.8549, 0.8549, 0.8549)
 			self.CharacterSlot_3_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			#self.CharacterSlot_4_Name.SetFontColor(0.8549, 0.8549, 0.8549)
+			self.CharacterSlot_4_Name.SetFontColor(0.8549, 0.8549, 0.8549)
 		elif index == 1:
 			self.CharacterSlot_1.Down()
 			self.CharacterSlot_1_Name.SetFontColor(1.0, 0.6000, 0.3500)
@@ -874,11 +865,11 @@ class SelectCharacterWindow(ui.Window):
 			self.CharacterSlot_0.SetUp()
 			self.CharacterSlot_2.SetUp()
 			self.CharacterSlot_3.SetUp()
-			#self.CharacterSlot_4.SetUp()
+			self.CharacterSlot_4.SetUp()
 			self.CharacterSlot_0_Name.SetFontColor(0.8549, 0.8549, 0.8549)
 			self.CharacterSlot_2_Name.SetFontColor(0.8549, 0.8549, 0.8549)
 			self.CharacterSlot_3_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			#self.CharacterSlot_4_Name.SetFontColor(0.8549, 0.8549, 0.8549)
+			self.CharacterSlot_4_Name.SetFontColor(0.8549, 0.8549, 0.8549)
 		elif index == 2:
 			self.CharacterSlot_2.Down()
 			self.CharacterSlot_2_Name.SetFontColor(1.0, 0.6000, 0.3500)
@@ -886,11 +877,11 @@ class SelectCharacterWindow(ui.Window):
 			self.CharacterSlot_0.SetUp()
 			self.CharacterSlot_1.SetUp()
 			self.CharacterSlot_3.SetUp()
-			#self.CharacterSlot_4.SetUp()
+			self.CharacterSlot_4.SetUp()
 			self.CharacterSlot_0_Name.SetFontColor(0.8549, 0.8549, 0.8549)
 			self.CharacterSlot_1_Name.SetFontColor(0.8549, 0.8549, 0.8549)
 			self.CharacterSlot_3_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			#self.CharacterSlot_4_Name.SetFontColor(0.8549, 0.8549, 0.8549)
+			self.CharacterSlot_4_Name.SetFontColor(0.8549, 0.8549, 0.8549)
 		elif index == 3:
 			self.CharacterSlot_3.Down()
 			self.CharacterSlot_3_Name.SetFontColor(1.0, 0.6000, 0.3500)
@@ -898,23 +889,23 @@ class SelectCharacterWindow(ui.Window):
 			self.CharacterSlot_0.SetUp()
 			self.CharacterSlot_1.SetUp()
 			self.CharacterSlot_2.SetUp()
-			#self.CharacterSlot_4.SetUp()
+			self.CharacterSlot_4.SetUp()
 			self.CharacterSlot_0_Name.SetFontColor(0.8549, 0.8549, 0.8549)
 			self.CharacterSlot_1_Name.SetFontColor(0.8549, 0.8549, 0.8549)
 			self.CharacterSlot_2_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			#self.CharacterSlot_4_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-		#elif index == 4:
-		#	self.CharacterSlot_4.Down()
-		#	self.CharacterSlot_4_Name.SetFontColor(1.0, 0.6000, 0.3500)
-		#	self.CharacterFace_4.LoadImage(self.FACE_IMAGE_DICT_1[race])
-		#	self.CharacterSlot_0.SetUp()
-		#	self.CharacterSlot_1.SetUp()
-		#	self.CharacterSlot_2.SetUp()
-		#	self.CharacterSlot_3.SetUp()
-		#	self.CharacterSlot_0_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-		#	self.CharacterSlot_1_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-		#	self.CharacterSlot_2_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-		#	self.CharacterSlot_3_Name.SetFontColor(0.8549, 0.8549, 0.8549)
+			self.CharacterSlot_4_Name.SetFontColor(0.8549, 0.8549, 0.8549)
+		elif index == 4:
+			self.CharacterSlot_4.Down()
+			self.CharacterSlot_4_Name.SetFontColor(1.0, 0.6000, 0.3500)
+			self.CharacterFace_4.LoadImage(self.FACE_IMAGE_DICT_1[race])
+			self.CharacterSlot_0.SetUp()
+			self.CharacterSlot_1.SetUp()
+			self.CharacterSlot_2.SetUp()
+			self.CharacterSlot_3.SetUp()
+			self.CharacterSlot_0_Name.SetFontColor(0.8549, 0.8549, 0.8549)
+			self.CharacterSlot_1_Name.SetFontColor(0.8549, 0.8549, 0.8549)
+			self.CharacterSlot_2_Name.SetFontColor(0.8549, 0.8549, 0.8549)
+			self.CharacterSlot_3_Name.SetFontColor(0.8549, 0.8549, 0.8549)
 		
 		self.slot = index
 		chr.SelectInstance(self.slot)
@@ -1013,7 +1004,9 @@ class SelectCharacterWindow(ui.Window):
 			self.SelectSlot(2)
 		if 5 == key:
 			self.SelectSlot(3)
-		
+		if 6 == key:
+			self.SelectSlot(4)
+
 		if 28 == key:
 			id = net.GetAccountCharacterSlotDataInteger(self.slot, net.ACCOUNT_CHARACTER_SLOT_ID)
 			if 0 == id:
@@ -1049,7 +1042,7 @@ class SelectCharacterWindow(ui.Window):
 			if False == chr.HasInstance(i):
 				continue
 		if -1 != self.startIndex:
-			if app.GetTime() - self.startReservingTime > 3.0:
+			if app.GetTime() - self.startReservingTime > 2.0:
 				if False == self.openLoadingFlag:
 					chrSlot=self.stream.GetCharacterSlot()
 					net.DirectEnter(chrSlot)
@@ -1085,11 +1078,15 @@ class SelectCharacterWindow(ui.Window):
 			self.toolTip.AlignHorizonalCenter()
 			self.toolTip.AutoAppendNewTextLine(uiScriptLocale.SELECT_CREATE, grp.GenerateColor(1.0, 1.0, 0.0, 1.0))
 			self.toolTip.Show()
-		elif stat >= 5 and stat <= 8:
-			chr_index = int(stat) - 5 
-			# print("chr_index: %d type: %s "%(chr_index, type(chr_index)))
-			playTime = net.GetAccountCharacterSlotDataInteger(chr_index, net.ACCOUNT_CHARACTER_SLOT_PLAYTIME)
-			guildName = net.GetAccountCharacterSlotDataString(chr_index, net.ACCOUNT_CHARACTER_SLOT_GUILD_NAME)
+		elif stat == 4:
+			self.toolTip.ClearToolTip()
+			self.toolTip.AlignHorizonalCenter()
+			self.toolTip.AutoAppendNewTextLine(uiScriptLocale.SELECT_CREATE, grp.GenerateColor(1.0, 1.0, 0.0, 1.0))
+			self.toolTip.Show()
+
+		elif stat >= 5 and stat <= 9:
+			playTime = net.GetAccountCharacterSlotDataInteger(stat-5, net.ACCOUNT_CHARACTER_SLOT_PLAYTIME)
+			guildName = net.GetAccountCharacterSlotDataString(stat-5, net.ACCOUNT_CHARACTER_SLOT_GUILD_NAME)
 			
 			self.toolTip.ClearToolTip()
 			self.toolTip.AlignHorizonalCenter()
@@ -1100,12 +1097,12 @@ class SelectCharacterWindow(ui.Window):
 
 			self.toolTip.AutoAppendNewTextLine(uiScriptLocale.SELECT_PLAYTIME % (playTime), grp.GenerateColor(1.0, 1.0, 0.0, 1.0))
 			self.toolTip.Show()
-		elif stat == 9:
+		elif stat == 10:
 			self.toolTip.ClearToolTip()
 			self.toolTip.AlignHorizonalCenter()
 			self.toolTip.AutoAppendNewTextLine(uiScriptLocale.CREATE_PREV, grp.GenerateColor(1.0, 1.0, 0.0, 1.0))
 			self.toolTip.Show()
-		elif stat == 10:
+		elif stat == 11:
 			self.toolTip.ClearToolTip()
 			self.toolTip.AlignHorizonalCenter()
 			self.toolTip.AutoAppendNewTextLine(uiScriptLocale.CREATE_NEXT, grp.GenerateColor(1.0, 1.0, 0.0, 1.0))

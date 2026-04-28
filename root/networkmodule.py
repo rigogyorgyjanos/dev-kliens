@@ -239,7 +239,10 @@ class MainStream(object):
 	def SetLoadingPhase(self):
 		try:
 			import introLoading
-			self.SetPhaseWindow(introLoading.LoadingWindow(self))
+			if app.ENABLE_LOADING_PERFORMANCE:
+				self.SetPhaseWindow(introLoading.NewLoadingWindow(self))
+			else:
+				self.SetPhaseWindow(introLoading.LoadingWindow(self))
 		except:
 			import exception
 			exception.Abort("networkModule.SetLoadingPhase")
@@ -294,3 +297,33 @@ class MainStream(object):
 	## Empty
 	def EmptyFunction(self):
 		pass
+	
+	if app.ENABLE_LOADING_PERFORMANCE:
+		def Close(self):
+			if self.curPhaseWindow:
+				self.curPhaseWindow.Close()
+				self.curPhaseWindow = 0
+
+			if self.newPhaseWindow:
+				self.newPhaseWindow.Close()
+				self.newPhaseWindow = 0
+
+		def SetWarpPhase(self):
+			try:
+				newPhaseWindow = self
+
+				self.Close()
+
+				if newPhaseWindow:
+					chrSlot = self.GetCharacterSlot()
+					net.SendSelectCharacterPacket(chrSlot)
+
+				self.curPhaseWindow = newPhaseWindow
+
+				if self.curPhaseWindow:
+					self.curtain.FadeIn()
+				else:
+					app.Exit()
+			except:
+				import exception
+				exception.Abort("networkModule.SetWarpPhase")
