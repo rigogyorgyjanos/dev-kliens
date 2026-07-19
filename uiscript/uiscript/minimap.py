@@ -122,7 +122,7 @@ window = {
 				{
 					"name" : "PositionInfo",
 					"type" : "text",
-					
+
 					"text_horizontal_align" : "center",
 
 					"outline" : 1,
@@ -136,13 +136,27 @@ window = {
 				{
 					"name" : "ObserverCount",
 					"type" : "text",
-					
+
 					"text_horizontal_align" : "center",
 
 					"outline" : 1,
 
 					"x" : 70,
 					"y" : 180,
+
+					"text" : "",
+				},
+				## FPS
+				{
+					"name" : "FPS",
+					"type" : "text",
+
+					"text_horizontal_align" : "center",
+
+					"outline" : 1,
+
+					"x" : 70,
+					"y" : 200,
 
 					"text" : "",
 				},

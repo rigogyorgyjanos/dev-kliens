@@ -317,6 +317,7 @@ class MiniMap(ui.ScriptWindow):
 		self.tooltipAtlasOpen = 0
 		self.tooltipInfo = None
 		self.serverInfo = None
+		self.fpsInfo = None
 
 	def SetMapName(self, mapName):
 		self.mapName=mapName
@@ -381,6 +382,7 @@ class MiniMap(ui.ScriptWindow):
 			self.dataTime = self.GetChild("Datetime")
 			self.observerCount = self.GetChild("ObserverCount")
 			self.serverInfo = self.GetChild("ServerInfo")
+			self.fpsInfo = self.GetChild("FPS")
 		except:
 			import exception
 			exception.Abort("MiniMap.LoadWindow.Bind")
@@ -438,6 +440,7 @@ class MiniMap(ui.ScriptWindow):
 
 		self.positionInfo.SetText("(%.0f, %.0f)" % (x/100, y/100))
 		self.dataTime.SetText(time.strftime("[%Y/%m/%d - %H:%M:%S]"))
+		self.fpsInfo.SetText("FPS: %d" % app.GetRenderFPS())
 
 		if self.tooltipInfo:
 			if True == self.MiniMapWindow.IsIn():
