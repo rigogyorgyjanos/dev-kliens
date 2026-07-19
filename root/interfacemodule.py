@@ -44,6 +44,8 @@ import uiselectitem
 import uiScriptLocale
 if app.ENABLE_LOADING_PERFORMANCE:
 	import uiWarpShower
+if app.RENEWAL_MISSION_BOOKS:
+	import uiMission
 
 import event
 import localeInfo
@@ -61,7 +63,11 @@ class Interface(object):
 		self.inputDialog = None
 		self.tipBoard = None
 		self.bigBoard = None
-
+	
+		
+		if app.RENEWAL_MISSION_BOOKS:
+			self.wndBookMission = None
+			
 		# ITEM_MALL
 		self.mallPageDlg = None
 		# END_OF_ITEM_MALL
@@ -89,6 +95,13 @@ class Interface(object):
 		if app.ENABLE_LOADING_PERFORMANCE:
 			self.wndWarpShower = None
 		event.SetInterfaceWindow(self)
+		
+		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+			import os
+			if not os.path.exists("data/user_data/wnd/"):
+				os.makedirs("data/user_data/wnd/")
+			if not os.path.exists("data/user_data/wnd/" + player.GetName()):
+				os.makedirs("data/user_data/wnd/" + player.GetName())
 
 	def __del__(self):
 		systemSetting.DestroyInterfaceHandler()
@@ -387,6 +400,12 @@ class Interface(object):
 	################################
 
 	def Close(self):
+		if app.RENEWAL_MISSION_BOOKS:
+			if self.wndBookMission:
+				self.wndBookMission.Close()
+				self.wndBookMission.Destroy()
+				self.wndBookMission = None
+				
 		if self.dlgWhisperWithoutTarget:
 			self.dlgWhisperWithoutTarget.Destroy()
 			del self.dlgWhisperWithoutTarget
@@ -913,6 +932,11 @@ class Interface(object):
 			
 		if self.wndExpandedTaskBar:
 			self.wndExpandedTaskBar.Hide()
+		
+		if app.RENEWAL_MISSION_BOOKS:
+			if self.wndBookMission:
+				self.wndBookMission.Hide()
+				
  
 
 	def ShowMouseImage(self):
@@ -1747,6 +1771,32 @@ class Interface(object):
 			if self.wndWarpShower:
 				self.wndWarpShower.Close()
 	
+	if app.RENEWAL_MISSION_BOOKS:
+		def MakeBookMission(self):
+			if self.wndBookMission == None:
+				self.wndBookMission = uiMission.MissionWindow()
+				
+		def OpenBookMission(self):
+			self.MakeBookMission()
+			if self.wndBookMission.IsShow():
+				self.wndBookMission.Close()
+			else:
+				self.wndBookMission.Open()
+		def ClearBookMission(self):
+			self.MakeBookMission()
+			self.wndBookMission.Clear()
+		def UpdateMissionInfo(self, cmd):
+			self.wndBookMission.UpdateMissionInfo(cmd)
+		def UpdateMissionValue(self, missionID, value):
+			self.wndBookMission.UpdateMissionValue(int(missionID), int(value))
+		def RewardMissionData(self, missionID, rewardStatus):
+			self.wndBookMission.RewardMissionData(int(missionID), int(rewardStatus))
+		def RemoveMissionData(self, missionID):
+			self.wndBookMission.RemoveMissionData(int(missionID))
+		def UpdateMissionEndTime(self, missionID, endTime):
+			self.wndBookMission.UpdateMissionEndTime(int(missionID), str(endTime))
+
+
 	def EmptyFunction(self):
 		pass
 	

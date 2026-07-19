@@ -336,7 +336,8 @@ class GameWindow(ui.ScriptWindow):
 		onPressKeyDict[app.DIK_F2]	= lambda : self.__PressQuickSlot(5)
 		onPressKeyDict[app.DIK_F3]	= lambda : self.__PressQuickSlot(6)
 		onPressKeyDict[app.DIK_F4]	= lambda : self.__PressQuickSlot(7)
-
+		onPressKeyDict[app.DIK_F5]			= lambda : self.interface.OpenBookMission()
+		
 		onPressKeyDict[app.DIK_LALT]		= lambda : self.ShowName()
 		onPressKeyDict[app.DIK_LCONTROL]	= lambda : self.ShowMouseImage()
 		onPressKeyDict[app.DIK_SYSRQ]		= lambda : self.SaveScreen()
@@ -2000,6 +2001,15 @@ class GameWindow(ui.ScriptWindow):
 		
 		if app.BL_MOVE_CHANNEL:
 			serverCommandList["server_info"] = self.__SeverInfo
+		
+		if app.RENEWAL_MISSION_BOOKS:
+			serverCommandList.update({"ClearBookMission" : self.interface.ClearBookMission})
+			serverCommandList.update({"UpdateMissionInfo" : self.interface.UpdateMissionInfo})
+			serverCommandList.update({"UpdateMissionValue" : self.interface.UpdateMissionValue})
+			serverCommandList.update({"RewardMissionData" : self.interface.RewardMissionData})
+			serverCommandList.update({"RemoveMissionData" : self.interface.RemoveMissionData})
+			serverCommandList.update({"UpdateMissionEndTime" : self.interface.UpdateMissionEndTime})
+			
 		self.serverCommander=stringCommander.Analyzer()
 		for serverCommandItem in serverCommandList.items():
 			self.serverCommander.SAFE_RegisterCallBack(

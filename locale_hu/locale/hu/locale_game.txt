@@ -881,3 +881,17 @@ TOOLTIP_ANTIFLAG_MYSHOP	myshop
 TOOLTIP_ANTIFLAG_SAFEBOX	safebox
 NOT_POSSIBLE	not possible
 SKILL_BOOK_NEXT_READ_TIME	Következõ olvasás: %02d:%02d:%02d
+MISSION_STATUS_COUNT	|cffF6A800|Eemoji/e_wiki|e Status:|r %d/%d
+MISSION_TYPE_NAME	|cffF6A800|Eemoji/e_wiki|e Type:|r %s
+MISSION_TYPE_ALL_MONSTER	All Monster
+MISSION_TYPE_ALL_METIN	All MetinStone
+MISSION_TYPE_ALL_BOSS	All King&Boss
+MISSION_TYPE_LEVELRANGE	 (+-%d Level)
+MISSION_TYPE_SPECIAL	|cffF6A800|Eemoji/e_wiki|e Type:|r %s
+MISSION_EXP	|cffF6A800|Eemoji/e_wiki|e EXP:|r %s ~ %s
+MISSION_GOLD	|cffF6A800|Eemoji/e_wiki|e Gold:|r %s ~ %s
+MISSION_LEFTTIME	|cffF6A800|Eemoji/e_wiki|e Left Time:|r %s
+MISSION_DELETE_TEXT	Do you want remove mission?
+MISSION_REWARD_TEXT	Do you want get reward?
+MISSION_END_TIME	|cffF6A800|Eemoji/e_wiki|e End Time:|r %s
+MISSION_REWARD_TITLE	|cffF6A800Reward:|r

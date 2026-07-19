@@ -22,6 +22,7 @@ import _winreg
 import os
 import string, random
 import interfaceModule
+from resizeexpr import Expr
 
 RUNUP_MATRIX_AUTH = False
 NEWCIBN_PASSPOD_AUTH = False
@@ -170,6 +171,7 @@ class LoginWindow(ui.ScriptWindow):
 		}
 
 		self.SetSize(wndMgr.GetScreenWidth(), wndMgr.GetScreenHeight())
+		self.SetResizeDic({"size" : (Expr("SCREEN_WIDTH"), Expr("SCREEN_HEIGHT"))})
 
 		if not self.__LoadScript(uiScriptLocale.LOCALE_UISCRIPT_PATH + "LoginWindow.py"):
 			dbg.TraceError("LoginWindow.Open - __LoadScript Error")

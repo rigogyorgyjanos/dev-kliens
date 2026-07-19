@@ -50,6 +50,8 @@ class CostumeWindow(ui.ScriptWindow):
 
 	def Show(self):
 		self.__LoadWindow()
+		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+			self.SetLastPosition()
 		self.RefreshCostumeSlot()
 
 		ui.ScriptWindow.Show(self)
@@ -424,6 +426,9 @@ class InventoryWindow(ui.ScriptWindow):
 		self.RefreshStatus()
 
 	def Destroy(self):
+		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+			if self.IsShow():
+				self.SaveLastPosition()
 		self.ClearDictionary()
 
 		self.dlgPickMoney.Destroy()
@@ -475,6 +480,10 @@ class InventoryWindow(ui.ScriptWindow):
   
 		if self.dlgPickMoney:
 			self.dlgPickMoney.Close()
+			
+		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+			if self.IsShow():
+				self.SaveLastPosition()
 		
 		wndMgr.Hide(self.hWnd)
 		
@@ -616,6 +625,31 @@ class InventoryWindow(ui.ScriptWindow):
 		
 		if self.tooltipItem and self.tooltipItem.IsShow():
 				self.tooltipItem.RefreshNeededItemCounts()
+	
+	if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+		import player, wndMgr
+
+		def SetLastPosition(self):
+			try:
+				file = open("data/user_data/wnd/" + player.GetName() + "/"+ "inventory" + ".pos", 'r')
+				line = file.read().split(",")
+				pos_x, pos_y = int(line[0]), int(line[1])
+				file.close()
+				if pos_x > wndMgr.GetScreenWidth() or pos_y > wndMgr.GetScreenHeight():
+					return
+				if pos_x < 0:
+					pos_x = 0
+				if pos_y < 0:
+					pos_y = 0
+				self.SetPosition(pos_x, pos_y)
+			except:
+				pass
+			
+		def SaveLastPosition(self):
+			pos_x, pos_y = self.GetGlobalPosition()
+			file = open("data/user_data/wnd/" + player.GetName() + "/"+ "inventory" + ".pos","w")
+			file.write(str(pos_x)+","+str(pos_y))
+			file.close()
 			
 	def OnUpdate(self):
 		if app.ENABLE_SORT_INVEN and self.tooltipInfo:

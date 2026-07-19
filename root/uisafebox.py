@@ -190,6 +190,28 @@ class ChangePasswordDialog(ui.ScriptWindow):
 		self.dlgMessage.Hide()
 
 class SafeboxWindow(ui.ScriptWindow):
+	if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+		def SetLastPosition(self):
+			try:
+				file = open("data/user_data/wnd/" + player.GetName() + "/"+ "safebox" + ".pos", 'r')
+				line = file.read().split(",")
+				pos_x, pos_y = int(line[0]), int(line[1])
+				file.close()
+				if pos_x > wndMgr.GetScreenWidth() or pos_y > wndMgr.GetScreenHeight():
+					return
+				if pos_x < 0:
+					pos_x = 0
+				if pos_y < 0:
+					pos_y = 0
+				self.SetPosition(pos_x, pos_y)
+			except:
+				pass
+			
+		def SaveLastPosition(self):
+			pos_x, pos_y = self.GetGlobalPosition()
+			file = open("data/user_data/wnd/" + player.GetName() + "/"+ "safebox" + ".pos","w")
+			file.write(str(pos_x)+","+str(pos_y))
+			file.close()
 
 	BOX_WIDTH = 176
 
@@ -210,7 +232,7 @@ class SafeboxWindow(ui.ScriptWindow):
 
 	def Show(self):
 		self.__LoadWindow()
-
+		self.SetLastPosition()
 		ui.ScriptWindow.Show(self)		
 
 	def Destroy(self):
@@ -305,7 +327,7 @@ class SafeboxWindow(ui.ScriptWindow):
 	def ShowWindow(self, size):
 
 		(self.xSafeBoxStart, self.ySafeBoxStart, z) = player.GetMainCharacterPosition()
-
+		self.SetLastPosition()
 		self.SetTableSize(size)
 		self.Show()
 
@@ -388,6 +410,9 @@ class SafeboxWindow(ui.ScriptWindow):
 
 	def Close(self):
 		net.SendChatPacket("/safebox_close")
+		if self.IsShow():
+			self.SaveLastPosition()
+		self.Hide() 
 
 	def CommandCloseSafebox(self):
 		if self.tooltipItem:
@@ -395,6 +420,8 @@ class SafeboxWindow(ui.ScriptWindow):
 
 		self.dlgPickMoney.Close()
 		self.dlgChangePassword.Close()
+		if self.IsShow():
+			self.SaveLastPosition()
 		self.Hide()
 
 	## Slot Event
@@ -497,7 +524,28 @@ class SafeboxWindow(ui.ScriptWindow):
 			self.Close()
 
 class MallWindow(ui.ScriptWindow):
-
+	if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+		def SetLastPosition(self):
+			try:
+				file = open("data/user_data/wnd/" + player.GetName() + "/"+ "mall" + ".pos", 'r')
+				line = file.read().split(",")
+				pos_x, pos_y = int(line[0]), int(line[1])
+				file.close()
+				if pos_x > wndMgr.GetScreenWidth() or pos_y > wndMgr.GetScreenHeight():
+					return
+				if pos_x < 0:
+					pos_x = 0
+				if pos_y < 0:
+					pos_y = 0
+				self.SetPosition(pos_x, pos_y)
+			except:
+				pass
+			
+		def SaveLastPosition(self):
+			pos_x, pos_y = self.GetGlobalPosition()
+			file = open("data/user_data/wnd/" + player.GetName() + "/"+ "mall" + ".pos","w")
+			file.write(str(pos_x)+","+str(pos_y))
+			file.close()
 	BOX_WIDTH = 176
 
 	def __init__(self):
@@ -517,7 +565,7 @@ class MallWindow(ui.ScriptWindow):
 
 	def Show(self):
 		self.__LoadWindow()
-
+		self.SetLastPosition()
 		ui.ScriptWindow.Show(self)		
 
 	def Destroy(self):
@@ -565,7 +613,7 @@ class MallWindow(ui.ScriptWindow):
 	def ShowWindow(self, size):
 
 		(self.xSafeBoxStart, self.ySafeBoxStart, z) = player.GetMainCharacterPosition()
-
+		self.SetLastPosition()
 		self.SetTableSize(size)
 		self.Show()
 
@@ -602,10 +650,15 @@ class MallWindow(ui.ScriptWindow):
 
 	def Close(self):
 		net.SendChatPacket("/mall_close")
+		if self.IsShow():
+			self.SaveLastPosition()
+		self.Hide() 
 
 	def CommandCloseMall(self):
 		if self.tooltipItem:
 			self.tooltipItem.HideToolTip()
+		if self.IsShow():
+			self.SaveLastPosition()
 
 		self.Hide()
 

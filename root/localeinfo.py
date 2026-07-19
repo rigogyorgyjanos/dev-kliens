@@ -53,6 +53,9 @@ __IS_JAPAN		= "locale/japan" == app.GetLocalePath()
 LOGIN_FAILURE_WRONG_SOCIALID = "ASDF"
 LOGIN_FAILURE_SHUTDOWN_TIME = "ASDF"
 
+def MoneyFormat(n):
+	return "%s" % ('.'.join([ i-3<0 and str(n)[:i] or str(n)[i-3:i] for i in range(len(str(n))%3, len(str(n))+1, 3) if i ])) 
+	
 if __IS_CANADA:
 	__IS_EUROPE = True
 

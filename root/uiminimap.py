@@ -114,6 +114,9 @@ class AtlasWindow(ui.ScriptWindow):
 		miniMap.RegisterAtlasWindow(self)
 		if app.ENABLE_TELEPORT_MINIMAP_GM:
 			self.board.SetMouseLeftButtonDownEvent(ui.__mem_func__(self.OnMouseLeftButtonUpEvent))
+		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+			self.SetLastPosition()
+			
 	def Destroy(self):
 		miniMap.UnregisterAtlasWindow()
 		self.ClearDictionary()
@@ -122,6 +125,9 @@ class AtlasWindow(ui.ScriptWindow):
 		self.tooltipInfo = None
 		self.infoGuildMark = None
 		self.board = None
+		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+			if self.IsShow():
+				self.SaveLastPosition()
 
 	def OnUpdate(self):
 
@@ -167,6 +173,9 @@ class AtlasWindow(ui.ScriptWindow):
 		if self.AtlasMainWindow:
 			self.AtlasMainWindow.HideAtlas()
 			self.AtlasMainWindow.Hide()
+		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+			if self.IsShow():
+				self.SaveLastPosition()
 		ui.ScriptWindow.Hide(self)
 
 	def Show(self):
@@ -183,7 +192,32 @@ class AtlasWindow(ui.ScriptWindow):
 				self.AtlasMainWindow.ShowAtlas()
 				self.AtlasMainWindow.Show()
 		ui.ScriptWindow.Show(self)
+	
+	if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+		import player, wndMgr
 
+		def SetLastPosition(self):
+			try:
+				file = open("data/user_data/wnd/" + player.GetName() + "/"+ "atlas" + ".pos", 'r')
+				line = file.read().split(",")
+				pos_x, pos_y = int(line[0]), int(line[1])
+				file.close()
+				if pos_x > wndMgr.GetScreenWidth() or pos_y > wndMgr.GetScreenHeight():
+					return
+				if pos_x < 0:
+					pos_x = 0
+				if pos_y < 0:
+					pos_y = 0
+				self.SetPosition(pos_x, pos_y)
+			except:
+				pass
+			
+		def SaveLastPosition(self):
+			pos_x, pos_y = self.GetGlobalPosition()
+			file = open("data/user_data/wnd/" + player.GetName() + "/"+ "atlas" + ".pos","w")
+			file.write(str(pos_x)+","+str(pos_y))
+			file.close()
+			
 	def SetCenterPositionAdjust(self, x, y):
 		self.SetPosition((wndMgr.GetScreenWidth() - self.GetWidth()) / 2 + x, (wndMgr.GetScreenHeight() - self.GetHeight()) / 2 + y)
 	

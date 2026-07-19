@@ -44,8 +44,34 @@ class DragonSoulWindow(ui.ScriptWindow):
 		self.SetWindowName("DragonSoulWindow")
 		self.__LoadWindow()
 
+	if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+		import player, wndMgr
+		def SetLastPosition(self):
+			try:
+				file = open("data/user_data/wnd/" + player.GetName() + "/"+ "dragonsoul_window" + ".pos", 'r')
+				line = file.read().split(",")
+				pos_x, pos_y = int(line[0]), int(line[1])
+				file.close()
+				if pos_x > wndMgr.GetScreenWidth() or pos_y > wndMgr.GetScreenHeight():
+					return
+				if pos_x < 0:
+					pos_x = 0
+				if pos_y < 0:
+					pos_y = 0
+				self.SetPosition(pos_x, pos_y)
+			except:
+				pass
+			
+		def SaveLastPosition(self):
+			pos_x, pos_y = self.GetGlobalPosition()
+			file = open("data/user_data/wnd/" + player.GetName() + "/"+ "dragonsoul_window" + ".pos","w")
+			file.write(str(pos_x)+","+str(pos_y))
+			file.close()
+			
+	
 	def __del__(self):
 		ui.ScriptWindow.__del__(self)
+	
 		
 	def Show(self):
 		self.__LoadWindow()
@@ -174,6 +200,8 @@ class DragonSoulWindow(ui.ScriptWindow):
 		self.activateButton.Enable()
 		self.deckTab[self.deckPageIndex].Down()
 		self.activateButton.SetUp()
+		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+			self.SetLastPosition()
 
 	def Destroy(self):
 		self.ClearDictionary()
@@ -188,10 +216,16 @@ class DragonSoulWindow(ui.ScriptWindow):
 		self.equipmentTab = []
 		self.tabDict = None
 		self.tabButtonDict = None
+		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+			if self.IsShow():
+				self.SaveLastPosition()
 		
 	def Close(self):
 		if None != self.tooltipItem:
 			self.tooltipItem.HideToolTip()
+		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+			if self.IsShow():
+				self.SaveLastPosition()
 		self.Hide()
 	
 	def __DeckButtonDown(self, deck):
@@ -843,6 +877,9 @@ class DragonSoulRefineWindow(ui.ScriptWindow):
 		self.equipmentTab = []
 		self.tabDict = None
 		self.tabButtonDict = None
+		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+			if self.IsShow():
+				self.SaveLastPosition()
 		
 	def Close(self):
 		if None != self.tooltipItem:
@@ -850,6 +887,9 @@ class DragonSoulRefineWindow(ui.ScriptWindow):
 		
 		self.__FlushRefineItemSlot()
 		player.SendDragonSoulRefine(player.DRAGON_SOUL_REFINE_CLOSE)
+		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+			if self.IsShow():
+				self.SaveLastPosition()
 		self.Hide()
 
 	def Show(self):
@@ -862,7 +902,31 @@ class DragonSoulRefineWindow(ui.ScriptWindow):
 		self.Refresh()
 		
 		ui.ScriptWindow.Show(self)
-
+	
+	if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+		import player, wndMgr
+		def SetLastPosition(self):
+			try:
+				file = open("data/user_data/wnd/" + player.GetName() + "/"+ "dragonsoul_refine" + ".pos", 'r')
+				line = file.read().split(",")
+				pos_x, pos_y = int(line[0]), int(line[1])
+				file.close()
+				if pos_x > wndMgr.GetScreenWidth() or pos_y > wndMgr.GetScreenHeight():
+					return
+				if pos_x < 0:
+					pos_x = 0
+				if pos_y < 0:
+					pos_y = 0
+				self.SetPosition(pos_x, pos_y)
+			except:
+				pass
+			
+		def SaveLastPosition(self):
+			pos_x, pos_y = self.GetGlobalPosition()
+			file = open("data/user_data/wnd/" + player.GetName() + "/"+ "dragonsoul_refine" + ".pos","w")
+			file.write(str(pos_x)+","+str(pos_y))
+			file.close()
+			
 	def SetItemToolTip(self, tooltipItem):
 		self.tooltipItem = tooltipItem
 	
@@ -881,6 +945,8 @@ class DragonSoulRefineWindow(ui.ScriptWindow):
 			self.wndRefineSlot.HideSlotBaseImage(i)
 
 		self.wndMoney.SetText(localeInfo.NumberToMoneyString(0))
+		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+			self.SetLastPosition()
 
 	def __FlushRefineItemSlot(self):
 		## Item slot settings

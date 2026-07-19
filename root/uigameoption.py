@@ -21,6 +21,28 @@ if localeInfo.IsYMIR():
 
 
 class OptionDialog(ui.ScriptWindow):
+	if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
+		def SetLastPosition(self):
+			try:
+				file = open("data/user_data/wnd/" + player.GetName() + "/"+ "game_option" + ".pos", 'r')
+				line = file.read().split(",")
+				pos_x, pos_y = int(line[0]), int(line[1])
+				file.close()
+				if pos_x > wndMgr.GetScreenWidth() or pos_y > wndMgr.GetScreenHeight():
+					return
+				if pos_x < 0:
+					pos_x = 0
+				if pos_y < 0:
+					pos_y = 0
+				self.SetPosition(pos_x, pos_y)
+			except:
+				pass
+			
+		def SaveLastPosition(self):
+			pos_x, pos_y = self.GetGlobalPosition()
+			file = open("data/user_data/wnd/" + player.GetName() + "/"+ "game_option" + ".pos","w")
+			file.write(str(pos_x)+","+str(pos_y))
+			file.close()
 
 	def __init__(self):
 		ui.ScriptWindow.__init__(self)
@@ -47,6 +69,8 @@ class OptionDialog(ui.ScriptWindow):
 		self.showsalesTextButtonList = []
 
 	def Destroy(self):
+		if self.IsShow():
+			self.SaveLastPosition()
 		self.ClearDictionary()
 
 		self.__Initialize()
@@ -485,8 +509,11 @@ class OptionDialog(ui.ScriptWindow):
 	def Show(self):
 		self.RefreshMobile()
 		self.RefreshBlock()
+		self.SetLastPosition()
 		ui.ScriptWindow.Show(self)
 
 	def Close(self):
+		if self.IsShow():
+			self.SaveLastPosition()
 		self.Hide()
 		systemSetting.SaveCharConfig()

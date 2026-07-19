@@ -102,6 +102,11 @@ class Window(object):
 		self.onMouseLeftButtonUpEvent = None
 		self.resizeDic = {}
 		self.RegisterWindow(layer)
+		if app.RENEWAL_MISSION_BOOKS:
+			self.exPos = (0,0)
+			self.itsRendered = False
+			self.itsNeedDoubleRender = False
+			self.sortIndex = 0
 		self.Hide()
 		if app.ENABLE_SEND_TARGET_INFO:
 			self.mouseLeftButtonDownEvent = None
@@ -286,8 +291,14 @@ class Window(object):
 		def SetLeft(self, x):
 			wndMgr.SetWindowPosition(self.hWnd, x, self.GetTop())
 			
-	def SetPosition(self, x, y):
-		wndMgr.SetWindowPosition(self.hWnd, x, y)
+	if app.RENEWAL_MISSION_BOOKS:
+		def SetPosition(self, x, y, flag = False):
+			if flag == True:
+				self.exPos = (x,y)
+			wndMgr.SetWindowPosition(self.hWnd, x, y)
+	else:
+		def SetPosition(self, x, y):
+			wndMgr.SetWindowPosition(self.hWnd, x, y)
 
 	def SetCenterPosition(self, x = 0, y = 0):
 		self.SetPosition((wndMgr.GetScreenWidth() - self.GetWidth()) / 2 + x, (wndMgr.GetScreenHeight() - self.GetHeight()) / 2 + y)
@@ -416,6 +427,79 @@ class Window(object):
 					wndMgr.SetScale(self.hWnd, float(v[0]), float(v[1]))
 				elif k == "rect":
 					wndMgr.SetRenderingRect(self.hWnd, float(v[0]), float(v[1]), float(v[2]), float(v[3]))
+
+class ListBoxNew(Window):
+	def __del__(self):
+		Window.__del__(self)
+	def Destroy(self):
+		for item in self.itemList:
+			item.Destroy()
+		self.itemList=[]
+		self.scrollBar=None
+		self.basePos=0
+		self.scrollLen=0
+		self.scrollLenExtra=0
+		self.isHorizontal= 0
+	def __init__(self, isHorizontal = False):
+		Window.__init__(self)
+		self.itemList=[]
+		self.Destroy()
+		self.isHorizontal= isHorizontal
+	def RemoveAllItems(self):
+		for item in self.itemList:
+			item.Destroy()
+		self.itemList=[]
+		if self.scrollBar:
+			self.scrollBar.SetPos(0)
+		self.RefreshAll()
+	def SetExtraScrollLen(self, extraLen):
+		self.scrollLenExtra=extraLen
+	def GetItems(self):
+		return self.itemList
+	def AppendItem(self, newItem):
+		self.itemList.append(newItem)
+	def SetScrollBar(self, scrollBar):
+		scrollBar.SetScrollEvent(__mem_func__(self.__OnScroll))
+		self.scrollBar=scrollBar
+	def OnMouseWheel(self, nLen):
+		if self.scrollBar:
+			if self.scrollBar.IsShow():
+				if nLen > 0:
+					self.scrollBar.OnUp()
+				else:
+					self.scrollBar.OnDown()
+				return True
+		return False
+	def __OnScroll(self):
+		self.SetBasePos(int(self.scrollBar.GetPos()*self.scrollLen))
+	def RefreshAll(self):
+		windowHeight = self.GetHeight()
+		scrollBar = self.scrollBar
+		screenSize = 0
+		for child in self.itemList:
+			if child.exPos[1] > screenSize:
+				screenSize = child.exPos[1]
+		if screenSize > windowHeight:
+			scrollLen = screenSize-windowHeight
+			if scrollLen != 0:
+				scrollLen += self.scrollLenExtra
+			self.scrollLen = scrollLen
+			scrollBar.SetMiddleBarSize(float(windowHeight-5)/float(screenSize))
+		else:
+			scrollBar.SetMiddleBarSize(1.0)
+	def Render(self,basePos):
+		for item in self.itemList:
+			(ex,ey) = item.exPos
+			if self.isHorizontal:
+				item.SetPosition(ex-(basePos), ey)
+			else:
+				item.SetPosition(ex, ey-(basePos))
+			item.OnRender()
+	def SetBasePos(self, basePos):
+		if self.basePos == basePos:
+			return
+		self.Render(basePos)
+		self.basePos=basePos
 		
 class ListBoxEx(Window):
 
@@ -1565,10 +1649,14 @@ class Button(Window):
 		return wndMgr.IsDIsable(self.hWnd)
 	
 	def GetText(self):
-			if self.ButtonText:
-				return self.ButtonText.GetText()
-			else:
-				return ""
+		if self.ButtonText:
+			return self.ButtonText.GetText()
+		else:
+			return ""
+			
+	if app.RENEWAL_MISSION_BOOKS:
+		def SetRenderingRect(self, left, top, right, bottom):
+			wndMgr.SetRenderingRect(self.hWnd, left, top, right, bottom)
 		
 class RadioButton(Button):
 	def __init__(self):
@@ -3739,7 +3827,12 @@ class PythonScriptLoader(object):
 				parent.Children[Index] = EditLine()
 				parent.Children[Index].SetParent(parent)
 				self.LoadElementEditLine(parent.Children[Index], ElementValue, parent)
-
+			
+			elif Type == "listbox_new":
+				parent.Children[Index] = ListBoxNew()
+				parent.Children[Index].SetParent(parent)
+				self.LoadElementListBox(parent.Children[Index], ElementValue, parent)
+				
 			elif Type == "titlebar":
 				parent.Children[Index] = TitleBar()
 				parent.Children[Index].SetParent(parent)
