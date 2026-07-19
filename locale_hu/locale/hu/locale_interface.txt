@@ -1,332 +1,332 @@
-ACCEPT	Megerõsít
-ATTACH_METIN_INFO	Használni akarod a Szellemkövet?
-ATTACH_METIN_TITLE	Szellemkõ használata
-CANCEL	Megszakít
-CHANGE_PASSWORD_CONFIRM	Új jelszót megerõsít
-CHANGE_PASSWORD_NEW	Új jelszó
-CHANGE_PASSWORD_OLD	Régi jelszó
-CHANGE_PASSWORD_TITLE	Jelszó változtatás
-CHARACTER_ACTION	Akció
-CHARACTER_EMOTICON	Érzelem
+ACCEPT	Megerï¿½sï¿½t
+ATTACH_METIN_INFO	Hasznï¿½lni akarod a Szellemkï¿½vet?
+ATTACH_METIN_TITLE	Szellemkï¿½ hasznï¿½lata
+CANCEL	Megszakï¿½t
+CHANGE_PASSWORD_CONFIRM	ï¿½j jelszï¿½t megerï¿½sï¿½t
+CHANGE_PASSWORD_NEW	ï¿½j jelszï¿½
+CHANGE_PASSWORD_OLD	Rï¿½gi jelszï¿½
+CHANGE_PASSWORD_TITLE	Jelszï¿½ vï¿½ltoztatï¿½s
+CHARACTER_ACTION	Akciï¿½
+CHARACTER_EMOTICON	ï¿½rzelem
 CHARACTER_MAIN	Karakter
-CHARACTER_MUTUAL_ACTION	Interaktív akció
-CHARACTER_NORMAL_ACTION	Normál akció
-CHARACTER_QUEST	Küldetések
-CHARACTER_SKILL	Képesség
-CLOSE	Bezár
+CHARACTER_MUTUAL_ACTION	Interaktï¿½v akciï¿½
+CHARACTER_NORMAL_ACTION	Normï¿½l akciï¿½
+CHARACTER_QUEST	Kï¿½ldetï¿½sek
+CHARACTER_SKILL	Kï¿½pessï¿½g
+CLOSE	Bezï¿½r
 COSTUME_TITLE	Viseletek
 COSTUME_WINDOW_TITLE	Viseletek
-CREATE_ATT_GRADE	Erõ
-CREATE_CREATE	Létrehoz
-CREATE_DEX_GRADE	ÜGY
+CREATE_ATT_GRADE	Erï¿½
+CREATE_CREATE	Lï¿½trehoz
+CREATE_DEX_GRADE	ï¿½GY
 CREATE_HP	VIT
 CREATE_LAST_POINT	Pont
-CREATE_MAN	Férfi
-CREATE_NAME	Név
-CREATE_NEXT	Tovább
+CREATE_MAN	Fï¿½rfi
+CREATE_NAME	Nï¿½v
+CREATE_NEXT	Tovï¿½bb
 CREATE_PREV	Vissza
 CREATE_SEX	Neme
-CREATE_SHAPE	Kinézet
+CREATE_SHAPE	Kinï¿½zet
 CREATE_SP	INT
 CREATE_STAT_RESET	Vissza
 CREATE_WOMAN	Asszony
-CUBE_INFO_TITLE	Finomítási kézikönyv
-CUBE_REQUIRE_MATERIAL	Szükséges anyagok
+CUBE_INFO_TITLE	Finomï¿½tï¿½si kï¿½zikï¿½nyv
+CUBE_REQUIRE_MATERIAL	Szï¿½ksï¿½ges anyagok
 CUBE_REQUIRE_MATERIAL_OR	vagy
-CUBE_TITLE	Nemesítési ablak
-DO_REFINE	Nemesít
-DRAGONSOUL_ACTIVATE	Aktiválás
+CUBE_TITLE	Nemesï¿½tï¿½si ablak
+DO_REFINE	Nemesï¿½t
+DRAGONSOUL_ACTIVATE	Aktivï¿½lï¿½s
 DRAGONSOUL_PAGE_BUTTON_1	Nyers
 DRAGONSOUL_PAGE_BUTTON_2	Metszett
 DRAGONSOUL_PAGE_BUTTON_3	Ritka
 DRAGONSOUL_PAGE_BUTTON_4	Antik
-DRAGONSOUL_PAGE_BUTTON_5	Legendás
-DRAGONSOUL_REFINE_WINDOW_TITLE	Nemesítési ablak
-DRAGONSOUL_TAP_TITLE_1	Sárkánygyémánt
-DRAGONSOUL_TAP_TITLE_2	Sárkányrubin
-DRAGONSOUL_TAP_TITLE_3	Sárkányjáde
-DRAGONSOUL_TAP_TITLE_4	Sárkányzafír
-DRAGONSOUL_TAP_TITLE_5	Sárkánygránát
-DRAGONSOUL_TAP_TITLE_6	Sárkányónix
-DRAGONSOUL_TITLE	Sárkánykõ-alkímia
-EMPIRE_EXIT	Bezár
-EMPIRE_NEXT	Tovább
+DRAGONSOUL_PAGE_BUTTON_5	Legendï¿½s
+DRAGONSOUL_REFINE_WINDOW_TITLE	Nemesï¿½tï¿½si ablak
+DRAGONSOUL_TAP_TITLE_1	Sï¿½rkï¿½nygyï¿½mï¿½nt
+DRAGONSOUL_TAP_TITLE_2	Sï¿½rkï¿½nyrubin
+DRAGONSOUL_TAP_TITLE_3	Sï¿½rkï¿½nyjï¿½de
+DRAGONSOUL_TAP_TITLE_4	Sï¿½rkï¿½nyzafï¿½r
+DRAGONSOUL_TAP_TITLE_5	Sï¿½rkï¿½nygrï¿½nï¿½t
+DRAGONSOUL_TAP_TITLE_6	Sï¿½rkï¿½nyï¿½nix
+DRAGONSOUL_TITLE	Sï¿½rkï¿½nykï¿½-alkï¿½mia
+EMPIRE_EXIT	Bezï¿½r
+EMPIRE_NEXT	Tovï¿½bb
 EMPIRE_PREV	Vissza
-EMPIRE_SELECT	Választani
+EMPIRE_SELECT	Vï¿½lasztani
 EXCHANGE_ACCEPT	Elfogad
-EXCHANGE_TITLE	Kereskedés
-GAMEOPTION_TITLE	Játék opciók
-GAME_EXIT_OBSERVER	Megfigyelõ módot befejezni
-GAME_HELP	Segítség
+EXCHANGE_TITLE	Kereskedï¿½s
+GAMEOPTION_TITLE	Jï¿½tï¿½k opciï¿½k
+GAME_EXIT_OBSERVER	Megfigyelï¿½ mï¿½dot befejezni
+GAME_HELP	Segï¿½tsï¿½g
 GAME_QUEST	Feladat
-GAME_SKILL_UP	Képesség fejlesztés
-GAME_STAT_UP	Státusz emelés
-GRADE	Osztály
-GRADE_SELECT	Osztály
-GUILD_BASENAME	Bázisnév
-GUILD_BOARD_ID	Név
-GUILD_BOARD_REFRESH	Aktualizálás (F5)
-GUILD_BOARD_TEXT	Üzenet
-GUILD_BUILDING_CATEGORY_TITLE	Építõ darabok
-GUILD_BUILDING_CHANGE	Cserélni
-GUILD_BUILDING_DIRECTION	Irány
+GAME_SKILL_UP	Kï¿½pessï¿½g fejlesztï¿½s
+GAME_STAT_UP	Stï¿½tusz emelï¿½s
+GRADE	Osztï¿½ly
+GRADE_SELECT	Osztï¿½ly
+GUILD_BASENAME	Bï¿½zisnï¿½v
+GUILD_BOARD_ID	Nï¿½v
+GUILD_BOARD_REFRESH	Aktualizï¿½lï¿½s (F5)
+GUILD_BOARD_TEXT	ï¿½zenet
+GUILD_BUILDING_CATEGORY_TITLE	ï¿½pï¿½tï¿½ darabok
+GUILD_BUILDING_CHANGE	Cserï¿½lni
+GUILD_BUILDING_DIRECTION	Irï¿½ny
 GUILD_BUILDING_GRADE	Rang
-GUILD_BUILDING_INFO	Épület- és költséginformációk
-GUILD_BUILDING_LIST_TITLE	Épület lista
-GUILD_BUILDING_LOG	Tönk
-GUILD_BUILDING_NAME	Épület név
-GUILD_BUILDING_OPERATE	Kiszolgál
-GUILD_BUILDING_PLY	Furnér
-GUILD_BUILDING_POSITION	Fekvés
-GUILD_BUILDING_PREVIEW	Elõrejelzés
-GUILD_BUILDING_PRICE	Ár
-GUILD_BUILDING_REFRESH	Frissítés (F5)
-GUILD_BUILDING_STONE	Kõ
-GUILD_BUILDING_TITLE	Céhház építés
-GUILD_CRYSTAL	Kristály
+GUILD_BUILDING_INFO	ï¿½pï¿½let- ï¿½s kï¿½ltsï¿½ginformï¿½ciï¿½k
+GUILD_BUILDING_LIST_TITLE	ï¿½pï¿½let lista
+GUILD_BUILDING_LOG	Tï¿½nk
+GUILD_BUILDING_NAME	ï¿½pï¿½let nï¿½v
+GUILD_BUILDING_OPERATE	Kiszolgï¿½l
+GUILD_BUILDING_PLY	Furnï¿½r
+GUILD_BUILDING_POSITION	Fekvï¿½s
+GUILD_BUILDING_PREVIEW	Elï¿½rejelzï¿½s
+GUILD_BUILDING_PRICE	ï¿½r
+GUILD_BUILDING_REFRESH	Frissï¿½tï¿½s (F5)
+GUILD_BUILDING_STONE	Kï¿½
+GUILD_BUILDING_TITLE	Cï¿½hhï¿½z ï¿½pï¿½tï¿½s
+GUILD_CRYSTAL	Kristï¿½ly
 GUILD_DEPOSIT	Fizetni
 GUILD_DROP_RESOURCE1	itt
-GUILD_DROP_RESOURCE2	Erõforrás eldobás
-GUILD_GEM	Drágakõ
-GUILD_GRADE_CHANGE_GRADE_NAME	Új rang név
+GUILD_DROP_RESOURCE2	Erï¿½forrï¿½s eldobï¿½s
+GUILD_GEM	Drï¿½gakï¿½
+GUILD_GRADE_CHANGE_GRADE_NAME	ï¿½j rang nï¿½v
 GUILD_GRADE_NUM	Nr.
-GUILD_GRADE_PERMISSION_DELETE	Kirúg
-GUILD_GRADE_PERMISSION_JOIN	Meghív
-GUILD_GRADE_PERMISSION_NOTICE	Írás
-GUILD_GRADE_PERMISSION_SKILL	Képz.
+GUILD_GRADE_PERMISSION_DELETE	Kirï¿½g
+GUILD_GRADE_PERMISSION_JOIN	Meghï¿½v
+GUILD_GRADE_PERMISSION_NOTICE	ï¿½rï¿½s
+GUILD_GRADE_PERMISSION_SKILL	Kï¿½pz.
 GUILD_GRADE_RANK	Rang
-GUILD_GRADE_WRITE	Írni
-GUILD_INFO	Céh információ
+GUILD_GRADE_WRITE	ï¿½rni
+GUILD_INFO	Cï¿½h informï¿½ciï¿½
 GUILD_INFO_CUR_EXP	Tapasztalat
-GUILD_INFO_DECALRE_WAR	Hadat üzen
-GUILD_INFO_ENEMY_GUILD	Ellenséges céh
+GUILD_INFO_DECALRE_WAR	Hadat ï¿½zen
+GUILD_INFO_ENEMY_GUILD	Ellensï¿½ges cï¿½h
 GUILD_INFO_ENEMY_GUILD_EMPTY	Semennyi
-GUILD_INFO_LEVEL	Céh-szint
-GUILD_INFO_MARK	Céh jel
-GUILD_INFO_MASTER	Vezetõ
-GUILD_INFO_MASTER_VALUE	Vezetõ
-GUILD_INFO_MEMBER_AVG_LEVEL	Átlagos Szint
-GUILD_INFO_MEMBER_NUM	Tagok száma
-GUILD_INFO_NAME	Céh név
-GUILD_INFO_NAME_VALUE	Ez egy céh név
+GUILD_INFO_LEVEL	Cï¿½h-szint
+GUILD_INFO_MARK	Cï¿½h jel
+GUILD_INFO_MASTER	Vezetï¿½
+GUILD_INFO_MASTER_VALUE	Vezetï¿½
+GUILD_INFO_MEMBER_AVG_LEVEL	ï¿½tlagos Szint
+GUILD_INFO_MEMBER_NUM	Tagok szï¿½ma
+GUILD_INFO_NAME	Cï¿½h nï¿½v
+GUILD_INFO_NAME_VALUE	Ez egy cï¿½h nï¿½v
 GUILD_INFO_OFFER_EXP	Befektet
-GUILD_INFO_REST_EXP	Szükséges tapasztalat
-GUILD_INFO_UPLOAD_MARK	Jel feltöltés
-GUILD_INFO_UPLOAD_SYMBOL	Zászló feltöltés
-GUILD_MARK	Céh jel
+GUILD_INFO_REST_EXP	Szï¿½ksï¿½ges tapasztalat
+GUILD_INFO_UPLOAD_MARK	Jel feltï¿½ltï¿½s
+GUILD_INFO_UPLOAD_SYMBOL	Zï¿½szlï¿½ feltï¿½ltï¿½s
+GUILD_MARK	Cï¿½h jel
 GUILD_MEMBER_JOB	Kaszt
-GUILD_MEMBER_KNIGHT	Vezetõ
+GUILD_MEMBER_KNIGHT	Vezetï¿½
 GUILD_MEMBER_LEVEL	Szint
-GUILD_MEMBER_NAME	Név
+GUILD_MEMBER_NAME	Nï¿½v
 GUILD_MEMBER_RANK	Rang
 GUILD_MEMBER_SPECIFIC_GRAVITY	Befektet.
-GUILD_METIN_STONE	Metin kõ
-GUILD_MINENAL	Ásvány
+GUILD_METIN_STONE	Metin kï¿½
+GUILD_MINENAL	ï¿½svï¿½ny
 GUILD_MONEY	Yang
-GUILD_NAME	Céh
-GUILD_RESOURCE_INFO	Forrás információk
-GUILD_SKILL_ACTIVE	Aktív
-GUILD_SKIlL_HEAL_GSP	Feltölteni
-GUILD_SKILL_PASSIVE	Passzív
+GUILD_NAME	Cï¿½h
+GUILD_RESOURCE_INFO	Forrï¿½s informï¿½ciï¿½k
+GUILD_SKILL_ACTIVE	Aktï¿½v
+GUILD_SKIlL_HEAL_GSP	Feltï¿½lteni
+GUILD_SKILL_PASSIVE	Passzï¿½v
 GUILD_SKILL_POWER	Energia
-GUILD_SKILL_STATE	Céh képesség
-GUILD_SYMBOL	Céh zászló
-GUILD_WAR_ACCEPT	Céh hadüzenet elfogadása
-GUILD_WAR_BATTLE_TYPE	Harci mód
-GUILD_WAR_CTF	Zászló
-GUILD_WAR_DECLARE	Céh háborút kinyilvánít
-GUILD_WAR_ENEMY	Ellenség
-GUILD_WAR_NORMAL	Harcmezõ
-GUILD_WAR_WARP	Aréna
-GUILD_WATER	Víz
-GUILD_WATER_STONE	Aqua kõ
+GUILD_SKILL_STATE	Cï¿½h kï¿½pessï¿½g
+GUILD_SYMBOL	Cï¿½h zï¿½szlï¿½
+GUILD_WAR_ACCEPT	Cï¿½h hadï¿½zenet elfogadï¿½sa
+GUILD_WAR_BATTLE_TYPE	Harci mï¿½d
+GUILD_WAR_CTF	Zï¿½szlï¿½
+GUILD_WAR_DECLARE	Cï¿½h hï¿½borï¿½t kinyilvï¿½nï¿½t
+GUILD_WAR_ENEMY	Ellensï¿½g
+GUILD_WAR_NORMAL	Harcmezï¿½
+GUILD_WAR_WARP	Arï¿½na
+GUILD_WATER	Vï¿½z
+GUILD_WATER_STONE	Aqua kï¿½
 GUILD_WITHDRAW	Kivon
-HELP_ATTACK_KEY	Támadás: bal egérgomb vagy szóköz billentyû
-HELP_CHANGE_PK_MODE	Támadási mód váltás: bal egérgomb beállítása
-HELP_CHARACTER_BUTTON1	(Karakter ablak, Leltár ablak,
-HELP_CHARACTER_BUTTON2	Barátlista és Beállítások)
-HELP_CONTROL_CAMERA_BY_MIDDLEBUTTON	Kameraállás: középsõ vagy jobb egérgomb
-HELP_CONTROL_CAMERA_BY_RIGHTBUTTON	Kameraállás: jobb vagy középsõ egérgomb
+HELP_ATTACK_KEY	Tï¿½madï¿½s: bal egï¿½rgomb vagy szï¿½kï¿½z billentyï¿½
+HELP_CHANGE_PK_MODE	Tï¿½madï¿½si mï¿½d vï¿½ltï¿½s: bal egï¿½rgomb beï¿½llï¿½tï¿½sa
+HELP_CHARACTER_BUTTON1	(Karakter ablak, Leltï¿½r ablak,
+HELP_CHARACTER_BUTTON2	Barï¿½tlista ï¿½s Beï¿½llï¿½tï¿½sok)
+HELP_CONTROL_CAMERA_BY_MIDDLEBUTTON	Kameraï¿½llï¿½s: kï¿½zï¿½psï¿½ vagy jobb egï¿½rgomb
+HELP_CONTROL_CAMERA_BY_RIGHTBUTTON	Kameraï¿½llï¿½s: jobb vagy kï¿½zï¿½psï¿½ egï¿½rgomb
 HELP_EXP	Tapasztalat
-HELP_FURY	Játékbeli tárgy piac
-HELP_GUILD_WINDOW	Céh ablak megnyitása: Alt+G
-HELP_HELP	Segítség megmutatása: H
-HELP_HP	Életerõ (TP)
-HELP_MESSENGER_WINDOW	Barátlista megnyitása: Alt+M
-HELP_MOUSE_LEFT	Bal egérgomb funkció
-HELP_MOUSE_RIGHT	Jobb egérgomb funkció
-HELP_MOVE_KEY	Vezérlés: W, A, S, D, vagy nyíl billentyûk
-HELP_OPEN_CHARACTER	Karakter ablak megnyitása: C
-HELP_OPEN_CHAT	Cset ablak megnyitása: Enter
-HELP_OPEN_INVENTORY	Leltár ablak megnyitása: I
-HELP_OPEN_LOG	Cset-log megnyitása: L
-HELP_OPEN_MINIMAP	Mini térkép megnyitása: Shift + M
-HELP_OPEN_QUEST	Feladata ablak megnyitása: N
-HELP_OPEN_SKILL	Képesség ablak megnyitása: V
-HELP_OPEN_WHISPER	Suttogás ablak megnyitása: Shift + Enter
-HELP_OPEN_ZONEMAP	Nagy térkép megnyitása: M
-HELP_PICK_ITEM	Tárgyak összegyûjtése: ^ vagy Y billentyû, vagy bal egérgomb
-HELP_QUICKSLOT	Gyors elérési mezõk
-HELP_SCREEN_CAPTURE	Képernyõkép mentése: Nyomtatás (a "Metin2\screenshot" könyvtárban lesz elmentve egy fájlba)
-HELP_SHOW_ALL_NAME	Nevek megmutatása: Alt
+HELP_FURY	Jï¿½tï¿½kbeli tï¿½rgy piac
+HELP_GUILD_WINDOW	Cï¿½h ablak megnyitï¿½sa: Alt+G
+HELP_HELP	Segï¿½tsï¿½g megmutatï¿½sa: H
+HELP_HP	ï¿½leterï¿½ (TP)
+HELP_MESSENGER_WINDOW	Barï¿½tlista megnyitï¿½sa: Alt+M
+HELP_MOUSE_LEFT	Bal egï¿½rgomb funkciï¿½
+HELP_MOUSE_RIGHT	Jobb egï¿½rgomb funkciï¿½
+HELP_MOVE_KEY	Vezï¿½rlï¿½s: W, A, S, D, vagy nyï¿½l billentyï¿½k
+HELP_OPEN_CHARACTER	Karakter ablak megnyitï¿½sa: C
+HELP_OPEN_CHAT	Cset ablak megnyitï¿½sa: Enter
+HELP_OPEN_INVENTORY	Leltï¿½r ablak megnyitï¿½sa: I
+HELP_OPEN_LOG	Cset-log megnyitï¿½sa: L
+HELP_OPEN_MINIMAP	Mini tï¿½rkï¿½p megnyitï¿½sa: Shift + M
+HELP_OPEN_QUEST	Feladata ablak megnyitï¿½sa: N
+HELP_OPEN_SKILL	Kï¿½pessï¿½g ablak megnyitï¿½sa: V
+HELP_OPEN_WHISPER	Suttogï¿½s ablak megnyitï¿½sa: Shift + Enter
+HELP_OPEN_ZONEMAP	Nagy tï¿½rkï¿½p megnyitï¿½sa: M
+HELP_PICK_ITEM	Tï¿½rgyak ï¿½sszegyï¿½jtï¿½se: ^ vagy Y billentyï¿½, vagy bal egï¿½rgomb
+HELP_QUICKSLOT	Gyors elï¿½rï¿½si mezï¿½k
+HELP_SCREEN_CAPTURE	Kï¿½pernyï¿½kï¿½p mentï¿½se: Nyomtatï¿½s (a "Metin2\screenshot" kï¿½nyvtï¿½rban lesz elmentve egy fï¿½jlba)
+HELP_SHOW_ALL_NAME	Nevek megmutatï¿½sa: Alt
 HELP_SP	Mana pontok (MP)
-HELP_SYSTEM_BUTTON	Rendszer billentyûk
-INVENTORY_PAGE_BUTTON_TOOLTIP_1	1. leltár
-INVENTORY_PAGE_BUTTON_TOOLTIP_2	2. leltár
-INVENTORY_PAGE_BUTTON_TOOLTIP_3	3. leltár
-INVENTORY_PAGE_BUTTON_TOOLTIP_4	4. leltár
-INVENTORY_TITLE	Leltár
-ITEM_MALL	Tárgy piac
-LOAD_ERROR	Az adatfájl megsérült. Installáld újra a klienst. Nyomd meg az ESC gombot.
+HELP_SYSTEM_BUTTON	Rendszer billentyï¿½k
+INVENTORY_PAGE_BUTTON_TOOLTIP_1	1. leltï¿½r
+INVENTORY_PAGE_BUTTON_TOOLTIP_2	2. leltï¿½r
+INVENTORY_PAGE_BUTTON_TOOLTIP_3	3. leltï¿½r
+INVENTORY_PAGE_BUTTON_TOOLTIP_4	4. leltï¿½r
+INVENTORY_TITLE	Leltï¿½r
+ITEM_MALL	Tï¿½rgy piac
+LOAD_ERROR	Az adatfï¿½jl megsï¿½rï¿½lt. Installï¿½ld ï¿½jra a klienst. Nyomd meg az ESC gombot.
 LOGIN_CONNECT	Csatlakozik
 LOGIN_CONNECTING	A szerverhez leszel kapcsolva.
-LOGIN_DEFAULT_SERVERADDR	Szervernév, 1. csatorna
-LOGIN_EXIT	Bezár
-LOGIN_REGION_TITLE	Számlakibocsátás helyszíne
-LOGIN_SELECT_BUTTON	Választ
-LOGIN_SELECT_EXIT	Bezár
+LOGIN_DEFAULT_SERVERADDR	Szervernï¿½v, 1. csatorna
+LOGIN_EXIT	Bezï¿½r
+LOGIN_REGION_TITLE	Szï¿½mlakibocsï¿½tï¿½s helyszï¿½ne
+LOGIN_SELECT_BUTTON	Vï¿½laszt
+LOGIN_SELECT_EXIT	Bezï¿½r
 LOGIN_SELECT_OK	OK
-LOGIN_SELECT_TITLE	Szervert választ
-MALL_PASSWORD_TITLE	Jelszó
-MALL_TITLE	Tárgypiac raktár
-MARKET_TITLE	Betölt
-MARKLIST_REFRESH	Aktualizál
-MARKLIST_TITLE	Céh jelet regisztrál
-MESSAGE	Ez egy üzenet
-MESSENGER_ADD_FRIEND	Barát hozzáadása
-MESSENGER_DELETE_FRIEND	Barát törlése
-MESSENGER_MOBILE	SMS köldés
-MESSENGER_OPEN_GUILD	Céh ablak nyitás
-MESSENGER_TITLE	Barát
-MESSENGER_USE_GUILD_MOVE_SKILL	Használd a céh mozgatókészséget
-MESSENGER_WHISPER	Súgó
-MINIMIZE	Minimalizál
-MOUSEBUTTON_ATTACK	Támad
-MOUSEBUTTON_AUTO_ATTACK	Automatikus támadás
+LOGIN_SELECT_TITLE	Szervert vï¿½laszt
+MALL_PASSWORD_TITLE	Jelszï¿½
+MALL_TITLE	Tï¿½rgypiac raktï¿½r
+MARKET_TITLE	Betï¿½lt
+MARKLIST_REFRESH	Aktualizï¿½l
+MARKLIST_TITLE	Cï¿½h jelet regisztrï¿½l
+MESSAGE	Ez egy ï¿½zenet
+MESSENGER_ADD_FRIEND	Barï¿½t hozzï¿½adï¿½sa
+MESSENGER_DELETE_FRIEND	Barï¿½t tï¿½rlï¿½se
+MESSENGER_MOBILE	SMS kï¿½ldï¿½s
+MESSENGER_OPEN_GUILD	Cï¿½h ablak nyitï¿½s
+MESSENGER_TITLE	Barï¿½t
+MESSENGER_USE_GUILD_MOVE_SKILL	Hasznï¿½ld a cï¿½h mozgatï¿½kï¿½szsï¿½get
+MESSENGER_WHISPER	Sï¿½gï¿½
+MINIMIZE	Minimalizï¿½l
+MOUSEBUTTON_ATTACK	Tï¿½mad
+MOUSEBUTTON_AUTO_ATTACK	Automatikus tï¿½madï¿½s
 MOUSEBUTTON_CAMERA	Kamera
-MOUSEBUTTON_SKILL	Készség
-MUSICLIST_TITLE	Zene választás
+MOUSEBUTTON_SKILL	Kï¿½szsï¿½g
+MUSICLIST_TITLE	Zene vï¿½lasztï¿½s
 NO	Nem
 OK	OK
-OPTION_ALWAYS_SHOW_NAME	Név
-OPTION_ALWAYS_SHOW_NAME_OFF	korlátozott
+OPTION_ALWAYS_SHOW_NAME	Nï¿½v
+OPTION_ALWAYS_SHOW_NAME_OFF	korlï¿½tozott
 OPTION_ALWAYS_SHOW_NAME_ON	Mindig
 OPTION_BLOCK	Letilt
 OPTION_BLOCK_EXCHANGE	Kereskedik
-OPTION_BLOCK_FRIEND	Barátok
-OPTION_BLOCK_GUILD	Céh
+OPTION_BLOCK_FRIEND	Barï¿½tok
+OPTION_BLOCK_GUILD	Cï¿½h
 OPTION_BLOCK_PARTY	Csoport
-OPTION_BLOCK_PARTY_REQUEST	Kérés
-OPTION_BLOCK_WHISPER	Súgni
+OPTION_BLOCK_PARTY_REQUEST	Kï¿½rï¿½s
+OPTION_BLOCK_WHISPER	Sï¿½gni
 OPTION_CAMERA_DISTANCE	Kamera
-OPTION_CAMERA_DISTANCE_LONG	Távoli
-OPTION_CAMERA_DISTANCE_SHORT	Közeli
-OPTION_DELETE_MOBILE_BUTTON	Telefonszám törlés
-OPTION_EFFECT	Találati info.
-OPTION_FOG	Köd
+OPTION_CAMERA_DISTANCE_LONG	Tï¿½voli
+OPTION_CAMERA_DISTANCE_SHORT	Kï¿½zeli
+OPTION_DELETE_MOBILE_BUTTON	Telefonszï¿½m tï¿½rlï¿½s
+OPTION_EFFECT	Talï¿½lati info.
+OPTION_FOG	Kï¿½d
 OPTION_FOG_DENSE	Sok
-OPTION_FOG_LIGHT	Kevés
-OPTION_FOG_MIDDLE	Közepes
-OPTION_INPUT_MOBILE_BUTTON	Mobiltelefonszám megadása
+OPTION_FOG_LIGHT	Kevï¿½s
+OPTION_FOG_MIDDLE	Kï¿½zepes
+OPTION_INPUT_MOBILE_BUTTON	Mobiltelefonszï¿½m megadï¿½sa
 OPTION_MOBILE	Mobiltelefon
 OPTION_MUSIC	Zene
-OPTION_MUSIC_CHANGE	Váltani
+OPTION_MUSIC_CHANGE	Vï¿½ltani
 OPTION_MUSIC_DEFAULT_THEMA	Metin2 alap zene
-OPTION_NAME_COLOR	Szín név
-OPTION_NAME_COLOR_EMPIRE	Birod. Szín
-OPTION_NAME_COLOR_NORMAL	Nomális
-OPTION_PVPMODE	PvP Mód
+OPTION_NAME_COLOR	Szï¿½n nï¿½v
+OPTION_NAME_COLOR_EMPIRE	Birod. Szï¿½n
+OPTION_NAME_COLOR_NORMAL	Nomï¿½lis
+OPTION_PVPMODE	PvP Mï¿½d
 OPTION_PVPMODE_FREE	Szabad
-OPTION_PVPMODE_FREE_TOOLTIP	Minden játékost megtámadhastz.
-OPTION_PVPMODE_GUILD	Céh
-OPTION_PVPMODE_GUILD_TOOLTIP	Céhtagokat kivéve minden játékost megtámadhatsz.
-OPTION_PVPMODE_PEACE	Béke
-OPTION_PVPMODE_PEACE_TOOLTIP	Nem támadhatod meg a saját birodalmad játékosait.
-OPTION_PVPMODE_REVENGE	Ellenség
-OPTION_PVPMODE_REVENGE_TOOLTIP	Csak eltérõ világképû játékost támadhatsz meg.
-OPTION_SALESTEXT	Bolt név
+OPTION_PVPMODE_FREE_TOOLTIP	Minden jï¿½tï¿½kost megtï¿½madhastz.
+OPTION_PVPMODE_GUILD	Cï¿½h
+OPTION_PVPMODE_GUILD_TOOLTIP	Cï¿½htagokat kivï¿½ve minden jï¿½tï¿½kost megtï¿½madhatsz.
+OPTION_PVPMODE_PEACE	Bï¿½ke
+OPTION_PVPMODE_PEACE_TOOLTIP	Nem tï¿½madhatod meg a sajï¿½t birodalmad jï¿½tï¿½kosait.
+OPTION_PVPMODE_REVENGE	Ellensï¿½g
+OPTION_PVPMODE_REVENGE_TOOLTIP	Csak eltï¿½rï¿½ vilï¿½gkï¿½pï¿½ jï¿½tï¿½kost tï¿½madhatsz meg.
+OPTION_SALESTEXT	Bolt nï¿½v
 OPTION_SALESTEXT_VIEW_OFF	kitakarni
 OPTION_SALESTEXT_VIEW_ON	eltakarni
-OPTION_SOUND	Hatás
-OPTION_TARGET_BOARD	Cél menü
-OPTION_TARGET_BOARD_NO_VIEW	Bezár
+OPTION_SOUND	Hatï¿½s
+OPTION_TARGET_BOARD	Cï¿½l menï¿½
+OPTION_TARGET_BOARD_NO_VIEW	Bezï¿½r
 OPTION_TARGET_BOARD_VIEW	Megmutat
 OPTION_TILING	Grafika
-OPTION_TILING_APPLY	Felhasznál
+OPTION_TILING_APPLY	Felhasznï¿½l
 OPTION_TILING_CPU	CPU
 OPTION_TILING_GPU	GPU
-OPTION_TITLE	Opciók
+OPTION_TITLE	Opciï¿½k
 OPTION_VIEW_CHAT	Cset sor
 OPTION_VIEW_CHAT_OFF	kitakarni
 OPTION_VIEW_CHAT_ON	eltakarni
-PARTY_MEMBER_INFO_NAME	Csoporttárs neve
-PASSWORD_DESC_1	Írd be a jelszavad
-PASSWORD_DESC_2	a raktár megnyitásához.
-PASSWORD_DESC_3	Megváltoztattad már a jelszavad?
-PASSWORD_DESC_4	Ha még nem, a jelszavad "000000" lesz.
-PASSWORD_DESC_5	Változtasd meg a jelszavad a raktárban.
-PASSWORD_TITLE	Jelszó mentés
+PARTY_MEMBER_INFO_NAME	Csoporttï¿½rs neve
+PASSWORD_DESC_1	ï¿½rd be a jelszavad
+PASSWORD_DESC_2	a raktï¿½r megnyitï¿½sï¿½hoz.
+PASSWORD_DESC_3	Megvï¿½ltoztattad mï¿½r a jelszavad?
+PASSWORD_DESC_4	Ha mï¿½g nem, a jelszavad "000000" lesz.
+PASSWORD_DESC_5	Vï¿½ltoztasd meg a jelszavad a raktï¿½rban.
+PASSWORD_TITLE	Jelszï¿½ mentï¿½s
 PICK_MONEY_TITLE	Feloszt
-PRIVATE_SHOP_CLOSE_BUTTON	Bolt zárás
+PRIVATE_SHOP_CLOSE_BUTTON	Bolt zï¿½rï¿½s
 PRIVATE_SHOP_NAME	Bolt neve
-PRIVATE_SHOP_TITLE	Magán bolt nyitás
-REFINE_COST	Javítási költségek: 0 Yang
-REFINE_INFO	Esély a sikeres javításra: 100%
-REFINE_MONEY	Nemesítési díj
-REFINE_SELECT	Nemesítés
-REFINE_TTILE	Javítások
+PRIVATE_SHOP_TITLE	Magï¿½n bolt nyitï¿½s
+REFINE_COST	Javï¿½tï¿½si kï¿½ltsï¿½gek: 0 Yang
+REFINE_INFO	Esï¿½ly a sikeres javï¿½tï¿½sra: 100%
+REFINE_MONEY	Nemesï¿½tï¿½si dï¿½j
+REFINE_SELECT	Nemesï¿½tï¿½s
+REFINE_TTILE	Javï¿½tï¿½sok
 REPORT_VIOLENT_WHISPER	
-RESTART_HERE	Újraindít itt
-RESTART_TOWN	Újraindít a városban
-SAFE_CHANGE_PASSWORD	Jelszó változtatás
-SAFE_TITLE	Tárolóhely
-SELECT_ATT_GRADE	ERÕ
-SELECT_CREATE	Létrehoz
-SELECT_DELETE	Töröl
-SELECT_DEX_GRADE	ÜGY
+RESTART_HERE	ï¿½jraindï¿½t itt
+RESTART_TOWN	ï¿½jraindï¿½t a vï¿½rosban
+SAFE_CHANGE_PASSWORD	Jelszï¿½ vï¿½ltoztatï¿½s
+SAFE_TITLE	Tï¿½rolï¿½hely
+SELECT_ATT_GRADE	ERï¿½
+SELECT_CREATE	Lï¿½trehoz
+SELECT_DELETE	Tï¿½rï¿½l
+SELECT_DEX_GRADE	ï¿½GY
 SELECT_EMPIRE_NAME	Birodalom neve
-SELECT_EXIT	Bezár
+SELECT_EXIT	Bezï¿½r
 SELECT_HP	VIT
 SELECT_LEVEL	Szint
-SELECT_METIN_STONE_TITLE	Szellemkõ választás
-SELECT_NAME	Név
-SELECT_NO_GUILD	Nincs céh
-SELECT_YES_GUILD	Céh név: %s
-SELECT_PLAYTIME	Játékidõ (perc) %d
+SELECT_METIN_STONE_TITLE	Szellemkï¿½ vï¿½lasztï¿½s
+SELECT_NAME	Nï¿½v
+SELECT_NO_GUILD	Nincs cï¿½h
+SELECT_YES_GUILD	Cï¿½h nï¿½v: %s
+SELECT_PLAYTIME	Jï¿½tï¿½kidï¿½ (perc) %d
 SELECT_SELECT	Start
 SELECT_SP	INT
-SELECT_TITLE	Cím választás
-SHOP_BUY	Vásárol
+SELECT_TITLE	Cï¿½m vï¿½lasztï¿½s
+SHOP_BUY	Vï¿½sï¿½rol
 SHOP_SELL	Elad
 SHOP_TITLE	Bolt
-SKILL_SUPPORT_TITLE	Standard készségek
-STEP	Tisztasági minõség
-STEP_SELECT	Tisztasági minõség
-STRENGTH	Erõsítés
+SKILL_SUPPORT_TITLE	Standard kï¿½szsï¿½gek
+STEP	Tisztasï¿½gi minï¿½sï¿½g
+STEP_SELECT	Tisztasï¿½gi minï¿½sï¿½g
+STRENGTH	Erï¿½sï¿½tï¿½s
 STRENGTH_SELECT	Szint
-SYSTEMOPTION_TITLE	Rendszer opciók
+SYSTEMOPTION_TITLE	Rendszer opciï¿½k
 SYSTEM_CHANGE	Karakter csere
-SYSTEM_EXIT	Játék befejezés
-SYSTEM_HELP	Segítség
-SYSTEM_LOGOUT	Kilépés
-SYSTEM_MALL	Tárgy piac
-SYSTEM_OPTION	Rendszer opciók
+SYSTEM_EXIT	Jï¿½tï¿½k befejezï¿½s
+SYSTEM_HELP	Segï¿½tsï¿½g
+SYSTEM_LOGOUT	Kilï¿½pï¿½s
+SYSTEM_MALL	Tï¿½rgy piac
+SYSTEM_OPTION	Rendszer opciï¿½k
 TASKBAR_CHARACTER	Karakter [C/V/B/N]
 TASKBAR_CHAT	Cset ablak [Enter]
 TASKBAR_DISABLE	Kikapcsolva
-TASKBAR_DRAGON_SOUL	Sárkánykõ-alkímia
-TASKBAR_EXPAND	Meghosszabbítás
-TASKBAR_INVENTORY	Leltár [I]
-TASKBAR_MESSENGER	Barátok [Alt+M]
-TASKBAR_NEXT_QUICKSLOT	Következõ gyors elérésû mezõ [Shift+Szám, Alt]
-TASKBAR_PREV_QUICKSLOT	Elõzõ gyors elérésû mezõ [Shift+Szám]
-TASKBAR_SYSTEM	Opciók [ESC]
-WHISPER_BAN	Letiltás
-WHISPER_NAME	Suttogás
+TASKBAR_DRAGON_SOUL	Sï¿½rkï¿½nykï¿½-alkï¿½mia
+TASKBAR_EXPAND	Meghosszabbï¿½tï¿½s
+TASKBAR_INVENTORY	Leltï¿½r [I]
+TASKBAR_MESSENGER	Barï¿½tok [Alt+M]
+TASKBAR_NEXT_QUICKSLOT	Kï¿½vetkezï¿½ gyors elï¿½rï¿½sï¿½ mezï¿½ [Shift+Szï¿½m, Alt]
+TASKBAR_PREV_QUICKSLOT	Elï¿½zï¿½ gyors elï¿½rï¿½sï¿½ mezï¿½ [Shift+Szï¿½m]
+TASKBAR_SYSTEM	Opciï¿½k [ESC]
+WHISPER_BAN	Letiltï¿½s
+WHISPER_NAME	Suttogï¿½s
 WHISPER_REPORT	
-WHISPER_SEND	Küld
+WHISPER_SEND	Kï¿½ld
 YES	Igen
-ZONE_MAP	Nagy térkép
+ZONE_MAP	Nagy tï¿½rkï¿½p
 OPTION_SHADOW_QUALITY	Shadow quality
 OPTION_SHADOW_QUALITY_AVERAGE	Medium
 OPTION_SHADOW_QUALITY_AVERAGE_TOOLTIP	Medium shadow quality
@@ -343,13 +343,13 @@ OPTION_SHADOW_TARGET_GROUND_AND_SOLO_TOOLTIP	Background shadows and player shado
 OPTION_SHADOW_TARGET_GROUND_TOOLTIP	Background
 OPTION_SHADOW_TARGET_NONE	1
 OPTION_SHADOW_TARGET_NONE_TOOLTIP	No shadow
-DESTROY	Megsemmisít
+DESTROY	Megsemmisï¿½t
 SYSTEM_MOVE_CHANNEL	Change Csatorna
-PASSWORD_RESTART	Jelszó megváltoztatása	
-SALVEAZA_CONT	Mentés	
-LIBERACCOUNT	Üres	
-CONNECT_CONTF1	Mentés 1	
-CONNECT_CONTF2	Mentés 2	
-CONNECT_CONTF3	Mentés 3	
-CONNECT_CONTF4	Mentés 4
-FREE	Üres	
+PASSWORD_RESTART	Jelszï¿½ megvï¿½ltoztatï¿½sa	
+SALVEAZA_CONT	Mentï¿½s	
+LIBERACCOUNT	ï¿½res	
+CONNECT_CONTF1	Mentï¿½s 1	
+CONNECT_CONTF2	Mentï¿½s 2	
+CONNECT_CONTF3	Mentï¿½s 3	
+CONNECT_CONTF4	Mentï¿½s 4
+FREE	ï¿½res	

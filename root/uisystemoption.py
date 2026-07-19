@@ -17,6 +17,8 @@ import background
 MUSIC_FILENAME_MAX_LEN = 25
 blockMode = 0
 
+FPS_LIMIT_LIST = (60, 90, 144, 0)	# 0 = no cap
+
 class OptionDialog(ui.ScriptWindow):
 
 	def __init__(self):
@@ -47,6 +49,7 @@ class OptionDialog(ui.ScriptWindow):
 			self.shadowQualityLevelButtonList = []
 		else:
 			self.ctrlShadowQuality = 0
+		self.fpsLimitComboBox = 0
 		
 		
 	def Destroy(self):
@@ -66,6 +69,7 @@ class OptionDialog(ui.ScriptWindow):
 	def __Load_BindObject(self):
 		try:
 			GetObject = self.GetChild
+			self.board = GetObject("board")
 			self.titleBar = GetObject("titlebar")
 			self.selectMusicFile = GetObject("bgm_file")
 			self.changeMusicButton = GetObject("bgm_button")
@@ -120,6 +124,8 @@ class OptionDialog(ui.ScriptWindow):
 			
 			self.__ClickRadioButton(self.shadowTargetLevelButtonList, systemSetting.GetShadowTargetLevel())
 			self.__ClickRadioButton(self.shadowQualityLevelButtonList, systemSetting.GetShadowQualityLevel())
+
+		self.__LoadFPSLimitComboBox()
 
 		self.changeMusicButton.SAFE_SetEvent(self.__OnClickChangeMusicButton)
 
@@ -228,6 +234,34 @@ class OptionDialog(ui.ScriptWindow):
 		def __OnClickShadowQualityLevelButton(self, i):
 			systemSetting.SetShadowQualityLevel(i)
 			self.__ClickRadioButton(self.shadowQualityLevelButtonList, i)
+
+	def __FPSLimitToText(self, fps):
+		if fps == 0:
+			return "No cap"
+		return str(fps)
+
+	def __LoadFPSLimitComboBox(self):
+		self.fpsLimitComboBox = ui.ComboBox()
+		self.fpsLimitComboBox.SetParent(self.board)
+		self.fpsLimitComboBox.SetPosition(110, 260)
+		self.fpsLimitComboBox.SetSize(80, 17)
+		self.fpsLimitComboBox.SetEvent(self.__OnSelectFPSLimit)
+		self.fpsLimitComboBox.Show()
+
+		for i, fps in enumerate(FPS_LIMIT_LIST):
+			self.fpsLimitComboBox.InsertItem(i, self.__FPSLimitToText(fps))
+
+		curFPSLimit = systemSetting.GetFPSLimit()
+		self.fpsLimitComboBox.SetCurrentItem(self.__FPSLimitToText(curFPSLimit))
+
+	def __OnSelectFPSLimit(self, index):
+		try:
+			fps = FPS_LIMIT_LIST[index]
+		except IndexError:
+			return
+
+		systemSetting.SetFPSLimit(fps)
+		self.fpsLimitComboBox.SetCurrentItem(self.__FPSLimitToText(fps))
 
 	def __OnChangeMusic(self, fileName):
 		self.selectMusicFile.SetText(fileName[:MUSIC_FILENAME_MAX_LEN])

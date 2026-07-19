@@ -116,7 +116,7 @@ window = {
 					"y" : 50,
 				},	
 
-				## Ä«¸Þ¶ó
+				## Ä«ï¿½Þ¶ï¿½
 				{
 					"name" : "camera_mode",
 					"type" : "text",
@@ -155,7 +155,7 @@ window = {
 					"down_image" : ROOT_PATH + "Middle_Button_03.sub",
 				},
 
-				## ¾È°³
+				## ï¿½È°ï¿½
 				{
 					"name" : "fog_mode",
 					"type" : "text",
@@ -208,7 +208,7 @@ window = {
 					"down_image" : ROOT_PATH + "small_Button_03.sub",
 				},
 
-				## Å¸ÀÏ °¡¼Ó
+				## Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				{
 					"name" : "tiling_mode",
 					"type" : "text",
@@ -262,7 +262,7 @@ window = {
 				},
 
 
-				## ±×¸²ÀÚ
+				## ï¿½×¸ï¿½ï¿½ï¿½
 #				{
 #					"name" : "shadow_mode",
 #					"type" : "text",
@@ -414,3 +414,22 @@ if app.__BL_SHADOW_RENDER_QUALITY_OPTION__:
 			"down_image" : ROOT_PATH + "small_Button_03.sub",
 		},
 	)
+
+## FPS Limit (below the shadow settings; the combo box itself is built in uisystemoption.py
+## since this UIScript loader has no declarative "combo_box" widget type)
+## Text is a plain literal, not routed through uiScriptLocale/locale_interface.txt - that file is
+## read straight out of the already-compiled locale_hu.epk (pack.Exist() only ever checks the
+## pack, never the loose file), so a loose-file edit there has no effect without repacking it.
+window["height"] += 30
+window["children"][0]["height"] += 30
+window["children"][0]["children"] += (
+	{
+		"name" : "fps_limit_text",
+		"type" : "text",
+
+		"x" : 40 + TEXT_TEMPORARY_X,
+		"y" : 260+2,
+
+		"text" : "FPS limit",
+	},
+)
