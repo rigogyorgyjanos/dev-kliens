@@ -534,6 +534,26 @@ class TargetBoard(ui.ThinBoard):
 		name.SetOutline()
 		name.Show()
 
+		if app.__AUTO_QUQUE_ATTACK__:
+			autoFarmText = ui.TextLine()
+			autoFarmText.SetParent(self)
+			autoFarmText.SetOutline()
+			autoFarmText.SetHorizontalAlignCenter()
+			autoFarmText.SetText("|Eemoji/key_shift|e + |Eemoji/key_rclick|e Metinkő kijelölés")
+			autoFarmText.Hide()
+			self.autoFarmText = autoFarmText
+
+			autoFarmBtn = ui.Button()
+			autoFarmBtn.SetParent(self)
+			autoFarmBtn.SetUpVisual("d:/ymir work/ui/pattern/q_mark_01.tga")
+			autoFarmBtn.SetOverVisual("d:/ymir work/ui/pattern/q_mark_02.tga")
+			autoFarmBtn.SetDownVisual("d:/ymir work/ui/pattern/q_mark_01.tga")
+			autoFarmBtn.SetEvent(ui.__mem_func__(self.__AutoFarmInfo))
+			autoFarmBtn.Hide()
+			self.autoFarmBtn = autoFarmBtn
+
+			self.autoFarmInfo = None
+
 		hpGauge = ui.Gauge()
 		hpGauge.SetParent(self)
 		hpGauge.MakeGauge(130, "red")
@@ -691,6 +711,10 @@ class TargetBoard(ui.ThinBoard):
 	def Close(self):
 		self.__Initialize()
 		self.Hide()
+		if app.__AUTO_QUQUE_ATTACK__:
+			if self.autoFarmInfo:
+				self.autoFarmInfo.Close()
+				self.autoFarmInfo = None
 		if app.ENABLE_SEND_TARGET_INFO:
 			self.infoButton.showWnd.Close()
 		if app.ENABLE_VIEW_ELEMENT and self.elementImage:
@@ -763,6 +787,20 @@ class TargetBoard(ui.ThinBoard):
 
 	def UpdatePosition(self):
 		self.SetPosition(wndMgr.GetScreenWidth()/2 - self.GetWidth()/2, 10)
+		if app.__AUTO_QUQUE_ATTACK__:
+			if chr.GetInstanceType(self.vid) == chr.INSTANCE_TYPE_STONE:
+				self.SetSize(self.GetWidth(), self.GetHeight() + 20)
+
+				self.autoFarmText.SetPosition(self.GetWidth() / 2, 30)
+				self.autoFarmText.Show()
+
+				self.autoFarmBtn.SetPosition((self.GetWidth() / 2) + (self.autoFarmText.GetTextSize()[1]/2) + 85, 30)
+				self.autoFarmBtn.Show()
+			else:
+				self.autoFarmText.Hide()
+				self.autoFarmBtn.Hide()
+				if self.autoFarmInfo:
+					self.autoFarmInfo.Close()
 
 	def ResetTargetBoard(self):
 		for btn in self.buttonDict.values():
@@ -1079,3 +1117,97 @@ class TargetBoard(ui.ThinBoard):
 			else:
 				if distance < self.EXCHANGE_LIMIT_RANGE:
 					self.RefreshButton()
+
+	if app.__AUTO_QUQUE_ATTACK__:
+		def __AutoFarmInfo(self):
+			if not self.autoFarmInfo:
+				self.autoFarmInfo = AutoFarmInfoWindow()
+			if self.autoFarmInfo.IsShow():
+				self.autoFarmInfo.Close()
+			else:
+				self.autoFarmInfo.Open()
+				(x, y) = self.autoFarmBtn.GetGlobalPosition()
+				self.autoFarmInfo.SetPosition(x + 10, y + 30)
+
+if app.__AUTO_QUQUE_ATTACK__:
+	class AutoFarmInfoWindow(ui.ThinBoard):
+		def __init__(self):
+			ui.ThinBoard.__init__(self)
+			self.__LoadWindow()
+
+		def __LoadWindow(self):
+			self.SetSize(356, 166)
+			self.AddFlag("float")
+			self.AddFlag("not_pick")
+
+			title = ui.TextLine()
+			title.SetParent(self)
+			title.AddFlag("not_pick")
+			title.SetHorizontalAlignCenter()
+			title.SetPackedFontColor(0xFFFBC401)
+			title.SetOutline()
+			title.SetText("Metinkő kijelölés")
+			title.SetPosition(self.GetWidth() / 2, 15)
+			title.Show()
+			self.title = title
+			
+			firstText = "Ha |cFF74FF20Shift + jobb kattintással|r kattintasz egy Metinkőre, a karaktered#"\
+			"kijelöli azt, és miután elpusztítottad, automatikusan a |cFF74FF20következőre|r vált."
+
+			firstDescription = ui.MultiTextLine()
+			firstDescription.SetParent(self)
+			firstDescription.AddFlag("not_pick")
+			firstDescription.SetTextRange(13)
+			firstDescription.SetTextType("horizontal#center")
+			firstDescription.SetPosition(self.GetWidth() / 2, 37)
+			firstDescription.SetOutline(1)
+			firstDescription.SetText(firstText)
+			firstDescription.Show()
+			self.firstDescription = firstDescription
+
+			secondText = "Max. 3 Metinkő jelölhető ki (Metinkő kijelölés hatás nélkül)#"\
+			"Max. 5 Metinkő jelölhető ki (Metinkő kijelölés hatással)"
+
+			secondDescription = ui.MultiTextLine()
+			secondDescription.SetParent(self)
+			secondDescription.AddFlag("not_pick")
+			secondDescription.SetTextRange(13)
+			secondDescription.SetTextType("horizontal#center")
+			secondDescription.SetPosition(self.GetWidth() / 2, 73)
+			secondDescription.SetOutline(1)
+			secondDescription.SetPackedFontColor(0xFFFFD071)
+			secondDescription.SetText(secondText)
+			secondDescription.Show()
+			self.secondDescription = secondDescription
+
+
+			item.SelectItem(61400)
+			itemIcon = ui.ImageBox()
+			itemIcon.SetParent(self)
+			itemIcon.AddFlag("not_pick")
+			itemIcon.LoadImage(item.GetIconImageFileName())
+			itemIcon.SetPosition((self.GetWidth() / 2) - 16, 105)
+			itemIcon.Show()
+			self.itemIcon = itemIcon
+
+			itemName = ui.TextLine()
+			itemName.SetParent(self)
+			itemName.AddFlag("not_pick")
+			itemName.SetHorizontalAlignCenter()
+			itemName.SetPackedFontColor(0xFFFBC401)
+			itemName.SetOutline()
+			itemName.SetText("Metinkő kijelölés")
+			itemName.SetPosition(self.GetWidth() / 2, 105 + 32 + 5)
+			itemName.Show()
+			self.itemName = itemName
+
+			self.SetCenterPosition()
+
+		def Open(self):
+			self.Show()
+			self.SetTop()
+		def Close(self):
+			self.Hide()
+		def OnPressEscapeKey(self):
+			self.Close()
+			return True

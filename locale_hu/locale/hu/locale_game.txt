@@ -560,6 +560,7 @@ TARGET_LEVEL_S_PAWN	2. szint
 TASKBAR_ATTACK	Támadni
 TASKBAR_AUTO	Automatikus támadás
 TASKBAR_CAMERA	Kamera
+TASKBAR_METIN_FARM	Metinkő kijelölés
 TASKBAR_EXP	Tapasztalat
 TASKBAR_HP	TP
 TASKBAR_MOVE	Mozogni
@@ -895,3 +896,4 @@ MISSION_DELETE_TEXT	Do you want remove mission?
 MISSION_REWARD_TEXT	Do you want get reward?
 MISSION_END_TIME	|cffF6A800|Eemoji/e_wiki|e End Time:|r %s
 MISSION_REWARD_TITLE	|cffF6A800Reward:|r
+NEW_AFFECT_AUTO_METIN_FARM	Metinkő kijelölés	SNA

@@ -242,6 +242,7 @@ class TaskBar(ui.ScriptWindow):
 	EVENT_CAMERA = 3
 	EVENT_SKILL = 4
 	EVENT_AUTO = 5
+	EVENT_METIN_FARM = 6
 
 	GAUGE_WIDTH = 95
 	GAUGE_HEIGHT = 13
@@ -510,6 +511,8 @@ class TaskBar(ui.ScriptWindow):
 		wnd.GetChild("button_move_and_attack").SetEvent(lambda adir=dir, aevent=self.EVENT_MOVE_AND_ATTACK: self.SelectMouseButtonEvent(adir, aevent))
 		wnd.GetChild("button_auto_attack").SetEvent(lambda adir=dir, aevent=self.EVENT_AUTO: self.SelectMouseButtonEvent(adir, aevent))
 		wnd.GetChild("button_camera").SetEvent(lambda adir=dir, aevent=self.EVENT_CAMERA: self.SelectMouseButtonEvent(adir, aevent))
+		if app.__AUTO_QUQUE_ATTACK__:
+			wnd.GetChild("button_metin_farm").SetEvent(lambda adir=dir, aevent=self.EVENT_METIN_FARM: self.SelectMouseButtonEvent(adir, aevent))
 
 		dir = self.MOUSE_BUTTON_RIGHT
 		wnd = self.mouseModeButtonList[dir]
@@ -1128,6 +1131,10 @@ class TaskBar(ui.ScriptWindow):
 			btn = self.mouseModeButtonList[dir].GetChild("button_skill")
 			func = player.MBF_SKILL
 			tooltip_text = localeInfo.TASKBAR_SKILL
+		elif app.__AUTO_QUQUE_ATTACK__ and self.EVENT_METIN_FARM == event:
+			btn = self.mouseModeButtonList[dir].GetChild("button_metin_farm")
+			func = player.MBF_METIN_FARM
+			tooltip_text = localeInfo.TASKBAR_METIN_FARM
 
 		if 0 != btn:
 			self.curMouseModeButton[dir].SetToolTipText(tooltip_text, 0, -18)

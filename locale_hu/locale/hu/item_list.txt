@@ -6441,3 +6441,9 @@
 50436	ETC	icon/item/book_13.tga
 50451	ETC	icon/item/book_14.tga
 
+61400	ETC	icon/item/61400.tga		
+61401	ETC	icon/item/61400.tga		
+61402	ETC	icon/item/61400.tga		
+61403	ETC	icon/item/61400.tga		
+61404	ETC	icon/item/61400.tga		
+61405	ETC	icon/item/61400.tga		

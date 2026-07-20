@@ -30,6 +30,7 @@ import uiCommon
 import uiPhaseCurtain
 import uiMapNameShower
 import uiAffectShower
+import uiFarmSession
 import uiPlayerGauge
 import uiCharacter
 import uiTarget
@@ -116,6 +117,10 @@ class GameWindow(ui.ScriptWindow):
 
 		self.mapNameShower = uiMapNameShower.MapNameShower()
 		self.affectShower = uiAffectShower.AffectShower()
+
+		self.wndFarmSession = None
+		if app.__FARM_SESSION_SYSTEM__:
+			self.wndFarmSession = uiFarmSession.FarmSessionWindow()
 
 		self.playerGauge = uiPlayerGauge.PlayerGauge(self)
 		self.playerGauge.Hide()
@@ -337,6 +342,8 @@ class GameWindow(ui.ScriptWindow):
 		onPressKeyDict[app.DIK_F3]	= lambda : self.__PressQuickSlot(6)
 		onPressKeyDict[app.DIK_F4]	= lambda : self.__PressQuickSlot(7)
 		onPressKeyDict[app.DIK_F5]			= lambda : self.interface.OpenBookMission()
+		if app.__FARM_SESSION_SYSTEM__ and self.wndFarmSession:
+			onPressKeyDict[app.DIK_F6]	= lambda : self.wndFarmSession.Open()
 		
 		onPressKeyDict[app.DIK_LALT]		= lambda : self.ShowName()
 		onPressKeyDict[app.DIK_LCONTROL]	= lambda : self.ShowMouseImage()
@@ -794,6 +801,22 @@ class GameWindow(ui.ScriptWindow):
 	def OnGameOver(self):
 		self.CloseTargetBoard()
 		self.OpenRestartDialog()
+
+	def OnFarmSessionState(self, isActive, elapsedSec, killTotal, itemTotal, yangGained, yangSpent):
+		if self.wndFarmSession:
+			self.wndFarmSession.OnFarmSessionState(isActive, elapsedSec, killTotal, itemTotal, yangGained, yangSpent)
+
+	def OnFarmSessionKillEntry(self, mobVnum, count):
+		if self.wndFarmSession:
+			self.wndFarmSession.OnFarmSessionKillEntry(mobVnum, count)
+
+	def OnFarmSessionItemEntry(self, itemVnum, count):
+		if self.wndFarmSession:
+			self.wndFarmSession.OnFarmSessionItemEntry(itemVnum, count)
+
+	def OnFarmSessionReportEnd(self):
+		if self.wndFarmSession:
+			self.wndFarmSession.OnFarmSessionReportEnd()
 
 	def OpenRestartDialog(self):
 		self.interface.OpenRestartDialog()

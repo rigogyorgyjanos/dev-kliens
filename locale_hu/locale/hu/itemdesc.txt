@@ -2409,3 +2409,9 @@
 50436	Alattomos méreg könyve	Ezt a könyvet Alattomos méreg képességed fejlesztésére használd. A könyv eltűnik az olvasás után.
 50451	Szikra könyve	Ezt a könyvet Szikra képességed fejlesztésére használd. A könyv eltűnik az olvasás után.
 
+61400	Metinkő kijelölés (1 nap)	Használatkor 1 napra aktiválja a Metinkő kijelölés hatást: a kijelölt Metinkő elpusztítása után karaktered automatikusan a következő kijelölt kőre vált.
+61401	Metinkő kijelölés (3 nap)	Használatkor 3 napra aktiválja a Metinkő kijelölés hatást: a kijelölt Metinkő elpusztítása után karaktered automatikusan a következő kijelölt kőre vált.
+61402	Metinkő kijelölés (7 nap)	Használatkor 7 napra aktiválja a Metinkő kijelölés hatást: a kijelölt Metinkő elpusztítása után karaktered automatikusan a következő kijelölt kőre vált.
+61403	Metinkő kijelölés (15 nap)	Használatkor 15 napra aktiválja a Metinkő kijelölés hatást: a kijelölt Metinkő elpusztítása után karaktered automatikusan a következő kijelölt kőre vált.
+61404	Metinkő kijelölés (30 nap)	Használatkor 30 napra aktiválja a Metinkő kijelölés hatást: a kijelölt Metinkő elpusztítása után karaktered automatikusan a következő kijelölt kőre vált.
+61405	Metinkő kijelölés (örökre)	Használatkor véglegesen aktiválja a Metinkő kijelölés hatást: a kijelölt Metinkő elpusztítása után karaktered automatikusan a következő kijelölt kőre vált.

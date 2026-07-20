@@ -420,6 +420,9 @@ class AffectShower(ui.Window):
 	if app.ENABLE_RENEWAL_AFFECT_SHOWER:
 		AFFECT_DATA_DICT[chr.NEW_AFFECT_POLYMORPH] =  (localeInfo.POLYMORPH_AFFECT_TOOLTIP, "icon/item/70104.tga")
 
+	if app.__AUTO_QUQUE_ATTACK__:
+		AFFECT_DATA_DICT[chr.NEW_AFFECT_AUTO_METIN_FARM] = (localeInfo.NEW_AFFECT_AUTO_METIN_FARM, "icon/item/61400.tga")
+
 	def __del__(self):
 		ui.Window.__del__(self)
 
@@ -490,6 +493,7 @@ class AffectShower(ui.Window):
 				return
 
 		if self.affectImageDict.has_key(affect):
+			self.affectImageDict[affect].SetDuration(duration)
 			return
 
 		if not self.AFFECT_DATA_DICT.has_key(affect):

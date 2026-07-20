@@ -960,6 +960,108 @@ class TextLine(Window):
 	def GetTextSize(self):
 		return wndMgr.GetTextSize(self.hWnd)
 
+class MultiTextLine(Window):
+	def __del__(self):
+		Window.__del__(self)
+	def Destroy(self):
+		self.textRules = {}
+	def __init__(self):
+		Window.__init__(self)
+		self.Destroy()
+		self.AddFlag("not_pick")
+		self.textRules["textRange"] = 15
+		self.textRules["text"] = ""
+		self.textRules["textType"] = ""
+		self.textRules["fontName"] = ""
+		self.textRules["hexColor"] = 0
+		self.textRules["fontColor"] = 0
+		self.textRules["outline"] = 0
+	def SetTextType(self, textType):
+		self.textRules["textType"] = textType
+		self.Refresh()
+	def SetTextRange(self, textRange):
+		self.textRules["textRange"] = textRange
+		self.Refresh()
+	def SetOutline(self, outline):
+		self.textRules["outline"] = outline
+		self.Refresh()
+	def SetPackedFontColor(self, hexColor):
+		self.textRules["hexColor"] = hexColor
+		self.Refresh()
+	def SetFontColor(self, r, g, b):
+		self.textRules["fontColor"] =[r, g, b]
+		self.Refresh()
+	def SetFontName(self, fontName):
+		self.textRules["fontName"] = fontName
+		self.Refresh()
+	def SetText(self, newText):
+		self.textRules["text"] = newText
+		self.Refresh()
+	def Refresh(self):
+		textRules = self.textRules
+		if textRules["text"] == "":
+			return
+		self.children=[]
+		outline = textRules["outline"]
+		fontColor = textRules["fontColor"]
+		hexColor = textRules["hexColor"]
+		yRange = textRules["textRange"]
+		fontName = textRules["fontName"]
+		textTypeList = textRules["textType"].split("?")
+		totalTextList = textRules["text"].split("#")
+
+		(xPosition, yPosition) = (0, 0)
+		width = 0
+		for text in totalTextList:
+			childText = TextLine()
+			childText.SetParent(self)
+			childText.AddFlag("not_pick")
+			childText.SetPosition(xPosition, yPosition)
+			if fontName != "":
+				childText.SetFontName(fontName)
+			if hexColor != 0:
+				childText.SetPackedFontColor(hexColor)
+			if fontColor != 0:
+				childText.SetFontColor(*fontColor)
+			if outline:
+				childText.SetOutline()
+			for textType in textTypeList:
+				self.AddTextType(childText, textType.split("#"))
+			childText.SetText(str(text))
+			if childText.GetTextSize()[0] > width:
+				width = childText.GetTextSize()[0]
+			childText.Show()
+			self.children.append(childText)
+			yPosition+=yRange
+
+	def AddTextType(self, text,  typeArg):
+		if len(typeArg) != 2:
+			return
+		_typeDict = {
+			"vertical": {
+				"top":text.SetVerticalAlignTop,
+				"bottom":text.SetVerticalAlignBottom,
+				"center":text.SetVerticalAlignCenter,
+			},
+			"horizontal": {
+				"left":text.SetHorizontalAlignLeft,
+				"right":text.SetHorizontalAlignRight,
+				"center":text.SetHorizontalAlignCenter,
+			},
+			"all_align": {
+				"1" : [text.SetHorizontalAlignCenter,text.SetVerticalAlignCenter,text.SetWindowHorizontalAlignCenter,text.SetWindowVerticalAlignCenter],
+			},
+		}
+		(firstToken, secondToken) = tuple(typeArg)
+		if _typeDict.has_key(firstToken):
+			textType = _typeDict[firstToken][secondToken] if _typeDict[firstToken].has_key(secondToken) else None
+			if textType != None:
+				if isinstance(textType, list):
+					for rule in textType:
+						rule()
+				else:
+					textType()
+
 class EmptyCandidateWindow(Window):
 	def __init__(self):
 		Window.__init__(self)
