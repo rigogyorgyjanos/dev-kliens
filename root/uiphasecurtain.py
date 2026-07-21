@@ -24,16 +24,18 @@ class PhaseCurtain(ui.Bar):
 		self.FadeOut(ui.__mem_func__(event), args)
 
 	def FadeOut(self, event, args = -1):
-		self.curAlpha = 0.0
-		self.SetAlpha(self.curAlpha)
-		#self.SetTop()
-		self.Show()
-		self.event = event
-		self.args = args
+		# Disabled - this used to animate the whole screen to black before running the phase-
+		# switch callback (and FadeIn() below animated it back afterwards). That animated black
+		# screen was the reported ' villanas' after map warps, so the callback now just runs
+		# immediately - the curtain never becomes visible at all.
+		if -1 != args:
+			event(args)
+		else:
+			event()
 
 	def FadeIn(self):
-		self.event = 0
-		self.FadeInFlag = True
+		# Disabled - nothing to fade back in, FadeOut() above never darkened the screen.
+		pass
 
 	def SetAlpha(self, alpha):
 		self.SetSize(wndMgr.GetScreenWidth(), wndMgr.GetScreenHeight())
@@ -42,31 +44,4 @@ class PhaseCurtain(ui.Bar):
 		self.SetColor(color)
 
 	def OnUpdate(self):
-
-		if 0 != self.event:
-
-			self.curAlpha += self.speed
-			if self.curAlpha >= 1.0:
-				self.curAlpha = 1.0
-
-				# 이벤트 중간에 멈출경우를 대비해 미리 제거
-				event=self.event
-				self.event = 0
-
-				#print "페이드 아웃 완료 이벤트 실행"
-
-				if -1 != self.args:
-					event(self.args)
-				else:
-					event()
-
-		elif True == self.FadeInFlag:
-
-			self.curAlpha -= self.speed
-			if self.curAlpha <= 0.0:
-				self.curAlpha = 0.0
-				self.eventFadeIn = 0
-				self.FadeInFlag = False
-				self.Hide()
-
-		self.SetAlpha(self.curAlpha)
+		pass
