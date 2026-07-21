@@ -230,6 +230,7 @@ class TaskBar(ui.ScriptWindow):
 	BUTTON_SYSTEM = 3
 	BUTTON_CHAT = 4
 	BUTTON_EXPAND = 4
+	BUTTON_FARM_SESSION = 5
 	IS_EXPANDED = False
 
 	MOUSE_BUTTON_LEFT = 0
@@ -441,6 +442,10 @@ class TaskBar(ui.ScriptWindow):
 		toggleButtonDict[TaskBar.BUTTON_INVENTORY]=self.GetChild("InventoryButton")
 		toggleButtonDict[TaskBar.BUTTON_MESSENGER]=self.GetChild("MessengerButton")
 		toggleButtonDict[TaskBar.BUTTON_SYSTEM]=self.GetChild("SystemButton")
+		try:
+			toggleButtonDict[TaskBar.BUTTON_FARM_SESSION]=self.GetChild("FarmSessionButton")
+		except:
+			pass
 		
 		# ChatButton, ExpandButton 둘 중 하나는 반드시 존재한다.
 		try:

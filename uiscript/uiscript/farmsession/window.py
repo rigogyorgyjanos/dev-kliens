@@ -2,7 +2,7 @@ import uiScriptLocale
 
 ROOT_PATH = "d:/ymir work/ui/public/"
 
-WINDOW_SIZE = (260, 320)
+WINDOW_SIZE = (260, 350)
 
 window = {
 	"name" : "FarmSessionWindow",
@@ -32,7 +32,7 @@ window = {
 					"text" : "",
 				},
 				{
-					"name" : "kill_text",
+					"name" : "yang_net_text",
 					"type" : "text",
 					"x" : 15,
 					"y" : 53,
@@ -40,7 +40,7 @@ window = {
 					"text" : "",
 				},
 				{
-					"name" : "item_text",
+					"name" : "stone_text",
 					"type" : "text",
 					"x" : 15,
 					"y" : 71,
@@ -48,7 +48,7 @@ window = {
 					"text" : "",
 				},
 				{
-					"name" : "yang_gained_text",
+					"name" : "boss_text",
 					"type" : "text",
 					"x" : 15,
 					"y" : 89,
@@ -56,7 +56,7 @@ window = {
 					"text" : "",
 				},
 				{
-					"name" : "yang_spent_text",
+					"name" : "normal_text",
 					"type" : "text",
 					"x" : 15,
 					"y" : 107,
@@ -64,28 +64,12 @@ window = {
 					"text" : "",
 				},
 				{
-					"name" : "yang_net_text",
-					"type" : "text",
-					"x" : 15,
-					"y" : 125,
-					"text_horizontal_align" : "left",
-					"text" : "",
-				},
-				{
 					"name" : "list_title_text",
 					"type" : "text",
 					"x" : 15,
-					"y" : 148,
+					"y" : 130,
 					"text_horizontal_align" : "left",
 					"text" : "",
-				},
-				{
-					"name" : "listbox",
-					"type" : "listbox_new",
-					"x" : 15,
-					"y" : 166,
-					"width" : WINDOW_SIZE[0] - 30,
-					"height" : 100,
 				},
 				{
 					"name" : "startstop_btn",
@@ -100,7 +84,7 @@ window = {
 				{
 					"name" : "save_btn",
 					"type" : "button",
-					"x" : 95,
+					"x" : 140,
 					"y" : 278,
 					"text" : uiScriptLocale.FARM_SESSION_SAVE,
 					"default_image" : ROOT_PATH + "Middle_Button_01.sub",
@@ -108,10 +92,20 @@ window = {
 					"down_image" : ROOT_PATH + "Middle_Button_03.sub",
 				},
 				{
+					"name" : "toggle_btn",
+					"type" : "button",
+					"x" : 15,
+					"y" : 305,
+					"text" : uiScriptLocale.FARM_SESSION_TOGGLE_LIST,
+					"default_image" : ROOT_PATH + "Middle_Button_01.sub",
+					"over_image" : ROOT_PATH + "Middle_Button_02.sub",
+					"down_image" : ROOT_PATH + "Middle_Button_03.sub",
+				},
+				{
 					"name" : "history_btn",
 					"type" : "button",
-					"x" : 175,
-					"y" : 278,
+					"x" : 140,
+					"y" : 305,
 					"text" : uiScriptLocale.FARM_SESSION_HISTORY,
 					"default_image" : ROOT_PATH + "Middle_Button_01.sub",
 					"over_image" : ROOT_PATH + "Middle_Button_02.sub",

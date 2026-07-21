@@ -121,6 +121,7 @@ class GameWindow(ui.ScriptWindow):
 		self.wndFarmSession = None
 		if app.__FARM_SESSION_SYSTEM__:
 			self.wndFarmSession = uiFarmSession.FarmSessionWindow()
+			self.interface.wndFarmSession = self.wndFarmSession
 
 		self.playerGauge = uiPlayerGauge.PlayerGauge(self)
 		self.playerGauge.Hide()
@@ -802,9 +803,9 @@ class GameWindow(ui.ScriptWindow):
 		self.CloseTargetBoard()
 		self.OpenRestartDialog()
 
-	def OnFarmSessionState(self, isActive, elapsedSec, killTotal, itemTotal, yangGained, yangSpent):
+	def OnFarmSessionState(self, isActive, elapsedSec, killTotal, stoneKillTotal, bossKillTotal, normalKillTotal, itemTotal, yangGained, yangSpent):
 		if self.wndFarmSession:
-			self.wndFarmSession.OnFarmSessionState(isActive, elapsedSec, killTotal, itemTotal, yangGained, yangSpent)
+			self.wndFarmSession.OnFarmSessionState(isActive, elapsedSec, killTotal, stoneKillTotal, bossKillTotal, normalKillTotal, itemTotal, yangGained, yangSpent)
 
 	def OnFarmSessionKillEntry(self, mobVnum, count):
 		if self.wndFarmSession:
@@ -817,6 +818,10 @@ class GameWindow(ui.ScriptWindow):
 	def OnFarmSessionReportEnd(self):
 		if self.wndFarmSession:
 			self.wndFarmSession.OnFarmSessionReportEnd()
+
+	def OnFarmSessionWarp(self):
+		if self.wndFarmSession:
+			self.wndFarmSession.Hide()
 
 	def OpenRestartDialog(self):
 		self.interface.OpenRestartDialog()

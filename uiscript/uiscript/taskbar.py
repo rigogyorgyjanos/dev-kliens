@@ -325,6 +325,19 @@ window = {
 			"over_image" : ROOT + "TaskBar/System_Button_02.sub",
 			"down_image" : ROOT + "TaskBar/System_Button_03.sub",
 		},
+		{
+			"name" : "FarmSessionButton",
+			"type" : "button",
+
+			"x" : SCREEN_WIDTH - 8,
+			"y" : 3 + Y_ADD_POSITION,
+
+			"tooltip_text" : uiScriptLocale.TASKBAR_FARM_SESSION,
+
+			"default_image" : ROOT + "TaskBar/System_Button_01.sub",
+			"over_image" : ROOT + "TaskBar/System_Button_02.sub",
+			"down_image" : ROOT + "TaskBar/System_Button_03.sub",
+		},
 
 		## QuickBar
 		{

@@ -74,6 +74,7 @@ class Interface(object):
 
 		self.wndWeb = None
 		self.wndTaskBar = None
+		self.wndFarmSession = None
 		self.wndCharacter = None
 		self.wndInventory = None
 		self.wndExpandedTaskBar = None
@@ -150,6 +151,11 @@ class Interface(object):
 		self.wndTaskBar.SetToggleButtonEvent(uiTaskBar.TaskBar.BUTTON_INVENTORY, ui.__mem_func__(self.ToggleInventoryWindow))
 		self.wndTaskBar.SetToggleButtonEvent(uiTaskBar.TaskBar.BUTTON_MESSENGER, ui.__mem_func__(self.ToggleMessenger))
 		self.wndTaskBar.SetToggleButtonEvent(uiTaskBar.TaskBar.BUTTON_SYSTEM, ui.__mem_func__(self.ToggleSystemDialog))
+		if app.__FARM_SESSION_SYSTEM__:
+			try:
+				self.wndTaskBar.SetToggleButtonEvent(uiTaskBar.TaskBar.BUTTON_FARM_SESSION, ui.__mem_func__(self.ToggleFarmSessionWindow))
+			except:
+				pass
 		if uiTaskBar.TaskBar.IS_EXPANDED:
 			self.wndTaskBar.SetToggleButtonEvent(uiTaskBar.TaskBar.BUTTON_EXPAND, ui.__mem_func__(self.ToggleExpandedButton))
 			self.wndExpandedTaskBar = uiTaskBar.ExpandedTaskBar()
@@ -160,7 +166,6 @@ class Interface(object):
 			self.wndTaskBar.SetToggleButtonEvent(uiTaskBar.TaskBar.BUTTON_CHAT, ui.__mem_func__(self.ToggleChat))
 		
 		self.wndEnergyBar = None
-		import app
 		if app.ENABLE_ENERGY_SYSTEM:
 			wndEnergyBar = uiTaskBar.EnergyBar()
 			wndEnergyBar.LoadWindow()
@@ -1041,6 +1046,13 @@ class Interface(object):
 			else:
 				self.wndInventory.OverOutItem()
 				self.wndInventory.Close()
+	
+	def ToggleFarmSessionWindow(self):
+		if self.wndFarmSession:
+			if self.wndFarmSession.IsShow():
+				self.wndFarmSession.Hide()
+			else:
+				self.wndFarmSession.Open()
 	
 	def ToggleExpandedButton(self):
 		if False == player.IsObserverMode():
