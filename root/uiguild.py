@@ -651,7 +651,7 @@ class CommentSlot(ui.Window):
 
 		self.slotSimpleText = ui.MakeTextLine(self)
 		self.slotSimpleText.SetPosition(2, 0)
-		## 13.12.02 ¾Æ¶ø¼öÁ¤
+		## 13.12.02 ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½
 		if localeInfo.IsARABIC() :
 			self.slotSimpleText.SetWindowHorizontalAlignCenter()
 			self.slotSimpleText.SetHorizontalAlignCenter()
@@ -765,6 +765,9 @@ class GuildWindow(ui.ScriptWindow):
 		self.largeMarkBox.SetIndex(guildID)
 		self.largeMarkBox.SetScale(3)
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.SetWheelTopWindow(self.hWnd)
+
 	def Close(self):
 		self.__CloseAllGuildMemberPageGradeComboBox()
 		self.offerDialog.Close()
@@ -773,9 +776,27 @@ class GuildWindow(ui.ScriptWindow):
 		self.tooltipSkill.Hide()
 		self.Hide()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.ClearWheelTopWindow()
+
 		self.pickDialog = None
 		self.questionDialog = None
 		self.popup = None
+
+	if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+		def OnMouseWheelButtonUp(self):
+			scrollBar = self.pageWindow and self.pageWindow["MEMBER"].scrollBar
+			if scrollBar and scrollBar.IsShow():
+				scrollBar.OnUp()
+				return True
+			return False
+
+		def OnMouseWheelButtonDown(self):
+			scrollBar = self.pageWindow and self.pageWindow["MEMBER"].scrollBar
+			if scrollBar and scrollBar.IsShow():
+				scrollBar.OnDown()
+				return True
+			return False
 
 	def Destroy(self):
 		self.ClearDictionary()
@@ -843,7 +864,7 @@ class GuildWindow(ui.ScriptWindow):
 					"SKILL"			: self.PageWindow(self, "uiscript/guildwindow_guildskillpage.py"),
 					"GRADE"			: self.PageWindow(self, "uiscript/guildwindow_gradepage.py"),
 				}
-			elif localeInfo.IsVIETNAM() :   # ´ÙÇ¥½Ã 
+			elif localeInfo.IsVIETNAM() :   # ï¿½ï¿½Ç¥ï¿½ï¿½ 
 				self.pageWindow = {
 					"GUILD_INFO"	: self.PageWindow(self, "uiscript/guildwindow_guildinfopage_eu.py"),
 					"BOARD"			: self.PageWindow(self, "uiscript/guildwindow_boardpage.py"),
@@ -1045,7 +1066,7 @@ class GuildWindow(ui.ScriptWindow):
 			page.Children.append(noticeMarkImage)
 
 			## Name
-			## 13.12.02 ¾Æ¶ø¼öÁ¤
+			## 13.12.02 ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½
 			if localeInfo.IsJAPAN():
 				nameSlotImage = ui.MakeImageBox(page, "d:/ymir work/ui/public/Parameter_Slot_100x18.sub", 9, yPos)
 			elif localeInfo.IsARABIC():
@@ -1065,7 +1086,7 @@ class GuildWindow(ui.ScriptWindow):
 			page.Children.append(deleteButton)
 
 			## Comment
-			## 13.12.02 ¾Æ¶ø¼öÁ¤
+			## 13.12.02 ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½
 			commentSlot = CommentSlot()
 			commentSlot.SetParent(page)
 			if localeInfo.IsARABIC():
@@ -1082,7 +1103,7 @@ class GuildWindow(ui.ScriptWindow):
 			page.boardDict[i] = boardSlotList
 
 		## PostComment - Have to make this here for that fit tooltip's position.
-		## 13.12.02 ¾Æ¶ø¼öÁ¤
+		## 13.12.02 ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½
 		if localeInfo.IsARABIC():
 			postCommentButton = ui.MakeButton(page, 3, 273, localeInfo.GUILD_COMMENT, "d:/ymir work/ui/game/taskbar/", "Send_Chat_Button_01.sub", "Send_Chat_Button_02.sub", "Send_Chat_Button_03.sub")
 		else:
@@ -1101,7 +1122,7 @@ class GuildWindow(ui.ScriptWindow):
 
 			inverseLineIndex = self.MEMBER_LINE_COUNT - i - 1
 			yPos = 28 + inverseLineIndex*lineStep
-            ## 13.12.02 ¾Æ¶ø ¼öÁ¤
+            ## 13.12.02 ï¿½Æ¶ï¿½ ï¿½ï¿½ï¿½ï¿½
 			## Name
 			if localeInfo.IsJAPAN():
 				nameSlotImage = ui.MakeImageBox(page, "d:/ymir work/ui/public/Parameter_Slot_100x18.sub", 15, yPos)
@@ -1285,7 +1306,7 @@ class GuildWindow(ui.ScriptWindow):
 
 			yPos = 22 + i*lineStep
 			index = i+1
-			## 13.12.02 ¾Æ¶ø ¼öÁ¤
+			## 13.12.02 ï¿½Æ¶ï¿½ ï¿½ï¿½ï¿½ï¿½
 			## GradeNumber
 			if localeInfo.IsARABIC():
 				gradeNumberSlotImage = ui.MakeImageBox(page, "d:/ymir work/ui/public/Parameter_Slot_00.sub", 310, yPos)
@@ -1358,7 +1379,7 @@ class GuildWindow(ui.ScriptWindow):
 		guildID = net.GetGuildID()
 		self.largeMarkBox.SetIndex(guildID)
 		self.largeMarkBox.SetScale(3)
-		## 13.12.02 ¾Æ¶ø¼öÁ¤
+		## 13.12.02 ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½
 		if localeInfo.IsARABIC():
 			self.largeMarkBox.SetPosition(self.largeMarkBox.GetWidth()+32,1)
 
@@ -1477,7 +1498,7 @@ class GuildWindow(ui.ScriptWindow):
 
 		page.levelAverageSlot.SetText(str(guild.GetGuildMemberLevelAverage()))
 
-		## ±æµåÀå¸¸ ±æµå ¸¶Å©¿Í ±æµåÀü ½ÅÃ» ¹öÆ°À» º¼ ¼ö ÀÖÀ½
+		## ï¿½ï¿½ï¿½ï¿½å¸¸ ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã» ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		mainCharacterName = player.GetMainCharacterName()
 		masterName = guild.GetGuildMasterName()
 
@@ -1498,7 +1519,7 @@ class GuildWindow(ui.ScriptWindow):
 			page.declareWarButton.Hide()
 			page.uploadSymbolButton.Hide()
 
-		## Refresh ½Ã¿¡ ±æµåÀü Á¤º¸ ¾÷µ¥ÀÌÆ®
+		## Refresh ï¿½Ã¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 		for i in xrange(guild.ENEMY_GUILD_SLOT_MAX_COUNT):
 			name = guild.GetEnemyGuildName(i)
 			nameTextLine = self.enemyGuildNameList[i]
@@ -2013,9 +2034,9 @@ class BuildGuildBuildingWindow(ui.ScriptWindow):
 			)
 	elif localeInfo.IsYMIR() or localeInfo.IsWE_KOREA():
 		GUILD_CATEGORY_LIST = (
-				("HEADQUARTER", "º»°Ç¹°"),
-				("FACILITY", "±â´É°Ç¹°"),
-				("OBJECT", "Á¶°æ¹°"),
+				("HEADQUARTER", "ï¿½ï¿½ï¿½Ç¹ï¿½"),
+				("FACILITY", "ï¿½ï¿½É°Ç¹ï¿½"),
+				("OBJECT", "ï¿½ï¿½ï¿½æ¹°"),
 			)
 	elif localeInfo.IsEUROPE() or localeInfo.IsHONGKONG():
 		GUILD_CATEGORY_LIST = (
@@ -2196,7 +2217,7 @@ class BuildGuildBuildingWindow(ui.ScriptWindow):
 		line_width = line_maxX - line_minX
 		line_width_half = line_width / 2
 
-		X_SIZE_STEP = 2 * 2 ## 2ÀÇ ´ÜÀ§·Î¸¸ Áõ°¡ÇØ¾ß ÇÔ
+		X_SIZE_STEP = 2 * 2 ## 2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½ï¿½
 		Y_SIZE_STEP = 8
 		sxPos = door_maxX - corner_minX + (line_width_half*X_SIZE_STEP)
 		exPos = -sxPos
@@ -2319,6 +2340,9 @@ class BuildGuildBuildingWindow(ui.ScriptWindow):
 		self.Show()
 		self.__DisablePCBlocker()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.SetWheelTopWindow(self.hWnd)
+
 		import debugInfo
 		if debugInfo.IsDebugMode():
 			self.categoryList.SelectItem(2)
@@ -2334,8 +2358,25 @@ class BuildGuildBuildingWindow(ui.ScriptWindow):
 		self.__OnClosePopupDialog()
 		self.__EnablePCBlocker()
 		self.__UnlockCameraMoving()
+
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.ClearWheelTopWindow()
+
 		if self.closeEvent:
 			self.closeEvent()
+
+	if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+		def OnMouseWheelButtonUp(self):
+			if self.listScrollBar and self.listScrollBar.IsShow():
+				self.listScrollBar.OnUp()
+				return True
+			return False
+
+		def OnMouseWheelButtonDown(self):
+			if self.listScrollBar and self.listScrollBar.IsShow():
+				self.listScrollBar.OnDown()
+				return True
+			return False
 
 	def Destory(self):
 		self.Close()
@@ -2372,14 +2413,14 @@ class BuildGuildBuildingWindow(ui.ScriptWindow):
 		self.popup = None
 
 	def __EnablePCBlocker(self):
-		## PC Blocker Ã³¸®¸¦ ÄÒ´Ù. (Åõ¸íÇØÁü)
+		## PC Blocker Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Ò´ï¿½. (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 		chr.SetInstanceType(chr.INSTANCE_TYPE_BUILDING)
 
 		for idx in self.indexList:
 			chr.SetBlendRenderMode(idx, 1.0)
 
 	def __DisablePCBlocker(self):
-		## PC Blocker Ã³¸®¸¦ ²ö´Ù. (¾ÈÅõ¸íÇØÁü)
+		## PC Blocker Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 		chr.SetInstanceType(chr.INSTANCE_TYPE_OBJECT)
 
 		for idx in self.indexList:
@@ -2634,13 +2675,13 @@ class BuildGuildBuildingWindow(ui.ScriptWindow):
 		return True
 
 """
-- ÇÁ·ÎÅäÄÝ
+- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-°ÔÀÓµ¹ÀÔ½Ã:
+ï¿½ï¿½ï¿½Óµï¿½ï¿½Ô½ï¿½:
 	RecvLandPacket:
 		CPythonMiniMap::RegisterGuildArea
 
-°ÔÀÓÀÌµ¿Áß:
+ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½ï¿½ï¿½:
 	PythonPlayer::Update()
 		CPythonPlayer::__Update_NotifyGuildAreaEvent()
 			game.py.BINARY_Guild_EnterGuildArea
@@ -2649,15 +2690,15 @@ class BuildGuildBuildingWindow(ui.ScriptWindow):
 				uigameButton.GameButtonWindow.HideBuildButton()
 
 BuildButton:
-!±æµåÀåÀÎÁö Ã³¸® ¾øÀ½
-!°Ç¹°ÀÌ ÀÖ¾îµµ Áþ±â ¹öÆ°Àº ÀÖÀ½
+!ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+!ï¿½Ç¹ï¿½ï¿½ï¿½ ï¿½Ö¾îµµ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-!°Ç¹°ÀÌ ÀÓ½Ã·Î »ç¿ëÇÏ´Â VID ´Â ¼­¹ö°¡ º¸³»ÁÖ´Â °Í°ú È¥µ¿µÉ ¿°·Á°¡ ÀÖÀ½
-!°Ç¹° VNUM Àº BuildGuildBuildingWindow.BUILDING_VNUM_LIST ¸¦ ÀÌ¿ëÇØ º¯È¯
+!ï¿½Ç¹ï¿½ï¿½ï¿½ ï¿½Ó½Ã·ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ VID ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½Í°ï¿½ È¥ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+!ï¿½Ç¹ï¿½ VNUM ï¿½ï¿½ BuildGuildBuildingWindow.BUILDING_VNUM_LIST ï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
 
-!°Ç¹° ÁöÀ»¶§´Â /build c(reate)
-!°Ç¹° ºÎ¼ú¶§´Â /build d(estroy)
-!rotation ÀÇ ´ÜÀ§´Â degree
+!ï¿½Ç¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ /build c(reate)
+!ï¿½Ç¹ï¿½ ï¿½Î¼ï¿½ï¿½ï¿½ï¿½ï¿½ /build d(estroy)
+!rotation ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ degree
 
 	interfaceModule.interface.__OnClickBuildButton:
 		interfaceModule.interface.BUILD_OpenWindow:
@@ -2670,7 +2711,7 @@ PreviewButton:
 	__OnPreviewMode:
 	__RestoreViewMode:
 
-°Ç¹° ºÎ¼ö±â:
+ï¿½Ç¹ï¿½ ï¿½Î¼ï¿½ï¿½ï¿½:
 	uiTarget.TargetBoard.__OnDestroyBuilding
 		net.SendChatPacket("/build d vid")
 """
@@ -2912,13 +2953,13 @@ if __name__ == "__main__":
 	app.Loop()
 
 	"""
-	- ÇÁ·ÎÅäÄÝ
+	- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-°ÔÀÓµ¹ÀÔ½Ã:
+ï¿½ï¿½ï¿½Óµï¿½ï¿½Ô½ï¿½:
 	RecvLandPacket:
 		CPythonMiniMap::RegisterGuildArea
 
-°ÔÀÓÀÌµ¿Áß:
+ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½ï¿½ï¿½:
 	PythonPlayer::Update()
 		CPythonPlayer::__Update_NotifyGuildAreaEvent()
 			game.py.BINARY_Guild_EnterGuildArea
@@ -2927,15 +2968,15 @@ if __name__ == "__main__":
 				uigameButton.GameButtonWindow.HideBuildButton()
 
 BuildButton:
-!±æµåÀåÀÎÁö Ã³¸® ¾øÀ½
-!°Ç¹°ÀÌ ÀÖ¾îµµ Áþ±â ¹öÆ°Àº ÀÖÀ½
+!ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+!ï¿½Ç¹ï¿½ï¿½ï¿½ ï¿½Ö¾îµµ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-!°Ç¹°ÀÌ ÀÓ½Ã·Î »ç¿ëÇÏ´Â VID ´Â ¼­¹ö°¡ º¸³»ÁÖ´Â °Í°ú È¥µ¿µÉ ¿°·Á°¡ ÀÖÀ½
-!°Ç¹° VNUM Àº BuildGuildBuildingWindow.BUILDING_VNUM_LIST ¸¦ ÀÌ¿ëÇØ º¯È¯
+!ï¿½Ç¹ï¿½ï¿½ï¿½ ï¿½Ó½Ã·ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ VID ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½Í°ï¿½ È¥ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+!ï¿½Ç¹ï¿½ VNUM ï¿½ï¿½ BuildGuildBuildingWindow.BUILDING_VNUM_LIST ï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
 
-!°Ç¹° ÁöÀ»¶§´Â /build c(reate)
-!°Ç¹° ºÎ¼ú¶§´Â /build d(estroy)
-!rotation ÀÇ ´ÜÀ§´Â degree
+!ï¿½Ç¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ /build c(reate)
+!ï¿½Ç¹ï¿½ ï¿½Î¼ï¿½ï¿½ï¿½ï¿½ï¿½ /build d(estroy)
+!rotation ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ degree
 
 	interfaceModule.interface.__OnClickBuildButton:
 		interfaceModule.interface.BUILD_OpenWindow:
@@ -2944,13 +2985,13 @@ AcceptButton:
 	BuildGuildBuildingWindow.Build:
 		net.SendChatPacket("/build c vnum x y x_rot y_rot z_rot")
 
-	x_rot, y_rot ´Â AffectContainer¿¡ ÀúÀå
+	x_rot, y_rot ï¿½ï¿½ AffectContainerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 PreviewButton:
 	__OnPreviewMode:
 	__RestoreViewMode:
 
-°Ç¹° ºÎ¼ö±â:
+ï¿½Ç¹ï¿½ ï¿½Î¼ï¿½ï¿½ï¿½:
 	uiTarget.TargetBoard.__OnDestroyBuilding
 		net.SendChatPacket("/build d vid")
 	"""

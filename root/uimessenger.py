@@ -8,6 +8,7 @@ import localeInfo
 import constInfo
 import uiToolTip
 import uiGameOption
+import wndMgr
 
 import uiCommon
 from _weakref import proxy
@@ -387,6 +388,22 @@ class MessengerWindow(ui.ScriptWindow):
 
 		ui.ScriptWindow.Show(self)
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.SetWheelTopWindow(self.hWnd)
+
+	if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+		def OnMouseWheelButtonUp(self):
+			if self.scrollBar and self.scrollBar.IsShow():
+				self.scrollBar.OnUp()
+				return True
+			return False
+
+		def OnMouseWheelButtonDown(self):
+			if self.scrollBar and self.scrollBar.IsShow():
+				self.scrollBar.OnDown()
+				return True
+			return False
+
 	def __LoadWindow(self):
 
 		pyScrLoader = ui.PythonScriptLoader()
@@ -465,6 +482,9 @@ class MessengerWindow(ui.ScriptWindow):
 	def Close(self):
 		self.questionDialog = None
 		self.Hide()
+
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.ClearWheelTopWindow()
 
 	def SetSize(self, width, height):
 		ui.ScriptWindow.SetSize(self, width, height)

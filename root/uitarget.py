@@ -161,6 +161,9 @@ class TargetBoard(ui.ThinBoard):
 
 				self.Show()
 
+				if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+					wndMgr.SetWheelTopWindow(self.hWnd)
+
 			def Refresh(self):
 				self.__LoadInformation(self.race)
 				self.SetSize(self.BOARD_WIDTH, self.yPos + 10)
@@ -171,11 +174,27 @@ class TargetBoard(ui.ThinBoard):
 				self.itemScrollBarB = None
 				if self.itemSlotS:
 					self.itemSlotS.Hide()
-				self.itemSlotS = None	
+				self.itemSlotS = None
 				self.itemTooltip.HideToolTip()
 				self.itemslotInfos = []
 				self.extraSlots = [0, 0]
 				self.Hide()
+
+				if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+					wndMgr.ClearWheelTopWindow()
+
+			if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+				def OnMouseWheelButtonUp(self):
+					if self.itemScrollBarB and self.itemScrollBarB.IsShow():
+						self.itemScrollBarB.OnUp()
+						return True
+					return False
+
+				def OnMouseWheelButtonDown(self):
+					if self.itemScrollBarB and self.itemScrollBarB.IsShow():
+						self.itemScrollBarB.OnDown()
+						return True
+					return False
 
 			def __LoadInformation(self, race):
 				self.yPos = 7

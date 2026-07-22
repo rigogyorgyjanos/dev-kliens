@@ -288,14 +288,35 @@ class MissionWindow(ui.ScriptWindow):
 			self.SaveLastPosition()
 		self.Hide()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.ClearWheelTopWindow()
+
 	def Open(self):
 		self.Show()
 		self.SetTop()
 		self.SetLastPosition()
-		
+
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.SetWheelTopWindow(self.hWnd)
+
 		if not self.__packetSended:
 			self.__packetSended = True
 			net.SendChatPacket("/mission_books load")
+
+	if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+		def OnMouseWheelButtonUp(self):
+			scrollBar = self.ElementDictionary.get("scrollBar")
+			if scrollBar and scrollBar.IsShow():
+				scrollBar.OnUp()
+				return True
+			return False
+
+		def OnMouseWheelButtonDown(self):
+			scrollBar = self.ElementDictionary.get("scrollBar")
+			if scrollBar and scrollBar.IsShow():
+				scrollBar.OnDown()
+				return True
+			return False
 	def OnPressEscapeKey(self):
 		self.Close()
 		return True

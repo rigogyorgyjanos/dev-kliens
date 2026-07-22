@@ -151,6 +151,22 @@ class CharacterWindow(ui.ScriptWindow):
 
 		ui.ScriptWindow.Show(self)
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.SetWheelTopWindow(self.hWnd)
+
+	if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+		def OnMouseWheelButtonUp(self):
+			if self.questScrollBar and self.questScrollBar.IsShow():
+				self.questScrollBar.OnUp()
+				return True
+			return False
+
+		def OnMouseWheelButtonDown(self):
+			if self.questScrollBar and self.questScrollBar.IsShow():
+				self.questScrollBar.OnDown()
+				return True
+			return False
+
 	def __LoadScript(self, fileName):
 		pyScrLoader = ui.PythonScriptLoader()
 		pyScrLoader.LoadScriptFile(self, fileName)	
@@ -422,6 +438,9 @@ class CharacterWindow(ui.ScriptWindow):
 
 		self.Hide()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.ClearWheelTopWindow()
+
 	def SetSkillToolTip(self, toolTipSkill):
 		self.toolTipSkill = toolTipSkill
 
@@ -525,7 +544,7 @@ class CharacterWindow(ui.ScriptWindow):
 		except:
 			#import exception
 			#exception.Abort("CharacterWindow.RefreshStatus.BindObject")
-			## °ÔÀÓÀÌ Æ¨°Ü ¹ö¸²
+			## ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ¨ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			pass
 
 		self.__RefreshStatusPlusButtonList()
@@ -802,7 +821,7 @@ class CharacterWindow(ui.ScriptWindow):
 			skillLevel = getSkillLevel(slotIndex)
 			skillType = getSkillType(skillIndex)
 
-			## ½Â¸¶ ½ºÅ³ ¿¹¿Ü Ã³¸®
+			## ï¿½Â¸ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
 			if player.SKILL_INDEX_RIDING == skillIndex:
 				if 1 == skillGrade:
 					skillLevel += 19
@@ -829,7 +848,7 @@ class CharacterWindow(ui.ScriptWindow):
 					else:
 						skillPage.SetSlotCountNew(realSlotIndex, skillGrade, skillLevel)
 
-			## ±×¿Ü
+			## ï¿½×¿ï¿½
 			else:
 				if not SHOW_LIMIT_SUPPORT_SKILL_LIST or skillIndex in SHOW_LIMIT_SUPPORT_SKILL_LIST:
 					realSlotIndex = self.__GetETCSkillRealSlotIndex(slotIndex)
@@ -863,11 +882,11 @@ class CharacterWindow(ui.ScriptWindow):
 
 	def CanShowPlusButton(self, skillIndex, skillLevel, curStatPoint):
 
-		## ½ºÅ³ÀÌ ÀÖÀ¸¸é
+		## ï¿½ï¿½Å³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if 0 == skillIndex:
 			return False
 
-		## ·¹º§¾÷ Á¶°ÇÀ» ¸¸Á·ÇÑ´Ù¸é
+		## ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´Ù¸ï¿½
 		if not skill.CanLevelUpSkill(skillIndex, skillLevel):
 			return False
 
@@ -983,8 +1002,8 @@ class CharacterWindow(ui.ScriptWindow):
 
 		mouseModule.mouseController.DeattachObject()
 
-	## FIXME : ½ºÅ³À» »ç¿ëÇßÀ»¶§ ½½·Ô ¹øÈ£¸¦ °¡Áö°í ÇØ´ç ½½·ÔÀ» Ã£¾Æ¼­ ¾÷µ¥ÀÌÆ® ÇÑ´Ù.
-	##         ¸Å¿ì ºÒÇÕ¸®. ±¸Á¶ ÀÚÃ¼¸¦ °³¼±ÇØ¾ß ÇÒµí.
+	## FIXME : ï¿½ï¿½Å³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½Æ¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ñ´ï¿½.
+	##         ï¿½Å¿ï¿½ ï¿½ï¿½ï¿½Õ¸ï¿½. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½Òµï¿½.
 	def OnUseSkill(self, slotIndex, coolTime):
 
 		skillIndex = player.GetSkillIndex(slotIndex)

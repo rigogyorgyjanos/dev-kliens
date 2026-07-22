@@ -630,7 +630,7 @@ class ChatWindow(ui.Window):
 		self.scrollBar = scrollBar
 
 		self.Refresh()
-		self.chatInputSet.RefreshPosition() # RTL ½Ã À§Ä¡¸¦ Á¦´ë·Î ÀâÀ¸·Á¸é À§Ä¡ °»½ÅÀÌ ÇÊ¿äÇÏ´Ù
+		self.chatInputSet.RefreshPosition() # RTL ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½Ï´ï¿½
 	
 	def __del__(self):
 		ui.Window.__del__(self)
@@ -1086,10 +1086,29 @@ class ChatLogWindow(ui.Window):
 		self.chatInputSet.SetChatFocus()
 		self.Show()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.SetWheelTopWindow(self.hWnd)
+
 	def Close(self):
 		if self.chatInputSet:
 			self.chatInputSet.KillChatFocus()
 		self.Hide()
+
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.ClearWheelTopWindow()
+
+	if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+		def OnMouseWheelButtonUp(self):
+			if self.scrollBar and self.scrollBar.IsShow():
+				self.scrollBar.OnUp()
+				return True
+			return False
+
+		def OnMouseWheelButtonDown(self):
+			if self.scrollBar and self.scrollBar.IsShow():
+				self.scrollBar.OnDown()
+				return True
+			return False
 
 	def OnResize(self):
 		x, y = self.btnSizing.GetLocalPosition()

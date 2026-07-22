@@ -6,6 +6,7 @@ import app
 import localeInfo
 import ime
 import chr
+import wndMgr
 
 class WhisperButton(ui.Button):
 	def __init__(self):
@@ -225,6 +226,9 @@ class WhisperDialog(ui.ScriptWindow):
 		self.gamemasterMark.Hide()
 		self.minimizeButton.Show()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.SetWheelTopWindow(self.hWnd)
+
 	def OpenWithoutTarget(self, event):
 		self.eventAcceptTarget = event
 		self.titleName.SetText("")
@@ -238,6 +242,9 @@ class WhisperDialog(ui.ScriptWindow):
 		self.minimizeButton.Hide()
 		self.gamemasterMark.Hide()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.SetWheelTopWindow(self.hWnd)
+
 	def SetGameMasterLook(self):
 		self.gamemasterMark.Show()
 		self.reportViolentWhisperButton.Hide()
@@ -246,6 +253,9 @@ class WhisperDialog(ui.ScriptWindow):
 		self.titleNameEdit.KillFocus()
 		self.chatLine.KillFocus()
 		self.Hide()
+
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.ClearWheelTopWindow()
 
 		if None != self.eventMinimize:
 			self.eventMinimize(self.targetName)
@@ -256,8 +266,24 @@ class WhisperDialog(ui.ScriptWindow):
 		self.chatLine.KillFocus()
 		self.Hide()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.ClearWheelTopWindow()
+
 		if None != self.eventClose:
 			self.eventClose(self.targetName)
+
+	if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+		def OnMouseWheelButtonUp(self):
+			if self.scrollBar and self.scrollBar.IsShow():
+				self.scrollBar.OnUp()
+				return True
+			return False
+
+		def OnMouseWheelButtonDown(self):
+			if self.scrollBar and self.scrollBar.IsShow():
+				self.scrollBar.OnDown()
+				return True
+			return False
 
 	def ReportViolentWhisper(self):
 		net.SendChatPacket("/reportviolentwhisper " + self.targetName)

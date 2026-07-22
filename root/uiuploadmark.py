@@ -2,6 +2,7 @@ import app
 import ui
 import localeInfo
 import uiScriptLocale
+import wndMgr
 
 class MarkItem(ui.ListBoxEx.Item):
 	def __init__(self, fileName):
@@ -134,6 +135,9 @@ class MarkSelectDialog(ui.ScriptWindow):
 		self.SetCenterPosition()
 		self.SetTop()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.SetWheelTopWindow(self.hWnd)
+
 		if self.markListBox.IsEmpty():
 			self.__PopupMessage(localeInfo.GUILDMARK_UPLOADER_ERROR_PATH)
 
@@ -141,9 +145,25 @@ class MarkSelectDialog(ui.ScriptWindow):
 		self.popupDialog.Hide()
 		self.Hide()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.ClearWheelTopWindow()
+
 	def OnPressEscapeKey(self):
 		self.Close()
 		return True
+
+	if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+		def OnMouseWheelButtonUp(self):
+			if self.markListBox.scrollBar and self.markListBox.scrollBar.IsShow():
+				self.markListBox.scrollBar.OnUp()
+				return True
+			return False
+
+		def OnMouseWheelButtonDown(self):
+			if self.markListBox.scrollBar and self.markListBox.scrollBar.IsShow():
+				self.markListBox.scrollBar.OnDown()
+				return True
+			return False
 
 	def SAFE_SetSelectEvent(self, event):
 		self.selectEvent=ui.__mem_func__(event)
@@ -259,6 +279,9 @@ class SymbolSelectDialog(ui.ScriptWindow):
 		self.SetCenterPosition()
 		self.SetTop()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.SetWheelTopWindow(self.hWnd)
+
 		if self.symbolListBox.IsEmpty():
 			self.__PopupMessage(localeInfo.GUILDMARK_UPLOADER_ERROR_PATH)
 
@@ -266,9 +289,25 @@ class SymbolSelectDialog(ui.ScriptWindow):
 		self.popupDialog.Hide()
 		self.Hide()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.ClearWheelTopWindow()
+
 	def OnPressEscapeKey(self):
 		self.Close()
 		return True
+
+	if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+		def OnMouseWheelButtonUp(self):
+			if self.symbolListBox.scrollBar and self.symbolListBox.scrollBar.IsShow():
+				self.symbolListBox.scrollBar.OnUp()
+				return True
+			return False
+
+		def OnMouseWheelButtonDown(self):
+			if self.symbolListBox.scrollBar and self.symbolListBox.scrollBar.IsShow():
+				self.symbolListBox.scrollBar.OnDown()
+				return True
+			return False
 
 	def SAFE_SetSelectEvent(self, event):
 		self.selectEvent=ui.__mem_func__(event)

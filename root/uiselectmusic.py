@@ -2,6 +2,7 @@ import app
 import ui
 import localeInfo
 import uiScriptLocale
+import wndMgr
 
 FILE_NAME_LEN = 20 
 DEFAULT_THEMA = localeInfo.MUSIC_METIN2_DEFAULT_THEMA
@@ -101,6 +102,9 @@ class FileListDialog(ui.ScriptWindow):
 		self.SetCenterPosition()
 		self.SetTop()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.SetWheelTopWindow(self.hWnd)
+
 		if self.fileListBox.IsEmpty():
 			self.__PopupMessage(localeInfo.MUSIC_EMPTY_MUSIC_LIST)
 
@@ -108,9 +112,25 @@ class FileListDialog(ui.ScriptWindow):
 		self.popupDialog.Hide()
 		self.Hide()
 
+		if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+			wndMgr.ClearWheelTopWindow()
+
 	def OnPressEscapeKey(self):
 		self.Close()
 		return True
+
+	if app.__BL_MOUSE_WHEEL_TOP_WINDOW__:
+		def OnMouseWheelButtonUp(self):
+			if self.fileListBox.scrollBar and self.fileListBox.scrollBar.IsShow():
+				self.fileListBox.scrollBar.OnUp()
+				return True
+			return False
+
+		def OnMouseWheelButtonDown(self):
+			if self.fileListBox.scrollBar and self.fileListBox.scrollBar.IsShow():
+				self.fileListBox.scrollBar.OnDown()
+				return True
+			return False
 
 	def SAFE_SetSelectEvent(self, event):
 		self.selectEvent=ui.__mem_func__(event)
