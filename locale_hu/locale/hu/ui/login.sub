@@ -1,7 +1,7 @@
 title subImage
 version 2.0
-image "login.jpg"
+image "login.png"
 left 0
 top 0
-right 1024
-bottom 768
+right 1920
+bottom 1080

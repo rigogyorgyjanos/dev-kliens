@@ -175,6 +175,7 @@ class SelectCharacterWindow(ui.Window):
 
 		self.startIndex = -1
 		self.isLoad = 0
+		self.slotOrder = range(self.SLOT_COUNT)
 
 	def __del__(self):
 		ui.Window.__del__(self)
@@ -298,11 +299,26 @@ class SelectCharacterWindow(ui.Window):
 			self.chrRenderer.SetParent(self.backGroundImg3)
 			self.chrRenderer.Show()
 
+	def __ComputeSlotOrder(self):
+		# Sort account slots by last-play-time (descending) so the most
+		# recently played character shows first - empty slots report 0 and
+		# sink to the end on their own, no special-casing needed.
+		order = list(xrange(self.SLOT_COUNT))
+		order.sort(key=lambda i: net.GetAccountCharacterSlotDataInteger(i, net.ACCOUNT_CHARACTER_SLOT_LAST_PLAYTIME), reverse=True)
+		return order
+
 	def Refresh(self):
 		if not self.isLoad:
 			return
-		
-		for i in xrange(self.SLOT_COUNT):
+
+		self.slotOrder = self.__ComputeSlotOrder()
+
+		for visualPos in xrange(self.SLOT_COUNT):
+			slotWidget = getattr(self, "CharacterSlot_%d" % visualPos)
+			slotWidget.SAFE_SetEvent(self.SelectSlot, self.slotOrder[visualPos])
+
+		for visualPos in xrange(self.SLOT_COUNT):
+			i = self.slotOrder[visualPos]
 			id = net.GetAccountCharacterSlotDataInteger(i, net.ACCOUNT_CHARACTER_SLOT_ID)
 			race = net.GetAccountCharacterSlotDataInteger(i, net.ACCOUNT_CHARACTER_SLOT_RACE)
 			form = net.GetAccountCharacterSlotDataInteger(i, net.ACCOUNT_CHARACTER_SLOT_FORM)
@@ -337,57 +353,23 @@ class SelectCharacterWindow(ui.Window):
 		self.CharacterFace_4.Hide()
 		self.CharacterSlot_4_Lv.Hide()
 		self.CharacterSlot_4_Name.Hide()
-		for i in xrange(self.SLOT_COUNT):
+		for visualPos in xrange(self.SLOT_COUNT):
+			i = self.slotOrder[visualPos]
 			id = net.GetAccountCharacterSlotDataInteger(i, net.ACCOUNT_CHARACTER_SLOT_ID)
 			race = net.GetAccountCharacterSlotDataInteger(i, net.ACCOUNT_CHARACTER_SLOT_RACE)
 			name = net.GetAccountCharacterSlotDataString(i, net.ACCOUNT_CHARACTER_SLOT_NAME)
 			level = net.GetAccountCharacterSlotDataInteger(i, net.ACCOUNT_CHARACTER_SLOT_LEVEL)
 			if id != 0:
-				if i == 0:
-					self.CharacterFace_0.LoadImage(self.FACE_IMAGE_DICT_2[race])
-					self.CharacterFace_0.Show()
-					self.CharacterSlot_0.Show()
-					self.CharacterSlot_0_Name.SetText(name)
-					self.CharacterSlot_0_Name.Show()
-					self.CharacterSlot_0_Lv.SetText(localeInfo.INTRO_SELECT_LEVEL % (level))
-					self.CharacterSlot_0_Lv.SetFontColor(30, 72, 168)
-					self.CharacterSlot_0_Lv.Show()
-				elif i == 1:
-					self.CharacterFace_1.LoadImage(self.FACE_IMAGE_DICT_2[race])
-					self.CharacterFace_1.Show()
-					self.CharacterSlot_1.Show()
-					self.CharacterSlot_1_Name.SetText(name)
-					self.CharacterSlot_1_Name.Show()
-					self.CharacterSlot_1_Lv.SetText(localeInfo.INTRO_SELECT_LEVEL % (level))
-					self.CharacterSlot_1_Lv.SetFontColor(30, 72, 168)
-					self.CharacterSlot_1_Lv.Show()
-				elif i == 2:
-					self.CharacterFace_2.LoadImage(self.FACE_IMAGE_DICT_2[race])
-					self.CharacterFace_2.Show()
-					self.CharacterSlot_2.Show()
-					self.CharacterSlot_2_Name.SetText(name)
-					self.CharacterSlot_2_Name.Show()
-					self.CharacterSlot_2_Lv.SetText(localeInfo.INTRO_SELECT_LEVEL % (level))
-					self.CharacterSlot_2_Lv.SetFontColor(30, 72, 168)
-					self.CharacterSlot_2_Lv.Show()
-				elif i == 3:
-					self.CharacterFace_3.LoadImage(self.FACE_IMAGE_DICT_2[race])
-					self.CharacterFace_3.Show()
-					self.CharacterSlot_3.Show()
-					self.CharacterSlot_3_Name.SetText(name)
-					self.CharacterSlot_3_Name.Show()
-					self.CharacterSlot_3_Lv.SetText(localeInfo.INTRO_SELECT_LEVEL % (level))
-					self.CharacterSlot_3_Lv.SetFontColor(30, 72, 168)
-					self.CharacterSlot_3_Lv.Show()
-				elif i == 4:
-					self.CharacterFace_4.LoadImage(self.FACE_IMAGE_DICT_2[race])
-					self.CharacterFace_4.Show()
-					self.CharacterSlot_4.Show()
-					self.CharacterSlot_4_Name.SetText(name)
-					self.CharacterSlot_4_Name.Show()
-					self.CharacterSlot_4_Lv.SetText(localeInfo.INTRO_SELECT_LEVEL % (level))
-					self.CharacterSlot_4_Lv.SetFontColor(30, 72, 168)
-					self.CharacterSlot_4_Lv.Show()
+				getattr(self, "CharacterFace_%d" % visualPos).LoadImage(self.FACE_IMAGE_DICT_2[race])
+				getattr(self, "CharacterFace_%d" % visualPos).Show()
+				getattr(self, "CharacterSlot_%d" % visualPos).Show()
+				slotName = getattr(self, "CharacterSlot_%d_Name" % visualPos)
+				slotName.SetText(name)
+				slotName.Show()
+				slotLv = getattr(self, "CharacterSlot_%d_Lv" % visualPos)
+				slotLv.SetText(localeInfo.INTRO_SELECT_LEVEL % (level))
+				slotLv.SetFontColor(30, 72, 168)
+				slotLv.Show()
 
 	def GetCharacterSlotID(self, slotIndex):
 		return net.GetAccountCharacterSlotDataInteger(slotIndex, net.ACCOUNT_CHARACTER_SLOT_ID)
@@ -846,67 +828,21 @@ class SelectCharacterWindow(ui.Window):
 			#self.MakeCharacter(index, id, name, race, form, hair, acce, acce_spec)
 			self.MakeCharacter(index, id, name, race, form, hair)
 		
-		if index == 0:
-			self.CharacterSlot_0.Down()
-			self.CharacterSlot_0_Name.SetFontColor(1.0, 0.6000, 0.3500)
-			self.CharacterFace_0.LoadImage(self.FACE_IMAGE_DICT_1[race])
-			self.CharacterSlot_1.SetUp()
-			self.CharacterSlot_2.SetUp()
-			self.CharacterSlot_3.SetUp()
-			self.CharacterSlot_4.SetUp()
-			self.CharacterSlot_1_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_2_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_3_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_4_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-		elif index == 1:
-			self.CharacterSlot_1.Down()
-			self.CharacterSlot_1_Name.SetFontColor(1.0, 0.6000, 0.3500)
-			self.CharacterFace_1.LoadImage(self.FACE_IMAGE_DICT_1[race])
-			self.CharacterSlot_0.SetUp()
-			self.CharacterSlot_2.SetUp()
-			self.CharacterSlot_3.SetUp()
-			self.CharacterSlot_4.SetUp()
-			self.CharacterSlot_0_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_2_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_3_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_4_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-		elif index == 2:
-			self.CharacterSlot_2.Down()
-			self.CharacterSlot_2_Name.SetFontColor(1.0, 0.6000, 0.3500)
-			self.CharacterFace_2.LoadImage(self.FACE_IMAGE_DICT_1[race])
-			self.CharacterSlot_0.SetUp()
-			self.CharacterSlot_1.SetUp()
-			self.CharacterSlot_3.SetUp()
-			self.CharacterSlot_4.SetUp()
-			self.CharacterSlot_0_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_1_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_3_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_4_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-		elif index == 3:
-			self.CharacterSlot_3.Down()
-			self.CharacterSlot_3_Name.SetFontColor(1.0, 0.6000, 0.3500)
-			self.CharacterFace_3.LoadImage(self.FACE_IMAGE_DICT_1[race])
-			self.CharacterSlot_0.SetUp()
-			self.CharacterSlot_1.SetUp()
-			self.CharacterSlot_2.SetUp()
-			self.CharacterSlot_4.SetUp()
-			self.CharacterSlot_0_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_1_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_2_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_4_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-		elif index == 4:
-			self.CharacterSlot_4.Down()
-			self.CharacterSlot_4_Name.SetFontColor(1.0, 0.6000, 0.3500)
-			self.CharacterFace_4.LoadImage(self.FACE_IMAGE_DICT_1[race])
-			self.CharacterSlot_0.SetUp()
-			self.CharacterSlot_1.SetUp()
-			self.CharacterSlot_2.SetUp()
-			self.CharacterSlot_3.SetUp()
-			self.CharacterSlot_0_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_1_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_2_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-			self.CharacterSlot_3_Name.SetFontColor(0.8549, 0.8549, 0.8549)
-		
+		# The widget slot showing this real account index on screen can differ
+		# from "index" itself now that the list is sorted by last-play-time -
+		# highlight by screen position (slotOrder), not by raw account index.
+		selectedVisualPos = self.slotOrder.index(index)
+		for visualPos in xrange(self.SLOT_COUNT):
+			slotWidget = getattr(self, "CharacterSlot_%d" % visualPos)
+			nameWidget = getattr(self, "CharacterSlot_%d_Name" % visualPos)
+			if visualPos == selectedVisualPos:
+				slotWidget.Down()
+				nameWidget.SetFontColor(1.0, 0.6000, 0.3500)
+				getattr(self, "CharacterFace_%d" % visualPos).LoadImage(self.FACE_IMAGE_DICT_1[race])
+			else:
+				slotWidget.SetUp()
+				nameWidget.SetFontColor(0.8549, 0.8549, 0.8549)
+
 		self.slot = index
 		chr.SelectInstance(self.slot)
 		
