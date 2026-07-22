@@ -20,7 +20,7 @@ window = {
 	"y" : 0,
 
 	"width" : 300,
-	"height" : 25*11+8,
+	"height" : 25*12+8,
 
 	"children" :
 	(
@@ -32,7 +32,7 @@ window = {
 			"y" : 0,
 
 			"width" : 300,
-			"height" : 25*11+8,
+			"height" : 25*12+8,
 
 			"children" :
 			(
@@ -56,7 +56,7 @@ window = {
 					),
 				},
 
-				## ÀÌ¸§»ö
+				## ï¿½Ì¸ï¿½ï¿½ï¿½
 				{
 					"name" : "name_color",
 					"type" : "text",
@@ -93,7 +93,7 @@ window = {
 					"down_image" : ROOT_PATH + "Middle_Button_03.sub",
 				},
 
-				## Å¸°ÙÃ¢
+				## Å¸ï¿½ï¿½Ã¢
 				{
 					"name" : "target_board",
 					"type" : "text",
@@ -398,7 +398,7 @@ window = {
 					"down_image" : ROOT_PATH + "middle_button_03.sub",
 				},
 
-				## ÆÇ¸Å¹®±¸
+				## ï¿½Ç¸Å¹ï¿½ï¿½ï¿½
 				{
 					"name" : "salestext_on_off",
 					"type" : "text",
@@ -433,7 +433,31 @@ window = {
 					"default_image" : ROOT_PATH + "middle_button_01.sub",
 					"over_image" : ROOT_PATH + "middle_button_02.sub",
 					"down_image" : ROOT_PATH + "middle_button_03.sub",
-				},				
+				},
+
+				## Pick Up Filter
+				{
+					"name" : "pick_up_text",
+					"type" : "text",
+
+					"x" : LINE_LABEL_X,
+					"y" : 265+2,
+
+					"text" : uiScriptLocale.PICK_UP,
+				},
+				{
+					"name" : "pick_up_show_button",
+					"type" : "button",
+
+					"x" : LINE_DATA_X,
+					"y" : 265,
+
+					"text" : uiScriptLocale.OPTION_SETTING,
+
+					"default_image" : ROOT_PATH + "middle_button_01.sub",
+					"over_image" : ROOT_PATH + "middle_button_02.sub",
+					"down_image" : ROOT_PATH + "middle_button_03.sub",
+				},
 			),
 		},
 	),

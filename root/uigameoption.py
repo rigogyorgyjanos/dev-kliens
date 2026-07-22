@@ -8,8 +8,8 @@ import localeInfo
 import constInfo
 import chrmgr
 import player
-import uiPrivateShopBuilder # ±èÁØÈ£
-import interfaceModule # ±èÁØÈ£
+import uiPrivateShopBuilder # ï¿½ï¿½ï¿½ï¿½È£
+import interfaceModule # ï¿½ï¿½ï¿½ï¿½È£
 
 blockMode = 0
 viewChatMode = 0
@@ -110,6 +110,9 @@ class OptionDialog(ui.ScriptWindow):
 			self.showDamageButtonList.append(GetObject("show_damage_off_button"))
 			self.showsalesTextButtonList.append(GetObject("salestext_on_button"))
 			self.showsalesTextButtonList.append(GetObject("salestext_off_button"))
+
+			if app.__BL_PICK_FILTER__:
+				GetObject("pick_up_show_button").SetEvent(ui.__mem_func__(self.OpenPickUpWindow))
 
 			global MOBILE
 			if MOBILE:
@@ -225,6 +228,10 @@ class OptionDialog(ui.ScriptWindow):
 
 	def __OnClickFogModeLevel2Button(self):
 		self.__SetFogLevel(2)
+
+	if app.__BL_PICK_FILTER__:
+		def OpenPickUpWindow(self):
+			net.OpenPickUpWindow()
 
 	def __OnClickBlockExchangeButton(self):
 		self.RefreshBlock()

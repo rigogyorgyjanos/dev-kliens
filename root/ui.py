@@ -1832,28 +1832,39 @@ class ToggleButton(Button):
 		self.eventUp = None
 		self.eventDown = None
 
+		self.eventUpArgs = None
+		self.eventDownArgs = None
+
 	def __del__(self):
 		Button.__del__(self)
 
 		self.eventUp = None
 		self.eventDown = None
 
-	def SetToggleUpEvent(self, event):
+	def SetToggleUpEvent(self, event, *args):
 		self.eventUp = event
+		self.eventUpArgs = args
 
-	def SetToggleDownEvent(self, event):
+	def SetToggleDownEvent(self, event, *args):
 		self.eventDown = event
+		self.eventDownArgs = args
 
 	def RegisterWindow(self, layer):
 		self.hWnd = wndMgr.RegisterToggleButton(self, layer)
 
 	def OnToggleUp(self):
 		if self.eventUp:
-			self.eventUp()
+			if self.eventUpArgs:
+				apply(self.eventUp, self.eventUpArgs)
+			else:
+				self.eventUp()
 
 	def OnToggleDown(self):
 		if self.eventDown:
-			self.eventDown()
+			if self.eventDownArgs:
+				apply(self.eventDown, self.eventDownArgs)
+			else:
+				self.eventDown()
 
 class DragButton(Button):
 	def __init__(self):
@@ -2093,11 +2104,11 @@ class SlotWindow(Window):
 		return wndMgr.GetSlotCount(self.hWnd)
 
 	def SetUseMode(self, flag):
-		"TrueÀÏ¶§¸¸ ItemToItem ÀÌ °¡´ÉÇÑÁö º¸¿©ÁØ´Ù"
+		"Trueï¿½Ï¶ï¿½ï¿½ï¿½ ItemToItem ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø´ï¿½"
 		wndMgr.SetUseMode(self.hWnd, flag)
 
 	def SetUsableItem(self, flag): 
-		"True¸é ÇöÀç °¡¸®Å² ¾ÆÀÌÅÛÀÌ ItemToItem Àû¿ë °¡´ÉÇÏ´Ù"
+		"Trueï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Å² ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ItemToItem ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½"
 		wndMgr.SetUsableItem(self.hWnd, flag)
 
 	## Slot
@@ -2268,7 +2279,7 @@ class TitleBar(Window):
 
 	def MakeTitleBar(self, width, color):
 
-		## ÇöÀç Color´Â »ç¿ëÇÏ°í ÀÖÁö ¾ÊÀ½
+		## ï¿½ï¿½ï¿½ï¿½ Colorï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 		width = max(64, width)
 
@@ -3776,8 +3787,8 @@ class PythonScriptLoader(object):
 		print "===== Load Script File : %s" % (FileName)
 
 		try:
-			# chr, player µîÀº sandbox ³»¿¡¼­ import°¡ Çã¿ëµÇÁö ¾Ê±â ¶§¹®¿¡,(º¿ÀÌ ¾Ç¿ëÇÒ ¿©Áö°¡ ¸Å¿ì Å­.)
-			#  ¹Ì¸® script dictionary¿¡ ÇÊ¿äÇÑ »ó¼ö¸¦ ³Ö¾î³õ´Â´Ù.
+			# chr, player ï¿½ï¿½ï¿½ï¿½ sandbox ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ importï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,(ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å¿ï¿½ Å­.)
+			#  ï¿½Ì¸ï¿½ script dictionaryï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½ï¿½Â´ï¿½.
 			import chr
 			import player
 			import app
