@@ -1091,7 +1091,10 @@ class Interface(object):
 		if player.DRAGON_SOUL_INVENTORY == inven_type:
 			if app.ENABLE_DRAGON_SOUL_SYSTEM:
 				self.wndDragonSoul.HighlightSlot(inven_pos)
-			
+		elif player.INVENTORY == inven_type:
+			if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
+				self.wndInventory.HighlightSlot(inven_pos)
+
 	def DragonSoulGiveQuilification(self):
 		self.DRAGON_SOUL_IS_QUALIFIED = True
 		self.wndExpandedTaskBar.SetToolTipText(uiTaskBar.ExpandedTaskBar.BUTTON_DRAGON_SOUL, uiScriptLocale.TASKBAR_DRAGON_SOUL)

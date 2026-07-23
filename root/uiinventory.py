@@ -340,7 +340,11 @@ class InventoryWindow(ui.ScriptWindow):
 			self.equipmentTab = []
 			self.equipmentTab.append(self.GetChild("Equipment_Tab_01"))
 			self.equipmentTab.append(self.GetChild("Equipment_Tab_02"))
-			
+
+			if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
+				self.listHighlightedSlot = []
+
+
 			if app.ENABLE_SORT_INVEN:
 				self.yenilebutton = self.GetChild2("YenileButton")
 				self.yenilebutton.SetEvent(ui.__mem_func__(self.ClickYenileButton))
@@ -589,7 +593,11 @@ class InventoryWindow(ui.ScriptWindow):
 		getItemVNum=player.GetItemIndex
 		getItemCount=player.GetItemCount
 		setItemVNum=self.wndItem.SetItemSlot
-		
+
+		if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
+			for i in xrange(self.wndItem.GetSlotCount()):
+				self.wndItem.DeactivateSlot(i)
+
 		for i in xrange(player.INVENTORY_PAGE_SIZE):
 			slotNumber = self.__InventoryLocalSlotPosToGlobalSlotPos(i)
 			
@@ -624,10 +632,12 @@ class InventoryWindow(ui.ScriptWindow):
 					player.SetAutoPotionInfo(potionType, isActivated, (totalAmount - usedAmount), totalAmount, self.__InventoryLocalSlotPosToGlobalSlotPos(i))
 					
 				else:
-					self.wndItem.DeactivateSlot(slotNumber)			
-		
-		
-					
+					self.wndItem.DeactivateSlot(slotNumber)
+
+
+		if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
+			self.__HighlightSlot_Refresh()
+
 		self.wndItem.RefreshSlot()
 
 		if self.wndBelt:
@@ -1022,6 +1032,9 @@ class InventoryWindow(ui.ScriptWindow):
 		overSlotPos = self.__InventoryLocalSlotPosToGlobalSlotPos(overSlotPos)
 		self.wndItem.SetUsableItem(False)
 
+		if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
+			self.DelHighlightSlot(overSlotPos)
+
 		if mouseModule.mouseController.isAttached():
 			attachedItemType = mouseModule.mouseController.GetAttachedType()
 			if player.SLOT_TYPE_INVENTORY == attachedItemType:
@@ -1296,4 +1309,36 @@ class InventoryWindow(ui.ScriptWindow):
 		if self.wndBelt:
 #			print "Belt Global Pos : ", self.wndBelt.GetGlobalPosition()
 			self.wndBelt.AdjustPositionAndSize()
-						
+
+	if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
+		# Pickup-glow highlight (freshly picked-up items) - sticky until hovered, tracked by
+		# global slot number so it survives inventory page switches like uiDragonSoul's version.
+		def __HighlightSlot_Refresh(self):
+			for i in xrange(self.wndItem.GetSlotCount()):
+				slotNumber = self.__InventoryLocalSlotPosToGlobalSlotPos(i)
+				if slotNumber in self.listHighlightedSlot:
+					self.wndItem.ActivateSlot(i)
+
+		def __HighlightSlot_Clear(self):
+			for i in xrange(self.wndItem.GetSlotCount()):
+				slotNumber = self.__InventoryLocalSlotPosToGlobalSlotPos(i)
+				if slotNumber in self.listHighlightedSlot:
+					self.wndItem.DeactivateSlot(i)
+					self.listHighlightedSlot.remove(slotNumber)
+
+		def HighlightSlot(self, slot):
+			if slot >= player.INVENTORY_PAGE_SIZE * player.INVENTORY_PAGE_COUNT:
+				return
+
+			if not slot in self.listHighlightedSlot:
+				self.listHighlightedSlot.append(slot)
+
+		def DelHighlightSlot(self, inventorylocalslot):
+			if inventorylocalslot in self.listHighlightedSlot:
+				if inventorylocalslot >= player.INVENTORY_PAGE_SIZE:
+					self.wndItem.DeactivateSlot(inventorylocalslot - (self.inventoryPageIndex * player.INVENTORY_PAGE_SIZE))
+				else:
+					self.wndItem.DeactivateSlot(inventorylocalslot)
+
+				self.listHighlightedSlot.remove(inventorylocalslot)
+

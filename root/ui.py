@@ -2052,6 +2052,10 @@ class SlotWindow(Window):
 	def DeactivateSlot(self, slotNumber):
 		wndMgr.DeactivateSlot(self.hWnd, slotNumber)
 
+	if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
+		def SetSlotDiffuseColor(self, slotindex, colortype):
+			wndMgr.SetSlotDiffuseColor(self.hWnd, slotindex, colortype)
+
 	def ShowSlotBaseImage(self, slotNumber):
 		wndMgr.ShowSlotBaseImage(self.hWnd, slotNumber)
 
