@@ -1399,6 +1399,29 @@ class ExtendedInventoryWindow(ui.ScriptWindow):
 			self.inventoryTab.append(self.GetChild("Inventory_Tab_01"))
 			self.inventoryTab.append(self.GetChild("Inventory_Tab_02"))
 			self.inventoryTab.append(self.GetChild("Inventory_Tab_03"))
+
+			if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
+				self.listHighlightedSlot = []
+
+			if app.ENABLE_SORT_INVEN:
+				self.yenilebutton = self.GetChild2("YenileButton")
+				self.yenilebutton.SetEvent(ui.__mem_func__(self.ClickYenileButton))
+				self.tooltipI = uiToolTip.ToolTip()
+				self.tooltipI.Hide()
+				self.tooltipInfo = [self.tooltipI]*4
+				self.InformationText = [localeInfo.YENILE_BUTTON_TITLE,
+										localeInfo.YENILE_BUTTON,
+										localeInfo.YENILE_BUTTON2,
+										localeInfo.YENILE_BUTTON3
+				]
+				for i in xrange(len(self.tooltipInfo)):
+					self.tooltipInfo[i].SetFollow(True)
+					self.tooltipInfo[i].AlignHorizonalCenter()
+					if i == 0:
+						self.tooltipInfo[i].AppendTextLine(self.InformationText[i], 0xffffff00)
+					else:
+						self.tooltipInfo[i].AppendTextLine(self.InformationText[i])
+					self.tooltipInfo[i].Hide()
 		except:
 			import exception
 			exception.Abort("ExtendedInventoryWindow.LoadWindow.BindObject")
@@ -1500,10 +1523,44 @@ class ExtendedInventoryWindow(ui.ScriptWindow):
 	def GetInventoryPageIndex(self):
 		return self.inventoryPageIndex
 
+	def __GetSortCategory(self):
+		# WJ_SPLIT_INVENTORY_SYSTEM: maps the currently open tab to the server's
+		# SortInven category id (0=base bag, 1=skillbook, 2=upgrade, 3=stone, 4=sandik).
+		if self.inventoryType == 0:
+			return 1
+		elif self.inventoryType == 2:
+			return 3
+		elif self.inventoryType == 3:
+			return 4
+		else:
+			return 2
+
+	if app.ENABLE_SORT_INVEN:
+		def ClickYenileButton(self):
+			category = self.__GetSortCategory()
+			if app.IsPressed(app.DIK_LALT):
+				net.SortInven(2, category)
+			elif app.IsPressed(app.DIK_LCONTROL):
+				net.SortInven(3, category)
+			else:
+				net.SortInven(1, category)
+
+	def OnUpdate(self):
+		if app.ENABLE_SORT_INVEN and self.tooltipInfo:
+			for i in xrange(len(self.tooltipInfo)):
+				if self.yenilebutton.IsIn():
+					self.tooltipInfo[i].Show()
+				else:
+					self.tooltipInfo[i].Hide()
+
 	def RefreshBagSlotWindow(self):
 		getItemVNum=player.GetItemIndex
 		getItemCount=player.GetItemCount
 		setItemVNum=self.wndItem.SetItemSlot
+
+		if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
+			for i in xrange(self.wndItem.GetSlotCount()):
+				self.wndItem.DeactivateSlot(i)
 
 		if self.inventoryType == 0:
 			slotStart = item.SKILL_BOOK_INVENTORY_SLOT_START
@@ -1533,6 +1590,31 @@ class ExtendedInventoryWindow(ui.ScriptWindow):
 			itemVnum = getItemVNum(slotNumber)
 			setItemVNum(i, itemVnum, itemCount)
 		self.wndItem.RefreshSlot()
+
+		if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
+			self.__HighlightSlot_Refresh()
+
+	if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
+		# Pickup-glow highlight (freshly picked-up items) - sticky until hovered, tracked by
+		# global slot number so it survives category/page switches, mirroring the base
+		# InventoryWindow's implementation.
+		def __HighlightSlot_Refresh(self):
+			for i in xrange(self.wndItem.GetSlotCount()):
+				slotNumber = self.__LocalSlotToGlobalSlot(i)
+				if slotNumber in self.listHighlightedSlot:
+					self.wndItem.ActivateSlot(i)
+
+		def HighlightSlot(self, slot):
+			if slot < item.SKILL_BOOK_INVENTORY_SLOT_START or slot >= item.SANDIK_INVENTORY_SLOT_START + player.SANDIK_INVENTORY_SLOT_COUNT:
+				return
+
+			if not slot in self.listHighlightedSlot:
+				self.listHighlightedSlot.append(slot)
+
+		def DelHighlightSlot(self, globalSlot, localSlot):
+			if globalSlot in self.listHighlightedSlot:
+				self.wndItem.DeactivateSlot(localSlot)
+				self.listHighlightedSlot.remove(globalSlot)
 
 	def RefreshItemSlot(self):
 		self.RefreshBagSlotWindow()
@@ -1731,9 +1813,13 @@ class ExtendedInventoryWindow(ui.ScriptWindow):
 			self.tooltipItem.HideToolTip()
 
 	def OverInItem(self, overSlotPos):
-		overSlotPos = self.__LocalSlotToGlobalSlot(overSlotPos)
+		globalSlotPos = self.__LocalSlotToGlobalSlot(overSlotPos)
 		self.wndItem.SetUsableItem(False)
-		self.ShowToolTip(overSlotPos)
+
+		if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
+			self.DelHighlightSlot(globalSlotPos, overSlotPos)
+
+		self.ShowToolTip(globalSlotPos)
 
 	def ShowToolTip(self, slotIndex):
 		if None != self.tooltipItem:

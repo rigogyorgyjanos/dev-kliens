@@ -1116,6 +1116,11 @@ class Interface(object):
 		elif player.INVENTORY == inven_type:
 			if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
 				self.wndInventory.HighlightSlot(inven_pos)
+				# WJ_SPLIT_INVENTORY_SYSTEM: inven_type alone can't tell base bag from the
+				# 4 extended tabs (all live inside INVENTORY) - each window bound-checks
+				# inven_pos itself and no-ops if it's not its own range.
+				if self.wndExtendedInventory:
+					self.wndExtendedInventory.HighlightSlot(inven_pos)
 
 	def DragonSoulGiveQuilification(self):
 		self.DRAGON_SOUL_IS_QUALIFIED = True
