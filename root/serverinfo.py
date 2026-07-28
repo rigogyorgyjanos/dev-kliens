@@ -3,7 +3,7 @@ import localeInfo
 
 SRV1 = {
 	"name":"dev-Krikal",
-	"host":"192.168.0.75", #vps
+	"host":"192.168.1.232", #vps
 	"auth1":11000,
 	"ch1":13000,
 	"ch2":13010,

@@ -382,6 +382,7 @@ class GameWindow(ui.ScriptWindow):
 		#onPressKeyDict[app.DIK_B]			= lambda state = "EMOTICON": self.interface.ToggleCharacterWindow(state)
 		onPressKeyDict[app.DIK_N]			= lambda state = "QUEST": self.interface.ToggleCharacterWindow(state)
 		onPressKeyDict[app.DIK_I]			= lambda : self.interface.ToggleInventoryWindow()
+		onPressKeyDict[app.DIK_U]			= lambda : self.interface.ToggleExtendedInventoryWindow()
 		onPressKeyDict[app.DIK_O]			= lambda : self.interface.ToggleDragonSoulWindowWithNoInfo()
 		onPressKeyDict[app.DIK_M]			= lambda : self.interface.PressMKey()
 		#onPressKeyDict[app.DIK_H]			= lambda : self.interface.OpenHelpWindow()
@@ -1292,7 +1293,11 @@ class GameWindow(ui.ScriptWindow):
 				player.RequestDeleteGlobalQuickSlot(attachedItemSlotPos)
 
 			## Inventory
-			elif player.SLOT_TYPE_INVENTORY == attachedType:
+			elif player.SLOT_TYPE_INVENTORY == attachedType or\
+				player.SLOT_TYPE_SKILL_BOOK_INVENTORY == attachedType or\
+				player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY == attachedType or\
+				player.SLOT_TYPE_STONE_INVENTORY == attachedType or\
+				player.SLOT_TYPE_SANDIK_INVENTORY == attachedType:
 
 				if player.ITEM_MONEY == attachedItemIndex:
 					self.__PutMoney(attachedType, attachedItemCount, self.PickingCharacterIndex)
@@ -1321,7 +1326,11 @@ class GameWindow(ui.ScriptWindow):
 		return True
 
 	def __PutItem(self, attachedType, attachedItemIndex, attachedItemSlotPos, attachedItemCount, dstChrID):
-		if player.SLOT_TYPE_INVENTORY == attachedType or player.SLOT_TYPE_DRAGON_SOUL_INVENTORY == attachedType:
+		if player.SLOT_TYPE_INVENTORY == attachedType or player.SLOT_TYPE_DRAGON_SOUL_INVENTORY == attachedType or\
+			player.SLOT_TYPE_SKILL_BOOK_INVENTORY == attachedType or\
+			player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY == attachedType or\
+			player.SLOT_TYPE_STONE_INVENTORY == attachedType or\
+			player.SLOT_TYPE_SANDIK_INVENTORY == attachedType:
 			attachedInvenType = player.SlotTypeToInvenType(attachedType)
 			if True == chr.HasInstance(self.PickingCharacterIndex) and player.GetMainCharacterIndex() != dstChrID:
 				if player.IsEquipmentSlot(attachedItemSlotPos) and player.SLOT_TYPE_DRAGON_SOUL_INVENTORY != attachedType:
@@ -1383,7 +1392,11 @@ class GameWindow(ui.ScriptWindow):
 			self.stream.popupWindow.Open(localeInfo.DROP_ITEM_FAILURE_EQUIP_ITEM, 0, localeInfo.UI_OK)
 
 		else:
-			if player.SLOT_TYPE_INVENTORY == attachedType:
+			if player.SLOT_TYPE_INVENTORY == attachedType or\
+				player.SLOT_TYPE_SKILL_BOOK_INVENTORY == attachedType or\
+				player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY == attachedType or\
+				player.SLOT_TYPE_STONE_INVENTORY == attachedType or\
+				player.SLOT_TYPE_SANDIK_INVENTORY == attachedType:
 				dropItemIndex = player.GetItemIndex(attachedItemSlotPos)
 
 				item.SelectItem(dropItemIndex)
@@ -1434,7 +1447,11 @@ class GameWindow(ui.ScriptWindow):
 		if answer:
 			dropType = self.itemDropQuestionDialog.dropType
 			dropNumber = self.itemDropQuestionDialog.dropNumber
-			if player.SLOT_TYPE_INVENTORY == dropType:
+			if player.SLOT_TYPE_INVENTORY == dropType or\
+				player.SLOT_TYPE_SKILL_BOOK_INVENTORY == dropType or\
+				player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY == dropType or\
+				player.SLOT_TYPE_STONE_INVENTORY == dropType or\
+				player.SLOT_TYPE_SANDIK_INVENTORY == dropType:
 				if dropNumber == player.ITEM_MONEY:
 					return
 				else:
@@ -1453,7 +1470,11 @@ class GameWindow(ui.ScriptWindow):
 			dropCount = self.itemDropQuestionDialog.dropCount
 			dropNumber = self.itemDropQuestionDialog.dropNumber
 
-			if player.SLOT_TYPE_INVENTORY == dropType:
+			if player.SLOT_TYPE_INVENTORY == dropType or\
+				player.SLOT_TYPE_SKILL_BOOK_INVENTORY == dropType or\
+				player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY == dropType or\
+				player.SLOT_TYPE_STONE_INVENTORY == dropType or\
+				player.SLOT_TYPE_SANDIK_INVENTORY == dropType:
 				if dropNumber == player.ITEM_MONEY:
 					net.SendGoldDropPacketNew(dropCount)
 					snd.PlaySound("sound/ui/money.wav")

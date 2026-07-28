@@ -16,7 +16,7 @@ import systemSetting
 import localeInfo
 
 ## Mouse Controler
-## ¸¶¿ì½º Ä¿¼­¸¦ Á¦¾îÇÏ¸ç ¸¶¿ì½º Ä¿¼­¿¡ AttachµÇ¾î ¿òÁ÷ÀÌ´Â Objectµé±îÁö Á¦¾îÇÒ ¼ö ÀÖ´Ù.
+## ï¿½ï¿½ï¿½ì½º Ä¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ì½º Ä¿ï¿½ï¿½ï¿½ï¿½ Attachï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ Objectï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½.
 
 class CursorImage(object):
 	def __init__(self):
@@ -157,7 +157,7 @@ class CMouseController(object):
 				self.curCursorImage = self.cursorDict[app.NORMAL]
 
 		except KeyError:
-			dbg.TraceError("mouseModule.MouseController.SetCursor - Àß¸øµÈ Ä¿¼­ ¹øÈ£ [%d]" % cursorNum)
+			dbg.TraceError("mouseModule.MouseController.SetCursor - ï¿½ß¸ï¿½ï¿½ï¿½ Ä¿ï¿½ï¿½ ï¿½ï¿½È£ [%d]" % cursorNum)
 			self.curCursorName = app.NORMAL
 			self.curCursorImage = self.cursorDict[app.NORMAL]
 
@@ -189,7 +189,11 @@ class CMouseController(object):
 				Type == player.SLOT_TYPE_SHOP or\
 				Type == player.SLOT_TYPE_SAFEBOX or\
 				Type == player.SLOT_TYPE_MALL or\
-				Type == player.SLOT_TYPE_DRAGON_SOUL_INVENTORY:
+				Type == player.SLOT_TYPE_DRAGON_SOUL_INVENTORY or\
+				Type == player.SLOT_TYPE_SKILL_BOOK_INVENTORY or\
+				Type == player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY or\
+				Type == player.SLOT_TYPE_STONE_INVENTORY or\
+				Type == player.SLOT_TYPE_SANDIK_INVENTORY:
 
 				item.SelectItem(self.AttachedItemIndex)
 				self.AttachedIconHandle = item.GetIconInstance()
@@ -286,7 +290,11 @@ class CMouseController(object):
 				self.AttachedType == player.SLOT_TYPE_PRIVATE_SHOP or\
 				self.AttachedType == player.SLOT_TYPE_SHOP or\
 				self.AttachedType == player.SLOT_TYPE_SAFEBOX or\
-				self.AttachedType == player.SLOT_TYPE_MALL:
+				self.AttachedType == player.SLOT_TYPE_MALL or\
+				self.AttachedType == player.SLOT_TYPE_SKILL_BOOK_INVENTORY or\
+				self.AttachedType == player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY or\
+				self.AttachedType == player.SLOT_TYPE_STONE_INVENTORY or\
+				self.AttachedType == player.SLOT_TYPE_SANDIK_INVENTORY:
 
 				item.DeleteIconInstance(self.AttachedIconHandle)
 

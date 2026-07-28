@@ -284,7 +284,11 @@ class ShopDialog(ui.ScriptWindow):
 		attachedSlotPos = mouseModule.mouseController.GetAttachedSlotNumber()
 		attachedCount = mouseModule.mouseController.GetAttachedItemCount()
 		
-		if player.SLOT_TYPE_INVENTORY == attachedSlotType:
+		if player.SLOT_TYPE_INVENTORY == attachedSlotType or\
+			player.SLOT_TYPE_SKILL_BOOK_INVENTORY == attachedSlotType or\
+			player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY == attachedSlotType or\
+			player.SLOT_TYPE_STONE_INVENTORY == attachedSlotType or\
+			player.SLOT_TYPE_SANDIK_INVENTORY == attachedSlotType:
 
 			itemIndex = player.GetItemIndex(attachedSlotPos)
 			item.SelectItem(itemIndex)

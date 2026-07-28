@@ -9,8 +9,8 @@ import uiCommon
 import localeInfo
 import chat
 import item
-import systemSetting #±èÁØÈ£
-import player #±èÁØÈ£
+import systemSetting #ï¿½ï¿½ï¿½ï¿½È£
+import player #ï¿½ï¿½ï¿½ï¿½È£
 
 g_isBuildingPrivateShop = False
 
@@ -106,7 +106,7 @@ class PrivateShopAdvertisementBoard(ui.ThinBoard):
 		
 		else:
 			for key in g_privateShopAdvertisementBoardDict.keys():
-				if  player.GetMainCharacterIndex() == key:  #»óÁ¡Ç³¼±À» ¾Èº¸ÀÌ°Ô °¨Ãß´Â °æ¿ì¿¡µµ, ÇÃ·¹ÀÌ¾î ÀÚ½ÅÀÇ »óÁ¡ Ç³¼±Àº º¸ÀÌµµ·Ï ÇÔ. by ±èÁØÈ£
+				if  player.GetMainCharacterIndex() == key:  #ï¿½ï¿½ï¿½ï¿½Ç³ï¿½ï¿½ï¿½ï¿½ ï¿½Èºï¿½ï¿½Ì°ï¿½ ï¿½ï¿½ï¿½ß´ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½, ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ç³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½. by ï¿½ï¿½ï¿½ï¿½È£
 					g_privateShopAdvertisementBoardDict[key].Show() 	
 					x, y = chr.GetProjectPosition(player.GetMainCharacterIndex(), 220)
 					g_privateShopAdvertisementBoardDict[key].SetPosition(x - self.GetWidth()/2, y - self.GetHeight()/2)
@@ -225,7 +225,11 @@ class PrivateShopBuilder(ui.ScriptWindow):
 			attachedSlotPos = mouseModule.mouseController.GetAttachedSlotNumber()
 			mouseModule.mouseController.DeattachObject()
 
-			if player.SLOT_TYPE_INVENTORY != attachedSlotType and player.SLOT_TYPE_DRAGON_SOUL_INVENTORY != attachedSlotType:
+			if player.SLOT_TYPE_INVENTORY != attachedSlotType and player.SLOT_TYPE_DRAGON_SOUL_INVENTORY != attachedSlotType and\
+				player.SLOT_TYPE_SKILL_BOOK_INVENTORY != attachedSlotType and\
+				player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY != attachedSlotType and\
+				player.SLOT_TYPE_STONE_INVENTORY != attachedSlotType and\
+				player.SLOT_TYPE_SANDIK_INVENTORY != attachedSlotType:
 				return
 			attachedInvenType = player.SlotTypeToInvenType(attachedSlotType)
 				

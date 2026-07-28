@@ -80,6 +80,7 @@ class Interface(object):
 		self.wndFarmSession = None
 		self.wndCharacter = None
 		self.wndInventory = None
+		self.wndExtendedInventory = None
 		self.wndExpandedTaskBar = None
 		self.wndDragonSoul = None
 		self.wndDragonSoulRefine = None
@@ -198,8 +199,13 @@ class Interface(object):
 		
 	def __MakeWindows(self):
 		wndCharacter = uiCharacter.CharacterWindow()
+		
 		wndInventory = uiInventory.InventoryWindow()
 		wndInventory.BindInterfaceClass(self)
+
+		wndExtendedInventory = uiInventory.ExtendedInventoryWindow()
+		wndExtendedInventory.BindInterfaceClass(self)
+		
 		if app.ENABLE_DRAGON_SOUL_SYSTEM:
 			wndDragonSoul = uiDragonSoul.DragonSoulWindow()	
 			wndDragonSoulRefine = uiDragonSoul.DragonSoulRefineWindow()
@@ -220,6 +226,7 @@ class Interface(object):
 		
 		self.wndCharacter = wndCharacter
 		self.wndInventory = wndInventory
+		self.wndExtendedInventory = wndExtendedInventory
 		self.wndDragonSoul = wndDragonSoul
 		self.wndDragonSoulRefine = wndDragonSoulRefine
 		self.wndMiniMap = wndMiniMap
@@ -350,6 +357,7 @@ class Interface(object):
 		self.privateShopAdvertisementBoardDict = {}
 
 		self.wndInventory.SetItemToolTip(self.tooltipItem)
+		self.wndExtendedInventory.SetItemToolTip(self.tooltipItem)
 		if app.ENABLE_DRAGON_SOUL_SYSTEM:
 			self.wndDragonSoul.SetItemToolTip(self.tooltipItem)
 			self.wndDragonSoulRefine.SetItemToolTip(self.tooltipItem)
@@ -449,6 +457,9 @@ class Interface(object):
 
 		if self.wndInventory:
 			self.wndInventory.Destroy()
+
+		if self.wndExtendedInventory:
+			self.wndExtendedInventory.Destroy()
 			
 		if self.wndDragonSoul:
 			self.wndDragonSoul.Destroy()
@@ -563,6 +574,7 @@ class Interface(object):
 		del self.wndEnergyBar
 		del self.wndCharacter
 		del self.wndInventory
+		del self.wndExtendedInventory
 		if self.wndDragonSoul:
 			del self.wndDragonSoul
 		if self.wndDragonSoulRefine:
@@ -645,6 +657,7 @@ class Interface(object):
 	def RefreshInventory(self):
 		self.wndTaskBar.RefreshQuickSlot()
 		self.wndInventory.RefreshItemSlot()
+		self.wndExtendedInventory.RefreshItemSlot()
 		if app.ENABLE_DRAGON_SOUL_SYSTEM:
 			self.wndDragonSoul.RefreshItemSlot()
 
@@ -1062,7 +1075,16 @@ class Interface(object):
 			else:
 				self.wndInventory.OverOutItem()
 				self.wndInventory.Close()
-	
+
+	def ToggleExtendedInventoryWindow(self):
+		if False == player.IsObserverMode():
+			if False == self.wndExtendedInventory.IsShow():
+				self.wndExtendedInventory.Show()
+				self.wndExtendedInventory.SetTop()
+			else:
+				self.wndExtendedInventory.OverOutItem()
+				self.wndExtendedInventory.Close()
+
 	def ToggleFarmSessionWindow(self):
 		if self.wndFarmSession:
 			if self.wndFarmSession.IsShow():
@@ -1152,8 +1174,6 @@ class Interface(object):
 				if True == self.wndDragonSoulRefine.IsShow():
 					self.wndDragonSoulRefine.Close()
 
-	# ��ȥ�� ��
-	
 	def ToggleGuildWindow(self):
 		if not self.wndGuild.IsShow():
 			if self.wndGuild.CanOpen():
@@ -1169,7 +1189,6 @@ class Interface(object):
 			self.wndChatLog.Hide()
 		else:
 			self.wndChatLog.Show()
-	
 	
 	def CheckGameButton(self):
 		if self.wndGameButton:
@@ -1231,8 +1250,6 @@ class Interface(object):
 	def SucceedCubeWork(self, itemVnum, count):
 		self.wndCube.Clear()
 		
-		print "ť�� ���� ����! [%d:%d]" % (itemVnum, count)
-
 		if 0: # ��� �޽��� ����� ���� �Ѵ�
 			self.wndCubeResult.SetPosition(*self.wndCube.GetGlobalPosition())
 			self.wndCubeResult.SetCubeResultItem(itemVnum, count)
@@ -1534,7 +1551,6 @@ class Interface(object):
 		self.dlgWhisperWithoutTarget = None
 		self.__CheckGameMaster(name)
 
-	## ĳ���� �޴��� 1:1 ��ȭ �ϱ⸦ �������� �̸��� ������ �ٷ� â�� ���� �Լ�
 	def OpenWhisperDialog(self, name):
 		if not self.whisperDialogDict.has_key(name):
 			dlg = self.__MakeWhisperDialog(name)
@@ -1547,7 +1563,6 @@ class Interface(object):
 			if 0 != btn:
 				self.__DestroyWhisperButton(btn)
 
-	## �ٸ� ĳ���ͷκ��� �޼����� �޾����� �ϴ� ��ư�� ��� �δ� �Լ�
 	def RecvWhisper(self, name):
 		if not self.whisperDialogDict.has_key(name):
 			btn = self.__FindWhisperButton(name)
@@ -1566,7 +1581,6 @@ class Interface(object):
 	def MakeWhisperButton(self, name):
 		self.__MakeWhisperButton(name)
 
-	## ��ư�� �������� â�� ���� �Լ�
 	def ShowWhisperDialog(self, btn):
 		try:
 			self.__MakeWhisperDialog(btn.name)
@@ -1581,8 +1595,6 @@ class Interface(object):
 		## ��ư �ʱ�ȭ
 		self.__DestroyWhisperButton(btn)
 
-	## WhisperDialog â���� �ּ�ȭ ������ ���������� ȣ��Ǵ� �Լ�
-	## â�� �ּ�ȭ �մϴ�.
 	def MinimizeWhisperDialog(self, name):
 
 		if 0 != name:
@@ -1590,8 +1602,6 @@ class Interface(object):
 
 		self.CloseWhisperDialog(name)
 
-	## WhisperDialog â���� �ݱ� ������ ���������� ȣ��Ǵ� �Լ�
-	## â�� ����ϴ�.
 	def CloseWhisperDialog(self, name):
 
 		if 0 == name:
@@ -1610,7 +1620,6 @@ class Interface(object):
 			import dbg
 			dbg.TraceError("interface.CloseWhisperDialog - Failed to find key")
 
-	## ��ư�� ������ �ٲ������ ��ư�� ������ �ϴ� �Լ�
 	def __ArrangeWhisperButton(self):
 
 		screenWidth = wndMgr.GetScreenWidth()
@@ -1627,9 +1636,7 @@ class Interface(object):
 			button.SetPosition(xPos + (int(count/yCount) * -50), yPos + (count%yCount * 63))
 			count += 1
 
-	## �̸����� Whisper ��ư�� ã�� ������ �ִ� �Լ�
-	## ��ư�� ��ųʸ��� ���� �ʴ� ���� ���� �Ǿ� ���� ������ ���� ���� ������
-	## �̷� ���� ToolTip���� �ٸ� ��ư�鿡 ���� �������� �����̴�.
+	
 	def __FindWhisperButton(self, name):
 		for button in self.whisperButtonList:
 			if button.name == name:
@@ -1637,7 +1644,6 @@ class Interface(object):
 
 		return 0
 
-	## â�� ����ϴ�.
 	def __MakeWhisperDialog(self, name):
 		dlgWhisper = uiWhisper.WhisperDialog(self.MinimizeWhisperDialog, self.CloseWhisperDialog)
 		dlgWhisper.BindInterface(self)
@@ -1649,7 +1655,6 @@ class Interface(object):
 
 		return dlgWhisper
 
-	## ��ư�� ����ϴ�.
 	def __MakeWhisperButton(self, name):
 		whisperButton = uiWhisper.WhisperButton()
 		whisperButton.SetUpVisual("d:/ymir work/ui/game/windows/btn_mail_up.sub")
