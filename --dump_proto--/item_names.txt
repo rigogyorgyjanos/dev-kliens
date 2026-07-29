@@ -5748,9 +5748,9 @@ VNUM	LOCALE_NAME
 50436	Alattomos méreg könyve
 50451	Szikra könyve
 
-61400	Premium Metinfarm(1 Day)
-61401	Premium Metinfarm(3 Day)
-61402	Premium Metinfarm(7 Day)
-61403	Premium Metinfarm(15 Day)
-61404	Premium Metinfarm(30 Day)
-61405	Premium Metinfarm(Perma)
+61400	Metinkő kijelölés (1 nap)
+61401	Metinkő kijelölés (3 nap)
+61402	Metinkő kijelölés (7 nap)
+61403	Metinkő kijelölés (15 nap)
+61404	Metinkő kijelölés (30 nap)
+61405	Metinkő kijelölés (örökre)
