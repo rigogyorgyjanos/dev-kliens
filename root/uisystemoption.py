@@ -27,6 +27,8 @@ class OptionDialog(ui.ScriptWindow):
 		
 		self.__Load()
 		self.RefreshCameraMode()
+		if app.ENABLE_FOV_OPTION:
+			self.RefreshFOVOption()
 
 	def __del__(self):
 		ui.ScriptWindow.__del__(self)
@@ -50,6 +52,8 @@ class OptionDialog(ui.ScriptWindow):
 		else:
 			self.ctrlShadowQuality = 0
 		self.fpsLimitComboBox = 0
+		if app.ENABLE_FOV_OPTION:
+			self.fovButtonList = []
 		
 		
 	def Destroy(self):
@@ -83,6 +87,9 @@ class OptionDialog(ui.ScriptWindow):
 			self.tilingModeButtonList.append(GetObject("tiling_cpu"))
 			self.tilingModeButtonList.append(GetObject("tiling_gpu"))
 			self.tilingApplyButton=GetObject("tiling_apply")
+			if app.ENABLE_FOV_OPTION:
+				self.fovButtonList.append(GetObject("fov_on"))
+				self.fovButtonList.append(GetObject("fov_off"))
 			#self.ctrlShadowQuality = GetObject("shadow_bar")
 			if app.__BL_SHADOW_RENDER_QUALITY_OPTION__:
 				self.shadowTargetLevelButtonList.append(GetObject("shadow_target_none"))
@@ -141,6 +148,10 @@ class OptionDialog(ui.ScriptWindow):
 
 		self.tilingApplyButton.SAFE_SetEvent(self.__OnClickTilingApplyButton)
 
+		if app.ENABLE_FOV_OPTION:
+			self.fovButtonList[0].SAFE_SetEvent(self.__OnClickFOVOnButton)
+			self.fovButtonList[1].SAFE_SetEvent(self.__OnClickFOVOffButton)
+
 		self.__SetCurTilingMode()
 
 		self.__ClickRadioButton(self.fogModeButtonList, constInfo.GET_FOG_LEVEL_INDEX())
@@ -197,6 +208,22 @@ class OptionDialog(ui.ScriptWindow):
 	def __SetTilingMode(self, index):
 		self.__ClickRadioButton(self.tilingModeButtonList, index)
 		self.tilingMode=index
+
+	def RefreshFOVOption(self):
+		if systemSetting.IsExtendedFOV():
+			self.__ClickRadioButton(self.fovButtonList, 0)
+		else:
+			self.__ClickRadioButton(self.fovButtonList, 1)
+
+	def __SetFOVOption(self, flag):
+		systemSetting.SetExtendedFOV(flag)
+		self.RefreshFOVOption()
+
+	def __OnClickFOVOnButton(self):
+		self.__SetFOVOption(1)
+
+	def __OnClickFOVOffButton(self):
+		self.__SetFOVOption(0)
 
 	def RefreshCameraMode(self):
 		index = systemSetting.GetCameraMode()

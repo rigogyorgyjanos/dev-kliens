@@ -433,3 +433,48 @@ window["children"][0]["children"] += (
 		"text" : "FPS limit",
 	},
 )
+
+## FOV option (extended field of view). Plain literal text, not uiScriptLocale -
+## see the note above the FPS limit block: locale_interface.txt loose edits don't
+## take effect since locale text is read from the already-compiled locale_hu.epk.
+window["height"] += 30
+window["children"][0]["height"] += 30
+window["children"][0]["children"] += (
+	{
+		"name" : "fov_option",
+		"type" : "text",
+
+		"x" : 40 + TEXT_TEMPORARY_X,
+		"y" : 290+2,
+
+		"text" : "Kiterjesztett FOV",
+	},
+
+	{
+		"name" : "fov_on",
+		"type" : "radio_button",
+
+		"x" : 110,
+		"y" : 290,
+
+		"text" : "Be",
+
+		"default_image" : ROOT_PATH + "small_Button_01.sub",
+		"over_image" : ROOT_PATH + "small_Button_02.sub",
+		"down_image" : ROOT_PATH + "small_Button_03.sub",
+	},
+
+	{
+		"name" : "fov_off",
+		"type" : "radio_button",
+
+		"x" : 110 + 50,
+		"y" : 290,
+
+		"text" : "Ki",
+
+		"default_image" : ROOT_PATH + "small_Button_01.sub",
+		"over_image" : ROOT_PATH + "small_Button_02.sub",
+		"down_image" : ROOT_PATH + "small_Button_03.sub",
+	},
+)
