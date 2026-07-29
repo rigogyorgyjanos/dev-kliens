@@ -1,13 +1,33 @@
 import uiScriptLocale
+import serverInfo
 
 LOCALE_PATH = uiScriptLocale.LOGIN_PATH
-#Big-List
-#SERVER_BOARD_HEIGHT = 180 + 390
-#SERVER_LIST_HEIGHT = 171 + 350
-#Small list like german
-# SERVER_BOARD_HEIGHT = 220 + 180
-SERVER_LIST_HEIGHT = 171 + 350
-SERVER_BOARD_WEIGHT = 375 
+
+## Extra width reserved on the left of LoginBoard for the server-select buttons.
+## Widening LoginBoard itself (instead of using a separate floating window) means
+## a single "horizontal_align":"center" on LoginBoard re-centers the whole screen
+## (server buttons + card + account buttons) as one unit.
+SERVER_BOARD_WIDTH = 145
+SERVER_BUTTON_STEP = 38
+
+ServerButtonList = []
+_serverButtonIndex = 0
+for _id, _regionDataDict in serverInfo.REGION_DICT[0].items():
+	ServerButtonList.append({
+		"name" : "ServerButton%d" % (_serverButtonIndex + 1),
+		"type" : "radio_button",
+
+		"x" : 0,
+		"y" : _serverButtonIndex * SERVER_BUTTON_STEP,
+
+		"default_image" : "d:/ymir work/ui/tunga/login/accounts_button.tga",
+		"over_image" : "d:/ymir work/ui/tunga/login/accounts_button2.tga",
+		"down_image" : "d:/ymir work/ui/tunga/login/accounts_button2.tga",
+
+		"text" : _regionDataDict.get("name", "noname"),
+	})
+	_serverButtonIndex += 1
+
 window = {
 	"name" : "LoginWindow",
 	"sytle" : ("movable",),
@@ -27,8 +47,8 @@ window = {
 			"type" : "expanded_image",
 			"x" : 0,
 			"y" : 0,
-			"x_scale" : float(SCREEN_WIDTH) / 1024.0,
-			"y_scale" : float(SCREEN_HEIGHT) / 1024.0,
+			"x_scale" : float(SCREEN_WIDTH) / 1920.0,
+			"y_scale" : float(SCREEN_HEIGHT) / 1080.0,
 			"image" : "locale/hu/ui/login.sub",
 		},
 		
@@ -42,8 +62,8 @@ window = {
 			
 			"horizontal_align" : "center",
 			"vertical_align" : "center",
-			
-			"width" : 800,
+
+			"width" : 800 + SERVER_BOARD_WIDTH,
 			"height" : 550,
 
 			"image" : "d:/ymir work/ui/tunga/login/dialogbg.tga",
@@ -51,9 +71,18 @@ window = {
 			"children" :
 			(
 				{
+					"name" : "ServerBoard",
+					"type" : "window",
+					"x" : 0,
+					"y" : 87,
+					"width" : SERVER_BOARD_WIDTH,
+					"height" : 260,
+					"children" : tuple(ServerButtonList),
+				},
+				{
 					"name" : "RegisterBoard",
 					"type" : "window",
-					"x" : 515,
+					"x" : 515 + SERVER_BOARD_WIDTH,
 					"y" : 87,
 					"width" : 240,
 					"height" : 260,
@@ -232,8 +261,8 @@ window = {
 				{
 					"name" : "Login_back",
 					"type" : "image",
-					
-					"x" : 0,
+
+					"x" : SERVER_BOARD_WIDTH,
 					"y" : 87,
 					
 					"image" : "d:/ymir work/ui/tunga/login/dialogbg.dds",
@@ -549,7 +578,7 @@ window = {
 				{
 					"name" : "LanguageBoard",
 					"type" : "window",
-					"x" : 30,
+					"x" : 30 + SERVER_BOARD_WIDTH,
 					"y" : 310,
 					"width" : 0,
 					"height" : 0,
@@ -638,25 +667,12 @@ window = {
 					"name" : "LoginExitButton",
 					"type" : "button",
 
-					"x" : 360,
+					"x" : 360 + SERVER_BOARD_WIDTH,
 					"y" : 360,
 					"default_image" : "d:/ymir work/ui/tunga/login/exit_btn_default.dds",
 					"over_image" : "d:/ymir work/ui/tunga/login/exit_btn_over.dds",
 					"down_image" : "d:/ymir work/ui/tunga/login/exit_btn_down.dds",
 
-				},
-				{
-					"name" : "ServerList",
-					"type" : "listbox2",
-
-					"x" : 0,
-					"y" : 360,
-					"width" : 0,
-					"height" : SERVER_LIST_HEIGHT,
-					"row_count" : 15,
-					"item_align" : 0,
-							
-							
 				},
 			),
 		},

@@ -195,7 +195,6 @@ class LoginWindow(ui.ScriptWindow):
 		ime.AddExceptKey(93)
 		self.Show()
 
-		self.__RefreshServerList()
 		self.__OpenLoginBoard()
 
 
@@ -222,7 +221,7 @@ class LoginWindow(ui.ScriptWindow):
 		self.pwdEditLine = None
 		self.connectingDialog = None
 
-		self.serverList = None
+		self.serverButtons = None
 
 		self.KillFocus()
 		self.Hide()
@@ -357,7 +356,6 @@ class LoginWindow(ui.ScriptWindow):
 
 		try:
 			GetObject=self.GetChild
-			self.serverList				= GetObject("ServerList")
 			self.loginBoard				= GetObject("LoginBoard")
 			self.idEditLine				= GetObject("ID_EditLine")
 			self.pwdEditLine			= GetObject("Password_EditLine")
@@ -406,9 +404,19 @@ class LoginWindow(ui.ScriptWindow):
 			import exception
 			exception.Abort("LoginWindow.__LoadScript.BindObject")
 
+		self.serverButtons = {}
+		self.firstServerID = None
+		buttonIndex = 0
+		for id, regionDataDict in serverInfo.REGION_DICT[0].items():
+			button = GetObject("ServerButton%d" % (buttonIndex + 1))
+			button.SetEvent(ui.__mem_func__(self.__SelectServer), id)
+			self.serverButtons[id] = button
+			if self.firstServerID is None:
+				self.firstServerID = id
+			buttonIndex += 1
+
 		self.loginButton.SetEvent(ui.__mem_func__(self.__OnClickLoginButton))
 		self.loginExitButton.SetEvent(ui.__mem_func__(self.__OnClickExitButton))
-		self.serverList.SetEvent(ui.__mem_func__(self.__OnSelectServer))
 
 		self.idEditLine.SetReturnEvent(ui.__mem_func__(self.pwdEditLine.SetFocus))
 		self.idEditLine.SetTabEvent(ui.__mem_func__(self.pwdEditLine.SetFocus))
@@ -670,9 +678,9 @@ class LoginWindow(ui.ScriptWindow):
 		self.stream.popupWindow.Close()
 
 		# CHINA_MATRIX_CARD_BUG_FIX
-		## A~Z ±îÁö 26 ÀÌ³»ÀÇ °ªÀÌ µé¾îÀÖ¾î¾ß¸¸ ÇÑ´Ù.
-		## Python Exception Log ¿¡¼­ ±× ÀÌ»óÀÇ °ªÀÌ µé¾îÀÖ¾î¼­ ¿¡·¯ ¹æÁö
-		## Çåµ¥ ¿Ö ÇÑ±¹ÂÊ ·Î±×¿¡¼­ ÀÌ°Ô È°¿ëµÇ´ÂÁö´Â ¸ð¸£°ÚÀ½
+		## A~Z ï¿½ï¿½ï¿½ï¿½ 26 ï¿½Ì³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ö¾ï¿½ß¸ï¿½ ï¿½Ñ´ï¿½.
+		## Python Exception Log ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ì»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ö¾î¼­ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		## ï¿½åµ¥ ï¿½ï¿½ ï¿½Ñ±ï¿½ï¿½ï¿½ ï¿½Î±×¿ï¿½ï¿½ï¿½ ï¿½Ì°ï¿½ È°ï¿½ï¿½Ç´ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ð¸£°ï¿½ï¿½ï¿½
 		row1 = min(30, row1)
 		row2 = min(30, row2)
 		row3 = min(30, row3)
@@ -756,7 +764,7 @@ class LoginWindow(ui.ScriptWindow):
 		return 0
 
 	def __GetServerID(self):
-		return self.serverList.GetSelectedItem()
+		return self.selectedServerID
 
 	def __GetChannelID(self):
 		return self.channelList.GetSelectedItem()
@@ -790,24 +798,51 @@ class LoginWindow(ui.ScriptWindow):
 		self.loginBoard.Hide()
 
 	def __SelectChannel(self, channel):
-		self.ChannelButtons = { 1 : [self.ChannelButton1, serverInfo.SRV1["ch1"]], 2 : [self.ChannelButton2, serverInfo.SRV1["ch2"]], 3 : [self.ChannelButton3, serverInfo.SRV1["ch3"]], 4 : [self.ChannelButton4, serverInfo.SRV1["ch4"]] }
+		self.ChannelButtons = { 1 : self.ChannelButton1, 2 : self.ChannelButton2, 3 : self.ChannelButton3, 4 : self.ChannelButton4 }
 		self.ChannelButton1.SetUp()
 		self.ChannelButton2.SetUp()
 		self.ChannelButton3.SetUp()
 		self.ChannelButton4.SetUp()
-		self.ChannelButtons[channel][0].Down()
-		self.stream.SetConnectInfo(serverInfo.SRV1["host"], self.ChannelButtons[channel][1], serverInfo.SRV1["host"], serverInfo.SRV1["auth1"])
-		net.SetMarkServer(serverInfo.SRV1["host"], serverInfo.SRV1["ch1"])
+		self.ChannelButtons[channel].Down()
+
+		regionID = self.__GetRegionID()
+		serverID = self.__GetServerID()
+
+		try:
+			channelInfo = serverInfo.REGION_DICT[regionID][serverID]["channel"][channel]
+			accountInfo = serverInfo.REGION_AUTH_SERVER_DICT[regionID][serverID]
+		except KeyError:
+			return
+
+		self.stream.SetConnectInfo(channelInfo["ip"], channelInfo["tcp_port"], accountInfo["ip"], accountInfo["port"])
+		net.SetMarkServer(channelInfo["ip"], channelInfo["tcp_port"])
 		app.SetGuildMarkPath("10.tga")
 		app.SetGuildSymbolPath("10")
-		
+
+	def __SelectServer(self, serverID):
+		if serverID not in self.serverButtons:
+			return
+
+		self.selectedServerID = serverID
+
+		for id, button in self.serverButtons.items():
+			if id == serverID:
+				button.Down()
+			else:
+				button.SetUp()
+
+		self.__RequestServerStateList()
+		self.__RefreshServerStateList()
+		self.__SelectChannel(1)
+
 	def __OpenLoginBoard(self):
 
 		loadRegionID, loadServerID, loadChannelID = self.__LoadChannelInfo()
-		serverIndex = self.__ServerIDToServerIndex(loadRegionID, loadServerID)
-		channelIndex = self.__ChannelIDToChannelIndex(loadChannelID)
-		self.__SelectChannel(1)
-		self.serverList.SelectItem(serverIndex)
+		if loadServerID in self.serverButtons:
+			defaultServerID = loadServerID
+		else:
+			defaultServerID = self.firstServerID
+		self.__SelectServer(defaultServerID)
 
 		if app.loggined:
 			self.Connect(self.id, self.pwd)
@@ -852,9 +887,6 @@ class LoginWindow(ui.ScriptWindow):
 			self.serverList.InsertItem(id, "  %02d. %s" % (int(server_id), name))
 			visible_index += 1
 
-	def __OnSelectServer(self):
-		self.__RequestServerStateList()
-		self.__RefreshServerStateList()
 
 	def __RequestServerStateList(self):
 		regionID = self.__GetRegionID()
@@ -1077,7 +1109,7 @@ class LoginWindow(ui.ScriptWindow):
 			self.PopupNotifyMessage(localeInfo.CHANNEL_SELECT_CHANNEL)
 			return
 
-		# »óÅÂ°¡ FULL °ú °°À¸¸é ÁøÀÔ ±ÝÁö
+		# ï¿½ï¿½ï¿½Â°ï¿½ FULL ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		if state == serverInfo.STATE_DICT[3]: 
 			self.PopupNotifyMessage(localeInfo.CHANNEL_NOTIFY_FULL)
 			return
@@ -1089,9 +1121,9 @@ class LoginWindow(ui.ScriptWindow):
 			channelName = serverInfo.REGION_DICT[regionID][serverID]["channel"][channelID]["name"]
 			addrKey = serverInfo.REGION_DICT[regionID][serverID]["channel"][channelID]["key"]
 			
-			if "Ãµ¸¶ ¼­¹ö" == serverName:			
+			if "Ãµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" == serverName:			
 				app.ForceSetLocale("ymir", "locale/ymir")
-			elif "Äèµµ ¼­¹ö" == serverName:			
+			elif "ï¿½èµµ ï¿½ï¿½ï¿½ï¿½" == serverName:			
 				app.ForceSetLocale("we_korea", "locale/we_korea")				
 				
 		except:
@@ -1106,7 +1138,7 @@ class LoginWindow(ui.ScriptWindow):
 			tcp_port = serverInfo.REGION_DICT[regionID][serverID]["channel"][channelID]["tcp_port"]
 		except:
 			import exception
-			exception.Abort("LoginWindow.__OnClickSelectServerButton - ¼­¹ö ¼±ÅÃ ½ÇÆÐ")
+			exception.Abort("LoginWindow.__OnClickSelectServerButton - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")
 
 		try:
 			account_ip = serverInfo.REGION_AUTH_SERVER_DICT[regionID][serverID]["ip"]
@@ -1126,13 +1158,13 @@ class LoginWindow(ui.ScriptWindow):
 
 		except:
 			import exception
-			exception.Abort("LoginWindow.__OnClickSelectServerButton - ¸¶Å© Á¤º¸ ¾øÀ½")
+			exception.Abort("LoginWindow.__OnClickSelectServerButton - ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")
 
 
 		if app.USE_OPENID and not app.OPENID_TEST :
-			## 2012.07.19 OpenID : ±è¿ë¿í
-			# Ã¤³Î ¼±ÅÃ È­¸é¿¡¼­ "È®ÀÎ"(SelectServerButton) À» ´­·¶À»¶§,
-			# ·Î±×ÀÎ È­¸éÀ¸·Î ³Ñ¾î°¡Áö ¾Ê°í ¹Ù·Î ¼­¹ö¿¡ OpenID ÀÎÁõÅ°¸¦ º¸³»µµ·Ï ¼öÁ¤
+			## 2012.07.19 OpenID : ï¿½ï¿½ï¿½ï¿½
+			# Ã¤ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È­ï¿½é¿¡ï¿½ï¿½ "È®ï¿½ï¿½"(SelectServerButton) ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,
+			# ï¿½Î±ï¿½ï¿½ï¿½ È­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾î°¡ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½Ù·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ OpenID ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			self.stream.SetConnectInfo(ip, tcp_port, account_ip, account_port)
 			self.Connect(0, 0)
 		else :
