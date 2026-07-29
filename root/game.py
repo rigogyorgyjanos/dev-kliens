@@ -399,6 +399,8 @@ class GameWindow(ui.ScriptWindow):
 
 		# CUBE_TEST
 		#onPressKeyDict[app.DIK_K]			= lambda : self.interface.OpenCubeWindow()
+		if app.ENABLE_SWITCHBOT:
+			onPressKeyDict[app.DIK_K]		= lambda : self.interface.ToggleSwitchbotWindow()
 		# CUBE_TEST_END
 
 		self.onPressKeyDict = onPressKeyDict
@@ -1909,7 +1911,14 @@ class GameWindow(ui.ScriptWindow):
 		self.interface.SucceedDragonSoulRefine(inven_type, inven_pos)
 	
 	# END of DRAGON SOUL REFINE WINDOW
-	
+
+	if app.ENABLE_SWITCHBOT:
+		def RefreshSwitchbotWindow(self):
+			self.interface.RefreshSwitchbotWindow()
+
+		def RefreshSwitchbotItem(self, slot):
+			self.interface.RefreshSwitchbotItem(slot)
+
 	def BINARY_SetBigMessage(self, message):
 		self.interface.bigBoard.SetTip(message)
 

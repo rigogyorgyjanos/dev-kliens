@@ -49,6 +49,8 @@ if app.ENABLE_LOADING_PERFORMANCE:
 	import uiWarpShower
 if app.RENEWAL_MISSION_BOOKS:
 	import uiMission
+if app.ENABLE_SWITCHBOT:
+	import uiswitchbot
 
 import event
 import localeInfo
@@ -81,6 +83,8 @@ class Interface(object):
 		self.wndCharacter = None
 		self.wndInventory = None
 		self.wndExtendedInventory = None
+		if app.ENABLE_SWITCHBOT:
+			self.wndSwitchbot = None
 		self.wndExpandedTaskBar = None
 		self.wndDragonSoul = None
 		self.wndDragonSoulRefine = None
@@ -242,6 +246,9 @@ class Interface(object):
 			self.wndDragonSoulRefine.SetInventoryWindows(self.wndInventory, self.wndDragonSoul)
 			self.wndInventory.SetDragonSoulRefineWindow(self.wndDragonSoulRefine)
 
+		if app.ENABLE_SWITCHBOT:
+			self.wndSwitchbot = uiswitchbot.SwitchbotWindow()
+
 	def __MakeDialogs(self):
 		self.dlgExchange = uiExchange.ExchangeDialog()
 		self.dlgExchange.LoadDialog()
@@ -365,6 +372,9 @@ class Interface(object):
 		self.wndCube.SetItemToolTip(self.tooltipItem)
 		self.wndCubeResult.SetItemToolTip(self.tooltipItem)
 
+		if app.ENABLE_SWITCHBOT:
+			self.wndSwitchbot.SetItemToolTip(self.tooltipItem)
+
 		# ITEM_MALL
 		self.wndMall.SetItemToolTip(self.tooltipItem)
 		# END_OF_ITEM_MALL
@@ -460,7 +470,11 @@ class Interface(object):
 
 		if self.wndExtendedInventory:
 			self.wndExtendedInventory.Destroy()
-			
+
+		if app.ENABLE_SWITCHBOT:
+			if self.wndSwitchbot:
+				self.wndSwitchbot.Destroy()
+
 		if self.wndDragonSoul:
 			self.wndDragonSoul.Destroy()
 
@@ -575,6 +589,8 @@ class Interface(object):
 		del self.wndCharacter
 		del self.wndInventory
 		del self.wndExtendedInventory
+		if app.ENABLE_SWITCHBOT:
+			del self.wndSwitchbot
 		if self.wndDragonSoul:
 			del self.wndDragonSoul
 		if self.wndDragonSoulRefine:
@@ -943,7 +959,11 @@ class Interface(object):
 
 		if self.wndInventory:
 			self.wndInventory.Hide()
-			
+
+		if app.ENABLE_SWITCHBOT:
+			if self.wndSwitchbot:
+				self.wndSwitchbot.Hide()
+
 		if app.ENABLE_DRAGON_SOUL_SYSTEM:
 			self.wndDragonSoul.Hide()
 			self.wndDragonSoulRefine.Hide()
@@ -1194,7 +1214,22 @@ class Interface(object):
 			self.wndChatLog.Hide()
 		else:
 			self.wndChatLog.Show()
-	
+
+	if app.ENABLE_SWITCHBOT:
+		def ToggleSwitchbotWindow(self):
+			if self.wndSwitchbot.IsShow():
+				self.wndSwitchbot.Close()
+			else:
+				self.wndSwitchbot.Open()
+
+		def RefreshSwitchbotWindow(self):
+			if self.wndSwitchbot and self.wndSwitchbot.IsShow():
+				self.wndSwitchbot.RefreshSwitchbotWindow()
+
+		def RefreshSwitchbotItem(self, slot):
+			if self.wndSwitchbot and self.wndSwitchbot.IsShow():
+				self.wndSwitchbot.RefreshSwitchbotItem(slot)
+
 	def CheckGameButton(self):
 		if self.wndGameButton:
 			self.wndGameButton.CheckGameButton()
@@ -1277,6 +1312,9 @@ class Interface(object):
  			
 		if self.wndExpandedTaskBar:
 			hideWindows += self.wndExpandedTaskBar,
+
+		if app.ENABLE_SWITCHBOT and self.wndSwitchbot:
+			hideWindows += self.wndSwitchbot,
  			
 		if app.ENABLE_DRAGON_SOUL_SYSTEM:
 			hideWindows += self.wndDragonSoul,\

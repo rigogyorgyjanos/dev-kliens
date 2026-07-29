@@ -764,7 +764,8 @@ class InventoryWindow(ui.ScriptWindow):
 				player.SLOT_TYPE_SKILL_BOOK_INVENTORY == attachedSlotType or\
 				player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY == attachedSlotType or\
 				player.SLOT_TYPE_STONE_INVENTORY == attachedSlotType or\
-				player.SLOT_TYPE_SANDIK_INVENTORY == attachedSlotType:
+				player.SLOT_TYPE_SANDIK_INVENTORY == attachedSlotType or\
+				(app.ENABLE_SWITCHBOT and player.SLOT_TYPE_SWITCHBOT == attachedSlotType):
 				itemCount = player.GetItemCount(attachedSlotPos)
 				attachedCount = mouseModule.mouseController.GetAttachedItemCount()
 				self.__SendMoveItemPacket(attachedSlotPos, selectedSlotPos, attachedCount)
@@ -807,7 +808,8 @@ class InventoryWindow(ui.ScriptWindow):
 				player.SLOT_TYPE_SKILL_BOOK_INVENTORY == attachedSlotType or\
 				player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY == attachedSlotType or\
 				player.SLOT_TYPE_STONE_INVENTORY == attachedSlotType or\
-				player.SLOT_TYPE_SANDIK_INVENTORY == attachedSlotType:
+				player.SLOT_TYPE_SANDIK_INVENTORY == attachedSlotType or\
+				(app.ENABLE_SWITCHBOT and player.SLOT_TYPE_SWITCHBOT == attachedSlotType):
 				self.__DropSrcItemToDestItemInInventory(attachedItemVID, attachedSlotPos, itemSlotIndex)
 
 			mouseModule.mouseController.DeattachObject()

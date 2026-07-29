@@ -589,6 +589,7 @@ class ListBoxEx(Window):
 	def GetItemIndex(self, argItem):
 		return self.itemList.index(argItem)
 
+
 	def GetSelectedItem(self):
 		return self.selItem
 
@@ -613,7 +614,11 @@ class ListBoxEx(Window):
 
 		if self.scrollBar:
 			self.scrollBar.SetPos(0)
-
+	
+	if app.ENABLE_SWITCHBOT:
+		def GetItems(self):
+			return self.itemList
+			
 	def RemoveItem(self, delItem):
 		if delItem==self.selItem:
 			self.selItem=None
@@ -2283,7 +2288,7 @@ class TitleBar(Window):
 
 	def MakeTitleBar(self, width, color):
 
-		## ���� Color�� ����ϰ� ���� ����
+		## ���� Color�� ����ϰ�?���� ����
 
 		width = max(64, width)
 
@@ -3792,7 +3797,7 @@ class PythonScriptLoader(object):
 
 		try:
 			# chr, player ���� sandbox ������ import�� ������ �ʱ� ������,(���� �ǿ��� ������ �ſ� ŭ.)
-			#  �̸� script dictionary�� �ʿ��� ����� �־���´�.
+			#  �̸� script dictionary�� �ʿ��� �����?�־���´�?
 			import chr
 			import player
 			import app

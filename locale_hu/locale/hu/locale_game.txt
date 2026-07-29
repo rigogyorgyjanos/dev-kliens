@@ -446,6 +446,18 @@ SHOP_NOT_ENOUGH_MONEY	Nincs elég Yang
 SHOP_NOT_ENOUGH_MONEY_EX	Nincs elegendő Yangod.
 SHOP_SELL_INFO	A leltár ablakodban válaszd ki az eladandó tárgyat.
 SHOP_SOLDOUT	Elfogyott
+SWITCHBOT_TITLE	Switchbot
+SWITCHBOT_START	Indítás
+SWITCHBOT_STOP	Leállítás
+SWITCHBOT_EMPTY_ATTR	- Nincs -
+SWITCHBOT_SELECT_ATTR	Attribútum kiválasztása
+SWITCHBOT_CLEAR_ATTR	Eltávolítás
+SWITCHBOT_ALTERNATIVES	Alternatívák:
+SWITCHBOT_CONFIGURATION_TITLE	Mentett beállítások
+SWITCHBOT_SAVE_BUTTON	Mentések megnyitása
+SWITCHBOT_SAVE	Mentés
+SWITCHBOT_LOAD_CONFIGURATION	Betöltés
+SWITCHBOT_CLEAR_CONFIGURATION	Törlés
 SHOT_ERROR_UNKNOWN	Ismeretlen hiba a távolsági támadás során: %s
 SKILL_BOHO	Visszaverés
 SKILL_BUDONG	Nem használható többé

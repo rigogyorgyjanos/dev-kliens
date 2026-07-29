@@ -193,7 +193,8 @@ class CMouseController(object):
 				Type == player.SLOT_TYPE_SKILL_BOOK_INVENTORY or\
 				Type == player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY or\
 				Type == player.SLOT_TYPE_STONE_INVENTORY or\
-				Type == player.SLOT_TYPE_SANDIK_INVENTORY:
+				Type == player.SLOT_TYPE_SANDIK_INVENTORY or\
+				(app.ENABLE_SWITCHBOT and Type == player.SLOT_TYPE_SWITCHBOT):
 
 				item.SelectItem(self.AttachedItemIndex)
 				self.AttachedIconHandle = item.GetIconInstance()
@@ -294,7 +295,8 @@ class CMouseController(object):
 				self.AttachedType == player.SLOT_TYPE_SKILL_BOOK_INVENTORY or\
 				self.AttachedType == player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY or\
 				self.AttachedType == player.SLOT_TYPE_STONE_INVENTORY or\
-				self.AttachedType == player.SLOT_TYPE_SANDIK_INVENTORY:
+				self.AttachedType == player.SLOT_TYPE_SANDIK_INVENTORY or\
+				(app.ENABLE_SWITCHBOT and self.AttachedType == player.SLOT_TYPE_SWITCHBOT):
 
 				item.DeleteIconInstance(self.AttachedIconHandle)
 

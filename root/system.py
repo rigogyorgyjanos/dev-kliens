@@ -118,7 +118,7 @@ def _process_result(code, fqname):
 
 module_do = lambda x:None
 
-def __pack_import(name,globals=None,locals=None,fromlist=None):
+def __pack_import(name,globals=None,locals=None,fromlist=None,level=-1):
 	if name in sys.modules:
 		return sys.modules[name]
 
@@ -134,7 +134,7 @@ def __pack_import(name,globals=None,locals=None,fromlist=None):
 		#return imp.load_module(name, pack_file(filename,'r'),filename,('.py','r',imp.PY_SOURCE))
 	else:
 		dbg.Trace('importing from lib %s\\n' % name)
-		return old_import(name,globals,locals,fromlist)
+		return old_import(name,globals,locals,fromlist,level)
 
 def splitext(p):
 	root, ext = '', ''
