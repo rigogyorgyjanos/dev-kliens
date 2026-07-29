@@ -1,12 +1,14 @@
 import uiScriptLocale
+import item
 
-EQUIPMENT_START_INDEX = 90
+EQUIPMENT_START_INDEX = item.EQUIPMENT_SLOT_START
+COSTUME_START_INDEX = item.COSTUME_SLOT_START
 
 window = {
 	"name" : "InventoryWindow",
 
-	## 600 - (width + ¿À¸¥ÂÊÀ¸·Î ºÎÅÍ ¶ç¿ì±â 24 px)
-	"x" : SCREEN_WIDTH - 176 - 200,
+	## 600 - (width + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 24 px)
+	"x" : SCREEN_WIDTH - 176,
 	"y" : SCREEN_HEIGHT - 37 - 565,
 
 	"style" : ("movable", "float",),
@@ -16,6 +18,7 @@ window = {
 
 	"children" :
 	(
+		## Inventory, Equipment Slots
 		{
 			"name" : "board",
 			"type" : "board",
@@ -35,17 +38,44 @@ window = {
 					"type" : "titlebar",
 					"style" : ("attach",),
 
-					"x" : 8,
+					"x" : 46,
 					"y" : 7,
 
-					"width" : 161,
+					"width" : 123,
 					"color" : "yellow",
 
 					"children" :
 					(
-						{ "name":"TitleName", "type":"text", "x":77, "y":3, "text":uiScriptLocale.INVENTORY_PAGE_BUTTON_TOOLTIP_2, "text_horizontal_align":"center" },
+						{ "name":"TitleName", "type":"text", "x":77, "y":3, "text":uiScriptLocale.INVENTORY_TITLE, "text_horizontal_align":"center" },
 					),
 				},
+				## Inventory Sort
+				{
+						"name" : "YenileButtonn",
+						"type" : "image",
+						"style" : ("attach",),
+
+						"x" : 8,
+						"y" : 7,
+
+						"image" : "d:/ymir work/ui/pattern/titlebar_inv_refresh_baseframe.tga",
+
+						"children" :
+						(
+							{
+								"name" : "YenileButton",
+								"type" : "button",
+
+								"x" : 11,
+								"y" : 3,
+
+								"default_image" : "d:/ymir work/ui/refresh_small_button_01.sub",
+								"over_image" : "d:/ymir work/ui/refresh_small_button_02.sub",
+								"down_image" : "d:/ymir work/ui/refresh_small_button_03.sub",
+								"disable_image" : "d:/ymir work/ui/refresh_small_button_04.sub",
+							},
+						),
+					},
 
 				## Equipment Slot
 				{
@@ -55,7 +85,7 @@ window = {
 					"x" : 10,
 					"y" : 33,
 
-					"image" : "d:/ymir work/ui/game/windows/equipment_base.sub",
+					"image" : "d:/ymir work/ui/inventory/1new_equipmentbg.tga",
 
 					"children" :
 					(
@@ -76,68 +106,80 @@ window = {
 										{"index":EQUIPMENT_START_INDEX+2, "x":39, "y":145, "width":32, "height":32},
 										{"index":EQUIPMENT_START_INDEX+3, "x":75, "y":67, "width":32, "height":32},
 										{"index":EQUIPMENT_START_INDEX+4, "x":3, "y":3, "width":32, "height":96},
-										{"index":EQUIPMENT_START_INDEX+5, "x":114, "y":84, "width":32, "height":32},
-										{"index":EQUIPMENT_START_INDEX+6, "x":114, "y":52, "width":32, "height":32},
-										{"index":EQUIPMENT_START_INDEX+7, "x":2, "y":113, "width":32, "height":32},
-										{"index":EQUIPMENT_START_INDEX+8, "x":75, "y":113, "width":32, "height":32},
-										{"index":EQUIPMENT_START_INDEX+9, "x":114, "y":1, "width":32, "height":32},
+										{"index":EQUIPMENT_START_INDEX+5, "x":114, "y":67, "width":32, "height":32},
+										{"index":EQUIPMENT_START_INDEX+6, "x":114, "y":35, "width":32, "height":32},
+										{"index":EQUIPMENT_START_INDEX+7, "x":2, "y":145, "width":32, "height":32},
+										{"index":EQUIPMENT_START_INDEX+8, "x":75, "y":145, "width":32, "height":32},
+										{"index":EQUIPMENT_START_INDEX+9, "x":114, "y":2, "width":32, "height":32},
 										{"index":EQUIPMENT_START_INDEX+10, "x":75, "y":35, "width":32, "height":32},
+										{"index":item.EQUIPMENT_RING1, "x":2, "y":106, "width":32, "height":32},
+										{"index":item.EQUIPMENT_RING2, "x":75, "y":106, "width":32, "height":32},
+										{"index":item.EQUIPMENT_BELT, "x":39, "y":106, "width":32, "height":32},
 									),
 						},
 
+						## Dragon Soul Button
 						{
-							"name" : "Equipment_Tab_01",
-							"type" : "radio_button",
+							"name" : "DSSButton",
+							"type" : "button",
 
-							"x" : 86,
-							"y" : 161,
+							"x" : 114,
+							"y" : 107,
 
-							"default_image" : "d:/ymir work/ui/game/windows/tab_button_small_01.sub",
-							"over_image" : "d:/ymir work/ui/game/windows/tab_button_small_02.sub",
-							"down_image" : "d:/ymir work/ui/game/windows/tab_button_small_03.sub",
+							"tooltip_text" : uiScriptLocale.TASKBAR_DRAGON_SOUL,
 
-							"children" :
-							(
-								{
-									"name" : "Equipment_Tab_01_Print",
-									"type" : "text",
-
-									"x" : 0,
-									"y" : 0,
-
-									"all_align" : "center",
-
-									"text" : "I",
-								},
-							),
+							"default_image" : "d:/ymir work/ui/dragonsoul/dss_inventory_button_01.tga",
+							"over_image" : "d:/ymir work/ui/dragonsoul/dss_inventory_button_02.tga",
+							"down_image" : "d:/ymir work/ui/dragonsoul/dss_inventory_button_03.tga",
 						},
+						## MallButton
 						{
-							"name" : "Equipment_Tab_02",
-							"type" : "radio_button",
+							"name" : "MallButton",
+							"type" : "button",
 
-							"x" : 86 + 32,
-							"y" : 161,
+							"x" : 118,
+							"y" : 148,
 
-							"default_image" : "d:/ymir work/ui/game/windows/tab_button_small_01.sub",
-							"over_image" : "d:/ymir work/ui/game/windows/tab_button_small_02.sub",
-							"down_image" : "d:/ymir work/ui/game/windows/tab_button_small_03.sub",
+							"tooltip_text" : uiScriptLocale.MALL_TITLE,
 
-							"children" :
-							(
-								{
-									"name" : "Equipment_Tab_02_Print",
-									"type" : "text",
-
-									"x" : 0,
-									"y" : 0,
-
-									"all_align" : "center",
-
-									"text" : "II",
-								},
-							),
+							"default_image" : "d:/ymir work/ui/game/TaskBar/Mall_Button_01.tga",
+							"over_image" : "d:/ymir work/ui/game/TaskBar/Mall_Button_02.tga",
+							"down_image" : "d:/ymir work/ui/game/TaskBar/Mall_Button_03.tga",
 						},
 
+					),
+				},
+
+				## Costume Slot - own sibling container (not nested in Equipment_Base) so
+				## Show()/Hide() on this one widget cascades to CostumeSlot automatically.
+				{
+					"name" : "Costume_Base",
+					"type" : "image",
+
+					"x" : 10,
+					"y" : 33,
+
+					"image" : "d:/ymir work/ui/inventory/new_costumebg.tga",
+
+					"children" :
+					(
+						{
+							"name" : "CostumeSlot",
+							"type" : "slot",
+
+							"x" : 3,
+							"y" : 3,
+
+							"width" : 150,
+							"height" : 182,
+
+							"slot" : (
+										{"index":COSTUME_START_INDEX+0, "x":61, "y":45, "width":32, "height":64}, #body
+										{"index":COSTUME_START_INDEX+1, "x":61, "y": 8, "width":32, "height":32}, #hair
+										{"index":COSTUME_START_INDEX+2, "x":13, "y":15, "width":32, "height":96}, #weapon
+										{"index":COSTUME_START_INDEX+3, "x":61, "y":125, "width":32, "height":32}, #mount
+									),
+						},
 					),
 				},
 
@@ -148,9 +190,9 @@ window = {
 					"x" : 10,
 					"y" : 33 + 191,
 
-					"default_image" : "d:/ymir work/ui/game/windows/tab_button_large_01.sub",
-					"over_image" : "d:/ymir work/ui/game/windows/tab_button_large_02.sub",
-					"down_image" : "d:/ymir work/ui/game/windows/tab_button_large_03.sub",
+					"default_image" : "d:/ymir work/ui/game/windows/tab_button_large_half_01.sub",
+					"over_image" : "d:/ymir work/ui/game/windows/tab_button_large_half_02.sub",
+					"down_image" : "d:/ymir work/ui/game/windows/tab_button_large_half_03.sub",
 					"tooltip_text" : uiScriptLocale.INVENTORY_PAGE_BUTTON_TOOLTIP_1,
 
 					"children" :
@@ -172,12 +214,12 @@ window = {
 					"name" : "Inventory_Tab_02",
 					"type" : "radio_button",
 
-					"x" : 10 + 78,
+					"x" : 10 + 39,
 					"y" : 33 + 191,
 
-					"default_image" : "d:/ymir work/ui/game/windows/tab_button_large_01.sub",
-					"over_image" : "d:/ymir work/ui/game/windows/tab_button_large_02.sub",
-					"down_image" : "d:/ymir work/ui/game/windows/tab_button_large_03.sub",
+					"default_image" : "d:/ymir work/ui/game/windows/tab_button_large_half_01.sub",
+					"over_image" : "d:/ymir work/ui/game/windows/tab_button_large_half_02.sub",
+					"down_image" : "d:/ymir work/ui/game/windows/tab_button_large_half_03.sub",
 					"tooltip_text" : uiScriptLocale.INVENTORY_PAGE_BUTTON_TOOLTIP_2,
 
 					"children" :
@@ -192,6 +234,60 @@ window = {
 							"all_align" : "center",
 
 							"text" : "II",
+						},
+					),
+				},
+				{
+					"name" : "Inventory_Tab_03",
+					"type" : "radio_button",
+
+					"x" : 10 + 39 + 39,
+					"y" : 33 + 191,
+
+					"default_image" : "d:/ymir work/ui/game/windows/tab_button_large_half_01.sub",
+					"over_image" : "d:/ymir work/ui/game/windows/tab_button_large_half_02.sub",
+					"down_image" : "d:/ymir work/ui/game/windows/tab_button_large_half_03.sub",
+					"tooltip_text" : uiScriptLocale.INVENTORY_PAGE_BUTTON_TOOLTIP_3,
+
+					"children" :
+					(
+						{
+							"name" : "Inventory_Tab_03_Print",
+							"type" : "text",
+
+							"x" : 0,
+							"y" : 0,
+
+							"all_align" : "center",
+
+							"text" : "III",
+						},
+					),
+				},
+				{
+					"name" : "Inventory_Tab_04",
+					"type" : "radio_button",
+
+					"x" : 10 + 39 + 39 + 39,
+					"y" : 33 + 191,
+
+					"default_image" : "d:/ymir work/ui/game/windows/tab_button_large_half_01.sub",
+					"over_image" : "d:/ymir work/ui/game/windows/tab_button_large_half_02.sub",
+					"down_image" : "d:/ymir work/ui/game/windows/tab_button_large_half_03.sub",
+					"tooltip_text" : uiScriptLocale.INVENTORY_PAGE_BUTTON_TOOLTIP_4,
+
+					"children" :
+					(
+						{
+							"name" : "Inventory_Tab_04_Print",
+							"type" : "text",
+
+							"x" : 0,
+							"y" : 0,
+
+							"all_align" : "center",
+
+							"text" : "IV",
 						},
 					),
 				},
@@ -235,14 +331,14 @@ window = {
 							"type":"image",
 
 							"x":-18,
-							"y":20,
+							"y":2,
 
 							"image":"d:/ymir work/ui/game/windows/money_icon.sub",
 						},
 
 						{
 							"name" : "Money",
-							"type" : "text",
+							"type" : "cool_text",
 
 							"x" : 3,
 							"y" : 3,

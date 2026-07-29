@@ -21,109 +21,8 @@ import wndMgr
 if app.ENABLE_SORT_INVEN:
 	import uiToolTip
 
-ITEM_MALL_BUTTON_ENABLE = True
-
 ITEM_FLAG_APPLICABLE = 1 << 14
 
-class CostumeWindow(ui.ScriptWindow):
-
-	if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
-
-		def SetLastPosition(self):
-			try:
-				file = open("data/user_data/wnd/" + player.GetName() + "/"+ "inventory" + ".pos", 'r')
-				line = file.read().split(",")
-				pos_x, pos_y = int(line[0]), int(line[1])
-				file.close()
-				if pos_x > wndMgr.GetScreenWidth() or pos_y > wndMgr.GetScreenHeight():
-					return
-				if pos_x < 0:
-					pos_x = 0
-				if pos_y < 0:
-					pos_y = 0
-				self.SetPosition(pos_x, pos_y)
-			except:
-				pass
-			
-		def SaveLastPosition(self):
-			pos_x, pos_y = self.GetGlobalPosition()
-			file = open("data/user_data/wnd/" + player.GetName() + "/"+ "inventory" + ".pos","w")
-			file.write(str(pos_x)+","+str(pos_y))
-			file.close()
-   
-	def __init__(self, wndInventory):
-		import exception
-		
-		if not app.ENABLE_COSTUME_SYSTEM:			
-			exception.Abort("What do you do?")
-			return
-
-		if not wndInventory:
-			exception.Abort("wndInventory parameter must be set to InventoryWindow")
-			return						
-			 	 
-		ui.ScriptWindow.__init__(self)
-
-		self.isLoaded = 0
-		self.wndInventory = wndInventory;
-
-		self.__LoadWindow()
-
-	def __del__(self):
-		ui.ScriptWindow.__del__(self)
-
-	def Show(self):
-		self.__LoadWindow()
-		if app.ENABLE_SAVE_LAST_WINDOW_POSITION:
-			self.SetLastPosition()
-		self.RefreshCostumeSlot()
-
-		ui.ScriptWindow.Show(self)
-
-	def Close(self):
-		self.Hide()
-
-	def __LoadWindow(self):
-		if self.isLoaded == 1:
-			return
-
-		self.isLoaded = 1
-
-		try:
-			pyScrLoader = ui.PythonScriptLoader()
-			pyScrLoader.LoadScriptFile(self, "UIScript/CostumeWindow.py")
-		except:
-			import exception
-			exception.Abort("CostumeWindow.LoadWindow.LoadObject")
-
-		try:
-			wndEquip = self.GetChild("CostumeSlot")
-			self.GetChild("TitleBar").SetCloseEvent(ui.__mem_func__(self.Close))
-			
-		except:
-			import exception
-			exception.Abort("CostumeWindow.LoadWindow.BindObject")
-
-		## Equipment
-		wndEquip.SetOverInItemEvent(ui.__mem_func__(self.wndInventory.OverInItem))
-		wndEquip.SetOverOutItemEvent(ui.__mem_func__(self.wndInventory.OverOutItem))
-		wndEquip.SetUnselectItemSlotEvent(ui.__mem_func__(self.wndInventory.UseItemSlot))
-		wndEquip.SetUseSlotEvent(ui.__mem_func__(self.wndInventory.UseItemSlot))						
-		wndEquip.SetSelectEmptySlotEvent(ui.__mem_func__(self.wndInventory.SelectEmptySlot))
-		wndEquip.SetSelectItemSlotEvent(ui.__mem_func__(self.wndInventory.SelectItemSlot))
-
-		self.wndEquip = wndEquip
-
-	def RefreshCostumeSlot(self):
-		getItemVNum=player.GetItemIndex
-		
-		for i in xrange(item.COSTUME_SLOT_COUNT):
-			slotNumber = item.COSTUME_SLOT_START + i
-			self.wndEquip.SetItemSlot(slotNumber, getItemVNum(slotNumber), 0)
-			print("RefreshCostumeSlot: slotnum: %d, vnum %d" % (slotNumber, getItemVNum(slotNumber)) )
-			
-		self.wndEquip.RefreshSlot()
-		
 class BeltInventoryWindow(ui.ScriptWindow):
 
 	def __init__(self, wndInventory):
@@ -264,20 +163,73 @@ class BeltInventoryWindow(ui.ScriptWindow):
 
 		self.wndBeltInventorySlot.RefreshSlot()
 
-		
+
+class EquipmentTabWindow(ui.ScriptWindow):
+
+	def __init__(self, wndInventory):
+		import exception
+
+		if not wndInventory:
+			exception.Abort("wndInventory parameter must be set to InventoryWindow")
+			return
+
+		ui.ScriptWindow.__init__(self)
+
+		self.isLoaded = 0
+		self.wndInventory = wndInventory
+
+		self.__LoadWindow()
+
+	def __del__(self):
+		ui.ScriptWindow.__del__(self)
+
+	def Show(self):
+		self.__LoadWindow()
+		self.AdjustPosition()
+
+		ui.ScriptWindow.Show(self)
+
+	def Close(self):
+		self.Hide()
+
+	def AdjustPosition(self):
+		x, y = self.wndInventory.GetGlobalPosition()
+		self.SetPosition(x - 41, y + 9)
+
+	def __LoadWindow(self):
+		if self.isLoaded == 1:
+			return
+
+		self.isLoaded = 1
+
+		try:
+			pyScrLoader = ui.PythonScriptLoader()
+			pyScrLoader.LoadScriptFile(self, "UIScript/EquipmentTabWindow.py")
+		except:
+			import exception
+			exception.Abort("EquipmentTabWindow.LoadWindow.LoadObject")
+
+		try:
+			self.tab1 = self.GetChild("Equipment_Tab_01")
+			self.tab2 = self.GetChild("Equipment_Tab_02")
+		except:
+			import exception
+			exception.Abort("EquipmentTabWindow.LoadWindow.BindObject")
+
+
 class InventoryWindow(ui.ScriptWindow):
 	USE_TYPE_TUPLE = ("USE_CLEAN_SOCKET", "USE_CHANGE_ATTRIBUTE", "USE_ADD_ATTRIBUTE", "USE_ADD_ATTRIBUTE2", "USE_ADD_ACCESSORY_SOCKET", "USE_PUT_INTO_ACCESSORY_SOCKET", "USE_PUT_INTO_BELT_SOCKET", "USE_PUT_INTO_RING_SOCKET")
 
 	questionDialog = None
 	tooltipItem = None
-	wndCostume = None
+	wndCostumeSlot = None
 	wndBelt = None
+	wndEquipTab = None
 	dlgPickMoney = None
 	interface = None
-	
+
 	sellingSlotNumber = -1
 	isLoaded = 0
-	isOpenedCostumeWindowWhenClosingInventory = 0		# �κ��丮 ���� �� �ڽ����� �����־����� ����-_-; ���̹� ����
 	isOpenedBeltWindowWhenClosingInventory = 0		# �κ��丮 ���� �� ��Ʈ �κ��丮�� �����־����� ����-_-; ���̹� ����
 
 	def __init__(self):
@@ -295,11 +247,16 @@ class InventoryWindow(ui.ScriptWindow):
 
 		ui.ScriptWindow.Show(self)
 
-		if self.isOpenedCostumeWindowWhenClosingInventory and self.wndCostume:
-			self.wndCostume.Show() 
+		if self.wndEquipTab:
+			self.wndEquipTab.Show()
+			self.wndEquipTab.SetTop()
 
 		if self.wndBelt:
 			self.wndBelt.Show(self.isOpenedBeltWindowWhenClosingInventory)
+
+	def OnTop(self):
+		if self.wndEquipTab:
+			self.wndEquipTab.SetTop()
 
 	def BindInterfaceClass(self, interface):
 		self.interface = interface
@@ -312,11 +269,7 @@ class InventoryWindow(ui.ScriptWindow):
 
 		try:
 			pyScrLoader = ui.PythonScriptLoader()
-
-			if ITEM_MALL_BUTTON_ENABLE:
-				pyScrLoader.LoadScriptFile(self, uiScriptLocale.LOCALE_UISCRIPT_PATH + "InventoryWindow.py")
-			else:
-				pyScrLoader.LoadScriptFile(self, "UIScript/InventoryWindow.py")
+			pyScrLoader.LoadScriptFile(self, "UIScript/InventoryWindow.py")
 		except:
 			import exception
 			exception.Abort("InventoryWindow.LoadWindow.LoadObject")
@@ -324,22 +277,23 @@ class InventoryWindow(ui.ScriptWindow):
 		try:
 			wndItem = self.GetChild("ItemSlot")
 			wndEquip = self.GetChild("EquipmentSlot")
+			self.wndEquipBase = self.GetChild2("Equipment_Base")
 			self.GetChild("TitleBar").SetCloseEvent(ui.__mem_func__(self.Close))
 			self.wndMoney = self.GetChild("Money")
 			self.wndMoneySlot = self.GetChild("Money_Slot")
 			self.mallButton = self.GetChild2("MallButton")
 			self.DSSButton = self.GetChild2("DSSButton")
-			self.costumeButton = self.GetChild2("CostumeButton")
-			
+			self.wndCostumeSlot = self.GetChild2("CostumeSlot")
+			self.wndCostumeBase = self.GetChild2("Costume_Base")
+
 			self.inventoryTab = []
 			self.inventoryTab.append(self.GetChild("Inventory_Tab_01"))
 			self.inventoryTab.append(self.GetChild("Inventory_Tab_02"))
 			self.inventoryTab.append(self.GetChild("Inventory_Tab_03"))
 			self.inventoryTab.append(self.GetChild("Inventory_Tab_04"))
 
-			self.equipmentTab = []
-			self.equipmentTab.append(self.GetChild("Equipment_Tab_01"))
-			self.equipmentTab.append(self.GetChild("Equipment_Tab_02"))
+			self.wndEquipTab = EquipmentTabWindow(self)
+			self.equipmentTab = [self.wndEquipTab.tab1, self.wndEquipTab.tab2]
 
 			if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
 				self.listHighlightedSlot = []
@@ -365,10 +319,15 @@ class InventoryWindow(ui.ScriptWindow):
 						self.tooltipInfo[i].AppendTextLine(self.InformationText[i])
 					self.tooltipInfo[i].Hide()
 					
-			if self.costumeButton and not app.ENABLE_COSTUME_SYSTEM:
-				self.costumeButton.Hide()
-				self.costumeButton.Destroy()
-				self.costumeButton = 0
+			if self.wndCostumeSlot and not app.ENABLE_COSTUME_SYSTEM:
+				self.wndCostumeSlot.Hide()
+				self.wndCostumeSlot.Destroy()
+				self.wndCostumeSlot = 0
+				if self.wndCostumeBase:
+					self.wndCostumeBase.Hide()
+					self.wndCostumeBase.Destroy()
+					self.wndCostumeBase = 0
+				self.equipmentTab[1].Hide()
 
 			# Belt Inventory Window
 			self.wndBelt = None
@@ -396,6 +355,15 @@ class InventoryWindow(ui.ScriptWindow):
 		wndEquip.SetOverInItemEvent(ui.__mem_func__(self.OverInItem))
 		wndEquip.SetOverOutItemEvent(ui.__mem_func__(self.OverOutItem))
 
+		## Costume
+		if self.wndCostumeSlot:
+			self.wndCostumeSlot.SetSelectEmptySlotEvent(ui.__mem_func__(self.SelectEmptySlot))
+			self.wndCostumeSlot.SetSelectItemSlotEvent(ui.__mem_func__(self.SelectItemSlot))
+			self.wndCostumeSlot.SetUnselectItemSlotEvent(ui.__mem_func__(self.UseItemSlot))
+			self.wndCostumeSlot.SetUseSlotEvent(ui.__mem_func__(self.UseItemSlot))
+			self.wndCostumeSlot.SetOverInItemEvent(ui.__mem_func__(self.OverInItem))
+			self.wndCostumeSlot.SetOverOutItemEvent(ui.__mem_func__(self.OverOutItem))
+
 		## PickMoneyDialog
 		dlgPickMoney = uiPickMoney.PickMoneyDialog()
 		dlgPickMoney.LoadDialog()
@@ -422,8 +390,7 @@ class InventoryWindow(ui.ScriptWindow):
 		self.equipmentTab[0].SetEvent(lambda arg=0: self.SetEquipmentPage(arg))
 		self.equipmentTab[1].SetEvent(lambda arg=1: self.SetEquipmentPage(arg))
 		self.equipmentTab[0].Down()
-		self.equipmentTab[0].Hide()
-		self.equipmentTab[1].Hide()
+		self.equipmentPageIndex = 0
 
 		self.wndItem = wndItem
 		self.wndEquip = wndEquip
@@ -434,14 +401,8 @@ class InventoryWindow(ui.ScriptWindow):
 			self.mallButton.SetEvent(ui.__mem_func__(self.ClickMallButton))
 
 		if self.DSSButton:
-			self.DSSButton.SetEvent(ui.__mem_func__(self.ClickDSSButton)) 
-		
-		# Costume Button
-		if self.costumeButton:
-			self.costumeButton.SetEvent(ui.__mem_func__(self.ClickCostumeButton))
+			self.DSSButton.SetEvent(ui.__mem_func__(self.ClickDSSButton))
 
-		self.wndCostume = None
-		
  		#####
 
 		## Refresh
@@ -468,6 +429,9 @@ class InventoryWindow(ui.ScriptWindow):
 		self.tooltipItem = None
 		self.wndItem = 0
 		self.wndEquip = 0
+		self.wndEquipBase = 0
+		self.wndCostumeSlot = 0
+		self.wndCostumeBase = 0
 		self.dlgPickMoney = 0
 		self.wndMoney = 0
 		self.wndMoneySlot = 0
@@ -476,14 +440,14 @@ class InventoryWindow(ui.ScriptWindow):
 		self.DSSButton = None
 		self.interface = None
 
-		if self.wndCostume:
-			self.wndCostume.Destroy()
-			self.wndCostume = 0
-			
 		if self.wndBelt:
 			self.wndBelt.Destroy()
 			self.wndBelt = None
-			
+
+		if self.wndEquipTab:
+			self.wndEquipTab.Destroy()
+			self.wndEquipTab = None
+
 		self.inventoryTab = []
 		self.equipmentTab = []
 
@@ -494,10 +458,9 @@ class InventoryWindow(ui.ScriptWindow):
 		if None != self.tooltipItem:
 			self.tooltipItem.HideToolTip()
 
-		if self.wndCostume:
-			self.isOpenedCostumeWindowWhenClosingInventory = self.wndCostume.IsShow()			# �κ��丮 â�� ���� �� �ڽ����� ���� �־��°�?
-			self.wndCostume.Close()
- 
+		if self.wndEquipTab:
+			self.wndEquipTab.Close()
+
 		if self.wndBelt:
 			self.isOpenedBeltWindowWhenClosingInventory = self.wndBelt.IsOpeningInventory()		# �κ��丮 â�� ���� �� ��Ʈ �κ��丮�� ���� �־��°�?
 			self.wndBelt.Close()
@@ -533,6 +496,23 @@ class InventoryWindow(ui.ScriptWindow):
 	def SetEquipmentPage(self, page):
 		self.equipmentPageIndex = page
 		self.equipmentTab[1-page].SetUp()
+		self.equipmentTab[page].Down()
+
+		if page == 0:
+			if self.wndEquipBase:
+				self.wndEquipBase.Show()
+			else:
+				self.wndEquip.Show()
+			if self.wndCostumeBase:
+				self.wndCostumeBase.Hide()
+		else:
+			if self.wndEquipBase:
+				self.wndEquipBase.Hide()
+			else:
+				self.wndEquip.Hide()
+			if self.wndCostumeBase:
+				self.wndCostumeBase.Show()
+
 		self.RefreshEquipSlotWindow()
 
 	def ClickMallButton(self):
@@ -541,16 +521,6 @@ class InventoryWindow(ui.ScriptWindow):
 	# DSSButton
 	def ClickDSSButton(self):
 		self.interface.ToggleDragonSoulWindow()
-
-	def ClickCostumeButton(self):
-		if self.wndCostume:
-			if self.wndCostume.IsShow(): 
-				self.wndCostume.Hide()
-			else:
-				self.wndCostume.Show()
-		else:
-			self.wndCostume = CostumeWindow(self)
-			self.wndCostume.Show()
 
 	def OpenPickMoneyDialog(self):
 		if mouseModule.mouseController.isAttached():
@@ -687,30 +657,25 @@ class InventoryWindow(ui.ScriptWindow):
 		getItemVNum=player.GetItemIndex
 		getItemCount=player.GetItemCount
 		setItemVNum=self.wndEquip.SetItemSlot
-		for i in xrange(player.EQUIPMENT_PAGE_COUNT):
+		for i in xrange(player.EQUIPMENT_BASE_SLOT_COUNT):
 			slotNumber = player.EQUIPMENT_SLOT_START + i
 			itemCount = getItemCount(slotNumber)
 			if itemCount <= 1:
 				itemCount = 0
 			setItemVNum(slotNumber, getItemVNum(slotNumber), itemCount)
 
-		# if app.ENABLE_NEW_EQUIPMENT_SYSTEM:
-			# for i in xrange(player.NEW_EQUIPMENT_SLOT_COUNT):
-				# slotNumber = player.NEW_EQUIPMENT_SLOT_START + i
-				# itemCount = getItemCount(slotNumber)
-				# if itemCount <= 1:
-					# itemCount = 0
-				# setItemVNum(slotNumber, getItemVNum(slotNumber), itemCount)
-				# print "ENABLE_NEW_EQUIPMENT_SYSTEM", slotNumber, itemCount, getItemVNum(slotNumber)
 		setItemVNum(item.EQUIPMENT_RING1, getItemVNum(item.EQUIPMENT_RING1), 0)
 		setItemVNum(item.EQUIPMENT_RING2, getItemVNum(item.EQUIPMENT_RING2), 0)
 		setItemVNum(item.EQUIPMENT_BELT, getItemVNum(item.EQUIPMENT_BELT), 0)
 
 
 		self.wndEquip.RefreshSlot()
-		
-		if self.wndCostume:
-			self.wndCostume.RefreshCostumeSlot()
+
+		if self.wndCostumeSlot:
+			for i in xrange(item.COSTUME_SLOT_COUNT):
+				slotNumber = item.COSTUME_SLOT_START + i
+				self.wndCostumeSlot.SetItemSlot(slotNumber, getItemVNum(slotNumber), 0)
+			self.wndCostumeSlot.RefreshSlot()
 
 	def RefreshItemSlot(self):
 		self.RefreshBagSlotWindow()
@@ -1320,6 +1285,9 @@ class InventoryWindow(ui.ScriptWindow):
 #			print "Belt Global Pos : ", self.wndBelt.GetGlobalPosition()
 			self.wndBelt.AdjustPositionAndSize()
 
+		if self.wndEquipTab:
+			self.wndEquipTab.AdjustPosition()
+
 	if app.BL_ENABLE_PICKUP_ITEM_EFFECT:
 		# Pickup-glow highlight (freshly picked-up items) - sticky until hovered, tracked by
 		# global slot number so it survives inventory page switches like uiDragonSoul's version.
@@ -1566,16 +1534,16 @@ class ExtendedInventoryWindow(ui.ScriptWindow):
 
 		if self.inventoryType == 0:
 			slotStart = item.SKILL_BOOK_INVENTORY_SLOT_START
-			slotCount = player.SKILL_BOOK_INVENTORY_SLOT_COUNT
+			slotCount = item.SKILL_BOOK_INVENTORY_SLOT_COUNT
 		elif self.inventoryType == 2:
 			slotStart = item.STONE_INVENTORY_SLOT_START
-			slotCount = player.STONE_INVENTORY_SLOT_COUNT
+			slotCount = item.STONE_INVENTORY_SLOT_COUNT
 		elif self.inventoryType == 3:
 			slotStart = item.SANDIK_INVENTORY_SLOT_START
-			slotCount = player.SANDIK_INVENTORY_SLOT_COUNT
+			slotCount = item.SANDIK_INVENTORY_SLOT_COUNT
 		else:
 			slotStart = item.UPGRADE_ITEMS_INVENTORY_SLOT_START
-			slotCount = player.UPGRADE_ITEMS_INVENTORY_SLOT_COUNT
+			slotCount = item.UPGRADE_ITEMS_INVENTORY_SLOT_COUNT
 
 		for i in xrange(slotCount):
 			slotNumber = slotStart + i
@@ -1607,7 +1575,7 @@ class ExtendedInventoryWindow(ui.ScriptWindow):
 					self.wndItem.ActivateSlot(i)
 
 		def HighlightSlot(self, slot):
-			if slot < item.SKILL_BOOK_INVENTORY_SLOT_START or slot >= item.SANDIK_INVENTORY_SLOT_START + player.SANDIK_INVENTORY_SLOT_COUNT:
+			if slot < item.SKILL_BOOK_INVENTORY_SLOT_START or slot >= item.SANDIK_INVENTORY_SLOT_END:
 				return
 
 			if not slot in self.listHighlightedSlot:

@@ -1,12 +1,10 @@
 import uiScriptLocale
 import item
 
-EQUIPMENT_START_INDEX = 180
-
 window = {
 	"name" : "BeltInventoryWindow",
 
-	## 600 - (width + ¿À¸¥ÂÊÀ¸·Î ºÎÅÍ ¶ç¿ì±â 24 px)
+	## 600 - (width + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 24 px)
 	"x" : SCREEN_WIDTH - 176 - 148,
 	"y" : SCREEN_HEIGHT - 37 - 565 + 209 + 32,
 #	"x" : -148,
