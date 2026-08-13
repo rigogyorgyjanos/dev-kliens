@@ -41,6 +41,11 @@ import miniMap
 
 if app.__BL_PICK_FILTER__:
 	import uiPickUpFilter
+if app.ENABLE_OFFLINESHOP_SYSTEM:
+	import uiOfflineShop
+	import uiOfflineShopBuilder
+if app.ENABLE_SHOP_SEARCH_SYSTEM:
+	import uiPrivateShopSearch
 # ACCESSORY_REFINE_ADD_METIN_STONE
 import uiselectitem
 # END_OF_ACCESSORY_REFINE_ADD_METIN_STONE
@@ -95,6 +100,13 @@ class Interface(object):
 		self.wndGuildBuilding = None
 		if app.__BL_PICK_FILTER__:
 			self.wndPickUpFilter = None
+		if app.ENABLE_OFFLINESHOP_SYSTEM:
+			self.wndOfflineShop = None
+			self.wndOfflineShopBuilder = None
+			self.offlineShopInputDialog = None
+			self.offlineShopSlotFlag = 0
+		if app.ENABLE_SHOP_SEARCH_SYSTEM:
+			self.wndPrivateShopSearch = None
 		self.OpenLinkQuestionDialog = None
 
 		self.listGMName = {}
@@ -238,6 +250,11 @@ class Interface(object):
 		self.wndChatLog = wndChatLog
 		if app.__BL_PICK_FILTER__:
 			self.wndPickUpFilter = uiPickUpFilter.PickUpFilterWindow()
+		if app.ENABLE_OFFLINESHOP_SYSTEM:
+			self.wndOfflineShop = uiOfflineShop.OfflineShopWindow()
+			self.wndOfflineShopBuilder = uiOfflineShopBuilder.OfflineShopBuilderWindow()
+		if app.ENABLE_SHOP_SEARCH_SYSTEM:
+			self.wndPrivateShopSearch = uiPrivateShopSearch.PrivateShopSearchWindow()
 		if app.ENABLE_LOADING_PERFORMANCE:
 			self.wndWarpShower = uiWarpShower.WarpShowerWindow()
 		
@@ -391,6 +408,10 @@ class Interface(object):
 		self.dlgShop.SetItemToolTip(self.tooltipItem)
 		self.dlgExchange.SetItemToolTip(self.tooltipItem)
 		self.privateShopBuilder.SetItemToolTip(self.tooltipItem)
+		if app.ENABLE_OFFLINESHOP_SYSTEM:
+			self.wndOfflineShopBuilder.SetItemToolTip(self.tooltipItem)
+			self.wndOfflineShop.SetItemToolTip(self.tooltipItem)
+			self.wndPrivateShopSearch.SetItemToolTip(self.tooltipItem)
 
 		self.__InitWhisper()
 		self.DRAGON_SOUL_IS_QUALIFIED = False
@@ -548,6 +569,18 @@ class Interface(object):
 			if self.wndPickUpFilter:
 				self.wndPickUpFilter.Destroy()
 				del self.wndPickUpFilter
+
+		if app.ENABLE_OFFLINESHOP_SYSTEM:
+			if self.wndOfflineShop:
+				self.wndOfflineShop.Destroy()
+				del self.wndOfflineShop
+			if self.wndOfflineShopBuilder:
+				self.wndOfflineShopBuilder.Destroy()
+				del self.wndOfflineShopBuilder
+		if app.ENABLE_SHOP_SEARCH_SYSTEM:
+			if self.wndPrivateShopSearch:
+				self.wndPrivateShopSearch.Destroy()
+				del self.wndPrivateShopSearch
 
 		if self.wndGameButton:
 			self.wndGameButton.Destroy()
@@ -983,6 +1016,14 @@ class Interface(object):
 		if app.__BL_PICK_FILTER__:
 			if self.wndPickUpFilter:
 				self.wndPickUpFilter.Hide()
+		if app.ENABLE_OFFLINESHOP_SYSTEM:
+			if self.wndOfflineShop:
+				self.wndOfflineShop.Hide()
+			if self.wndOfflineShopBuilder:
+				self.wndOfflineShopBuilder.Hide()
+		if app.ENABLE_SHOP_SEARCH_SYSTEM:
+			if self.wndPrivateShopSearch:
+				self.wndPrivateShopSearch.Hide()
 
 		if self.wndExpandedTaskBar:
 			self.wndExpandedTaskBar.Hide()
@@ -1817,6 +1858,93 @@ class Interface(object):
 		def OpenPickUpWindow(self):
 			if self.wndPickUpFilter:
 				self.wndPickUpFilter.Open()
+
+		if app.ENABLE_OFFLINESHOP_SYSTEM:
+			def OpenOfflineShop(self):
+				if self.wndOfflineShopBuilder:
+					self.wndOfflineShopBuilder.Hide()
+				if self.wndOfflineShop:
+					self.wndOfflineShop.Open()
+
+			def RefreshOfflineShop(self):
+				if self.wndOfflineShop:
+					if self.wndOfflineShop.IsShow():
+						self.wndOfflineShop.RefreshMe()
+					else:
+						self.wndOfflineShop.Open()
+
+			def CloseOfflineShop(self):
+				if self.wndOfflineShop:
+					self.wndOfflineShop.Hide()
+
+			def OnOfflineShopReturn(self, subheader):
+				if self.wndOfflineShop:
+					self.wndOfflineShop.OnOfflineShopReturn(subheader)
+
+			def OnOfflineShopCheckResult(self, hasShop):
+				if self.wndOfflineShopBuilder:
+					self.wndOfflineShopBuilder.OnCheckResult(hasShop)
+
+			def AppendAverageItem(self, vnum, price):
+				# Only one price dialog can realistically be open at a time (builder
+				# during shop creation, the owner-view's add-item flow once the shop
+				# already exists, or the Ctrl+right-click quick-add fallback dialog
+				# from either inventory window) - forward to all, each ignores it if
+				# its own dialog isn't open or is pricing a different vnum.
+				if self.wndOfflineShopBuilder:
+					self.wndOfflineShopBuilder.SetAveragePrice(vnum, price)
+				if self.wndOfflineShop:
+					self.wndOfflineShop.SetAveragePrice(vnum, price)
+				if self.wndInventory:
+					self.wndInventory.SetQuickAddAveragePrice(vnum, price)
+				if self.wndExtendedInventory:
+					self.wndExtendedInventory.SetQuickAddAveragePrice(vnum, price)
+
+			def OfflineShopSetFlag(self, flag):
+				# Chat-command args always arrive as strings, not numbers.
+				flag = long(flag)
+				# Server reuses this same chat command for two different moments: the
+				# initial "no shop yet" trigger (open the name dialog) AND telling an
+				# already-open builder that a slot got unlocked mid-session (item 72319
+				# consumed via OpenSlot while GetOfflineShopPanel() is still true). Route
+				# by whether the builder is already up, since the server can't tell us.
+				if self.wndOfflineShopBuilder and self.wndOfflineShopBuilder.IsShow():
+					self.wndOfflineShopBuilder.SetSlotFlag(flag)
+				else:
+					self.OpenOfflineShopInputNameDialog(flag)
+
+			def OpenOfflineShopInputNameDialog(self, slotFlag = 0):
+				inputDialog = uiCommon.InputDialog()
+				inputDialog.SetTitle(localeInfo.PRIVATE_SHOP_INPUT_NAME_DIALOG_TITLE)
+				inputDialog.SetMaxLength(32)
+				inputDialog.SetAcceptEvent(ui.__mem_func__(self.OpenOfflineShopBuilder))
+				inputDialog.SetCancelEvent(ui.__mem_func__(self.CloseOfflineShopInputNameDialog))
+				inputDialog.Open()
+				self.offlineShopInputDialog = inputDialog
+				self.offlineShopSlotFlag = slotFlag
+
+			def CloseOfflineShopInputNameDialog(self):
+				self.offlineShopInputDialog = None
+				return True
+
+			def OpenOfflineShopBuilder(self):
+				if not self.offlineShopInputDialog:
+					return True
+				if not len(self.offlineShopInputDialog.GetText()):
+					return True
+				if self.wndOfflineShopBuilder:
+					self.wndOfflineShopBuilder.Open(self.offlineShopInputDialog.GetText(), self.offlineShopSlotFlag)
+				self.CloseOfflineShopInputNameDialog()
+				return True
+
+		if app.ENABLE_SHOP_SEARCH_SYSTEM:
+			def OpenPrivateShopSearch(self):
+				if self.wndPrivateShopSearch:
+					self.wndPrivateShopSearch.Open()
+
+			def RefreshShopSearch(self):
+				if self.wndPrivateShopSearch:
+					self.wndPrivateShopSearch.RefreshMe()
 
 	#####################################################################################
 

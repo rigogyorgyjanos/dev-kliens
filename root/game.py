@@ -24,6 +24,8 @@ import localeInfo
 import constInfo
 import exchange
 import ime
+if app.ENABLE_OFFLINESHOP_SYSTEM:
+	import offlineShop
 
 import ui
 import uiCommon
@@ -345,7 +347,11 @@ class GameWindow(ui.ScriptWindow):
 		onPressKeyDict[app.DIK_F5]			= lambda : self.interface.OpenBookMission()
 		if app.__FARM_SESSION_SYSTEM__ and self.wndFarmSession:
 			onPressKeyDict[app.DIK_F6]	= lambda : self.wndFarmSession.Open()
-		
+		if app.ENABLE_OFFLINESHOP_SYSTEM:
+			onPressKeyDict[app.DIK_F7]	= lambda : offlineShop.SendOpen()
+		if app.ENABLE_SHOP_SEARCH_SYSTEM:
+			onPressKeyDict[app.DIK_F8]	= lambda : self.interface.OpenPrivateShopSearch()
+
 		onPressKeyDict[app.DIK_LALT]		= lambda : self.ShowName()
 		onPressKeyDict[app.DIK_LCONTROL]	= lambda : self.ShowMouseImage()
 		onPressKeyDict[app.DIK_SYSRQ]		= lambda : self.SaveScreen()
@@ -922,7 +928,10 @@ class GameWindow(ui.ScriptWindow):
 		self.interface.RecvWhisper(name)
 
 	def OnPickMoney(self, money):
-		chat.AppendChat(chat.CHAT_TYPE_INFO, localeInfo.GAME_PICK_MONEY % (money))
+		if app.ENABLE_CHATTING_WINDOW_RENEWAL:
+			chat.AppendChat(chat.CHAT_TYPE_MONEY_INFO, localeInfo.GAME_PICK_MONEY % (money))
+		else:
+			chat.AppendChat(chat.CHAT_TYPE_INFO, localeInfo.GAME_PICK_MONEY % (money))
 
 	def OnShopError(self, type):
 		try:
@@ -2067,7 +2076,18 @@ class GameWindow(ui.ScriptWindow):
 			serverCommandList.update({"RewardMissionData" : self.interface.RewardMissionData})
 			serverCommandList.update({"RemoveMissionData" : self.interface.RemoveMissionData})
 			serverCommandList.update({"UpdateMissionEndTime" : self.interface.UpdateMissionEndTime})
-			
+
+		if app.ENABLE_OFFLINESHOP_SYSTEM:
+			serverCommandList.update({"OpenOfflineShop" : self.OpenOfflineShop})
+			serverCommandList.update({"OfflineShopSetFlag" : self.OfflineShopSetFlag})
+			serverCommandList.update({"CloseOfflineShop" : self.CloseOfflineShop})
+			serverCommandList.update({"RefreshOfflineShop" : self.RefreshOfflineShop})
+			serverCommandList.update({"ClearOfflineShopLog" : self.ClearOfflineShopLog})
+			serverCommandList.update({"AddSellNotification" : self.AddSellNotification})
+			serverCommandList.update({"AppendAverageItem" : self.AppendAverageItem})
+		if app.ENABLE_SHOP_SEARCH_SYSTEM:
+			serverCommandList.update({"OpenPrivateShopSearch" : self.OpenPrivateShopSearch})
+
 		self.serverCommander=stringCommander.Analyzer()
 		for serverCommandItem in serverCommandList.items():
 			self.serverCommander.SAFE_RegisterCallBack(
@@ -2110,6 +2130,40 @@ class GameWindow(ui.ScriptWindow):
 	def CommandCloseMall(self):
 		self.interface.CommandCloseMall()
 	# END_OF_ITEM_MALL
+
+	if app.ENABLE_OFFLINESHOP_SYSTEM:
+		def OpenOfflineShop(self):
+			self.interface.OpenOfflineShop()
+
+		def OfflineShopSetFlag(self, flag):
+			self.interface.OfflineShopSetFlag(flag)
+
+		def CloseOfflineShop(self):
+			self.interface.CloseOfflineShop()
+
+		def RefreshOfflineShop(self):
+			self.interface.RefreshOfflineShop()
+
+		def ClearOfflineShopLog(self):
+			self.interface.RefreshOfflineShop()
+
+		def AddSellNotification(self, vnum, count, price):
+			chat.AppendChat(chat.CHAT_TYPE_INFO, "Item sold: vnum %s x%s for %s yang" % (vnum, count, price))
+
+		def AppendAverageItem(self, vnum, price):
+			self.interface.AppendAverageItem(long(vnum), long(price))
+
+		def OnOfflineShopCheckResult(self, hasShop):
+			self.interface.OnOfflineShopCheckResult(hasShop)
+
+		def OnOfflineShopReturn(self, subheader):
+			self.interface.OnOfflineShopReturn(subheader)
+	if app.ENABLE_SHOP_SEARCH_SYSTEM:
+		def OpenPrivateShopSearch(self, dummy = 0):
+			self.interface.OpenPrivateShopSearch()
+
+		def RefreshShopSearch(self):
+			self.interface.RefreshShopSearch()
 
 	def RefineSuceededMessage(self):
 		snd.PlaySound("sound/ui/make_soket.wav")

@@ -913,3 +913,5 @@ MISSION_REWARD_TEXT	Do you want get reward?
 MISSION_END_TIME	|cffF6A800|Eemoji/e_wiki|e End Time:|r %s
 MISSION_REWARD_TITLE	|cffF6A800Reward:|r
 NEW_AFFECT_AUTO_METIN_FARM	Metinkő kijelölés	SNA
+CHATTING_SETTING_SETTING	Beállítások
+CHATTING_SETTING_CLEAR_QUESTION	Visszaállítod az alapértelmezettre?

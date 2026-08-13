@@ -19,6 +19,9 @@ import mouseModule
 import constInfo
 if app.__BL_SHADER__:
 	import shaderMgr
+if app.ENABLE_OFFLINESHOP_SYSTEM:
+	import offlineShop
+	import privateShopSearch
 
 WARP_SCROLLS = [22011, 22000, 22010]
 
@@ -677,6 +680,44 @@ class ItemToolTip(ToolTip):
 		self.AddItemData(itemVnum, metinSlot, attrSlot)
 		self.AppendPrice(price)
 
+	def SetOfflineShopItem(self, slotIndex):
+		itemVnum = offlineShop.GetItemVnum(slotIndex)
+		if 0 == itemVnum:
+			return
+
+		price = offlineShop.GetItemPrice(slotIndex)
+		self.ClearToolTip()
+		self.isShopItem = True
+
+		metinSlot = []
+		for i in xrange(player.METIN_SOCKET_MAX_NUM):
+			metinSlot.append(offlineShop.GetItemMetinSocket(slotIndex, i))
+		attrSlot = []
+		for i in xrange(player.ATTRIBUTE_SLOT_MAX_NUM):
+			attrSlot.append(offlineShop.GetItemAttribute(slotIndex, i))
+
+		self.AddItemData(itemVnum, metinSlot, attrSlot)
+		self.AppendPrice(price)
+
+	def SetPrivateShopSearchItem(self, idx):
+		itemVnum = privateShopSearch.GetItemVnum(idx)
+		if 0 == itemVnum:
+			return
+
+		price = privateShopSearch.GetItemPrice(idx)
+		self.ClearToolTip()
+		self.isShopItem = True
+
+		metinSlot = []
+		for i in xrange(player.METIN_SOCKET_MAX_NUM):
+			metinSlot.append(privateShopSearch.GetItemMetinSocket(idx, i))
+		attrSlot = []
+		for i in xrange(player.ATTRIBUTE_SLOT_MAX_NUM):
+			attrSlot.append(privateShopSearch.GetItemAttribute(idx, i))
+
+		self.AddItemData(itemVnum, metinSlot, attrSlot)
+		self.AppendPrice(price)
+
 	def SetShopItemBySecondaryCoin(self, slotIndex):
 		itemVnum = shop.GetItemID(slotIndex)
 		if 0 == itemVnum:
@@ -862,6 +903,24 @@ class ItemToolTip(ToolTip):
 		item.SelectItem(itemVnum)
 		self.ClearToolTip()
 		self.AppendSellingPrice(shop.GetPrivateShopItemPrice(invenType, invenPos))
+
+		metinSlot = []
+		for i in xrange(player.METIN_SOCKET_MAX_NUM):
+			metinSlot.append(player.GetItemMetinSocket(invenPos, i))
+		attrSlot = []
+		for i in xrange(player.ATTRIBUTE_SLOT_MAX_NUM):
+			attrSlot.append(player.GetItemAttribute(invenPos, i))
+
+		self.AddItemData(itemVnum, metinSlot, attrSlot)
+
+	def SetOfflineShopBuilderItem(self, invenType, invenPos, price):
+		itemVnum = player.GetItemIndex(invenType, invenPos)
+		if 0 == itemVnum:
+			return
+
+		item.SelectItem(itemVnum)
+		self.ClearToolTip()
+		self.AppendSellingPrice(price)
 
 		metinSlot = []
 		for i in xrange(player.METIN_SOCKET_MAX_NUM):

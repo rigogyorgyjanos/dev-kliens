@@ -1274,7 +1274,21 @@ VNUM	LOCALE_NAME
 20394	Tűzföld-őr
 20395	Jégföld-őr
 30000	????
-30001	????
+30001	Shop
+30002	Shop
+30003	Shop
+30004	Shop
+30005	Shop
+30006	Shop
+30007	Shop
+30008	Shop
+30009	Shop
+30010	Shop
+30011	Shop
+30012	Shop
+30013	Shop
+30014	Shop
+30015	Shop
 30101	Kud szobra
 30102	Bazalt obeliszk
 30103	Teknős szikla

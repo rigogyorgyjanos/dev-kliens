@@ -5243,6 +5243,7 @@ VNUM	LOCALE_NAME
 71166	Páncélozott panda-pecsét
 71171	Egyszarvú-pecsét
 71172	Rémálom-pecsét
+71221	Bolt dekoráció
 72001	Tapasztalat gyűrű
 72002	Tapasztalat gyűrű
 72003	Tapasztalat gyűrű

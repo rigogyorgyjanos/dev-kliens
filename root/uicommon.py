@@ -382,6 +382,7 @@ class MoneyInputDialog(ui.ScriptWindow):
 		ui.ScriptWindow.__init__(self)
 
 		self.moneyHeaderText = localeInfo.MONEY_INPUT_DIALOG_SELLPRICE
+		self.averagePrice = None
 		self.__CreateDialog()
 		self.SetMaxLength(9)
 
@@ -416,7 +417,32 @@ class MoneyInputDialog(ui.ScriptWindow):
 		self.acceptButton = None
 		self.cancelButton = None
 		self.inputValue = None
+		self.averagePrice = None
 		self.Hide()
+
+	## Matches the Solaris2 reference's MoneyInputDialog.SetAveragePrice: grows the
+	## dialog once to make room for a market-average line built into the board itself,
+	## instead of a separate floating TextLine bolted on from outside (what the
+	## offline-shop price flow used to do here).
+	def SetAveragePrice(self, price):
+		if self.averagePrice:
+			self.averagePrice.SetText(localeInfo.NumberToMoneyString(price))
+			self.averagePrice.Show()
+			return
+
+		self.SetSize(self.GetWidth(), 125)
+		self.board.SetSize(self.GetWidth(), 125)
+
+		self.averagePrice = ui.TextLine()
+		self.averagePrice.SetParent(self.board)
+		self.averagePrice.SetSize(self.GetWidth(), 15)
+		self.averagePrice.SetHorizontalAlignCenter()
+		self.averagePrice.SetPosition(self.GetWidth() / 2, 78 - 4)
+		self.averagePrice.SetText("Market average: %s" % localeInfo.NumberToMoneyString(price))
+		self.averagePrice.Show()
+
+		self.acceptButton.SetPosition(self.acceptButton.GetLocalPosition()[0], 78 + 15)
+		self.cancelButton.SetPosition(self.cancelButton.GetLocalPosition()[0], 78 + 15)
 
 	def SetTitle(self, name):
 		self.board.SetTitleName(name)

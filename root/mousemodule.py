@@ -194,7 +194,8 @@ class CMouseController(object):
 				Type == player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY or\
 				Type == player.SLOT_TYPE_STONE_INVENTORY or\
 				Type == player.SLOT_TYPE_SANDIK_INVENTORY or\
-				(app.ENABLE_SWITCHBOT and Type == player.SLOT_TYPE_SWITCHBOT):
+				(app.ENABLE_SWITCHBOT and Type == player.SLOT_TYPE_SWITCHBOT) or\
+				(app.ENABLE_OFFLINESHOP_SYSTEM and Type == player.SLOT_TYPE_OFFLINE_SHOP_ITEM):
 
 				item.SelectItem(self.AttachedItemIndex)
 				self.AttachedIconHandle = item.GetIconInstance()
@@ -296,7 +297,8 @@ class CMouseController(object):
 				self.AttachedType == player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY or\
 				self.AttachedType == player.SLOT_TYPE_STONE_INVENTORY or\
 				self.AttachedType == player.SLOT_TYPE_SANDIK_INVENTORY or\
-				(app.ENABLE_SWITCHBOT and self.AttachedType == player.SLOT_TYPE_SWITCHBOT):
+				(app.ENABLE_SWITCHBOT and self.AttachedType == player.SLOT_TYPE_SWITCHBOT) or\
+				(app.ENABLE_OFFLINESHOP_SYSTEM and self.AttachedType == player.SLOT_TYPE_OFFLINE_SHOP_ITEM):
 
 				item.DeleteIconInstance(self.AttachedIconHandle)
 

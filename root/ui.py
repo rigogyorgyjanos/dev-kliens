@@ -223,7 +223,29 @@ class Window(object):
 
 	def Hide(self):
 		wndMgr.Hide(self.hWnd)
-	
+
+	if app.__BL_CLIP_MASK__:
+		def SetClippingMaskRect(self, left, top, right, bottom):
+			wndMgr.SetClippingMaskRect(self.hWnd, left, top, right, bottom)
+
+		def SetClippingMaskWindow(self, clipping_mask_window, adjust_value = 0):
+			wndMgr.SetClippingMaskWindow(self.hWnd, clipping_mask_window.GetWindowHandle(), adjust_value)
+
+	## Real D3D scissor-test clip - already built into this client's CWindow::Render
+	## (ScopedScissorRect) but never exposed to Python before. Unlike
+	## SetClippingMaskWindow (which has to be patched into every individual widget
+	## type's OnRender), this clips a window's ENTIRE subtree uniformly at the GPU
+	## level in one shot - background visual, text, icons, everything - by wrapping
+	## its own render call and all its children's render calls in one scissor rect.
+	def EnableScissorRect(self):
+		wndMgr.EnableScissorRect(self.hWnd)
+
+	def DisableScissorRect(self):
+		wndMgr.DisableScissorRect(self.hWnd)
+
+	def IsScissorRectEnabled(self):
+		return wndMgr.IsScissorRectEnabled(self.hWnd)
+
 	if app.ENABLE_SEND_TARGET_INFO:
 		def SetVisible(self, is_show):
 			if is_show:
@@ -1679,6 +1701,17 @@ class Button(Window):
 			return
 		self.ButtonText.SetPackedFontColor(color)
 
+	def SetTextAddPos(self, text, x_add = 0, y_add = 0, height = 4):
+		if not self.ButtonText:
+			textLine = TextLine()
+			textLine.SetParent(self)
+			textLine.SetPosition(self.GetWidth() / 2 + x_add, self.GetHeight() / 2 + y_add)
+			textLine.SetVerticalAlignCenter()
+			textLine.SetHorizontalAlignCenter()
+			textLine.Show()
+			self.ButtonText = textLine
+		self.ButtonText.SetText(text)
+
 	def SetText(self, text, height = 4):
 
 		if not self.ButtonText:
@@ -2288,7 +2321,7 @@ class TitleBar(Window):
 
 	def MakeTitleBar(self, width, color):
 
-		## ���� Color�� ����ϰ�?���� ����
+		## ���� Color�� ����ϰ�?���� ����
 
 		width = max(64, width)
 
@@ -3797,7 +3830,7 @@ class PythonScriptLoader(object):
 
 		try:
 			# chr, player ���� sandbox ������ import�� ������ �ʱ� ������,(���� �ǿ��� ������ �ſ� ŭ.)
-			#  �̸� script dictionary�� �ʿ��� �����?�־���´�?
+			#  �̸� script dictionary�� �ʿ��� �����?�־���´�?
 			import chr
 			import player
 			import app
@@ -4872,3 +4905,478 @@ def SandboxFloat(x):
 	return float(x)
 
 RegisterToolTipWindow("TEXT", TextLine)
+
+## ScrollBarNew is referenced by ported reference-package UI code (Shop Search) but was
+## never actually defined by that reference package either - ScrollBar already provides
+## the complete API (SetScrollEvent/SetMiddleBarSize/SetScrollBarSize/GetPos/SetPos/OnUp/OnDown)
+## needed as a drop-in replacement, so this is a plain alias, not a new implementation.
+ScrollBarNew = ScrollBar
+
+class DropdownTree(Window):
+	class Item(Window):
+		def __init__(self):
+			Window.__init__(self)
+			self.id = -1
+			self.parentId = -1
+			self.offset = 0
+			self.visible = False
+			self.expanded = False
+			self.event = None
+			self.onCollapseEvent = None
+			self.onExpandEvent = None
+
+		def __del__(self):
+			Window.__del__(self)
+
+		def Destroy(self):
+			self.id = 0
+			self.parentId = 0
+			self.offset = 0
+			self.visible = 0
+			self.expanded = 0
+			self.event = 0
+			self.onCollapseEvent = 0
+			self.onExpandEvent = 0
+			self.parent = 0
+
+		def SetParent(self, parent):
+			Window.SetParent(self, parent)
+			self.parent = proxy(parent)
+
+		def SetSize(self, width, height):
+			Window.SetSize(self, width, height)
+
+		def GetId(self):
+			return self.id
+
+		def SetId(self, id):
+			self.id = id
+
+		def GetParentId(self):
+			return self.parentId
+
+		def SetParentId(self, parentId):
+			self.parentId = parentId
+
+		def IsParent(self):
+			return self.parentId == -1
+
+		def SetVisible(self, visible):
+			self.visible = visible
+
+		def IsVisible(self):
+			return self.visible
+
+		def IsExpanded(self):
+			return self.expanded
+
+		def Expand(self):
+			self.expanded = True
+			if self.onExpandEvent:
+				self.onExpandEvent()
+
+		def Collapse(self):
+			self.expanded = False
+			if self.onCollapseEvent:
+				self.onCollapseEvent()
+
+		def SetOnExpandEvent(self, event):
+			self.onExpandEvent = __mem_func__(event)
+
+		def SetOnCollapseEvent(self, event):
+			self.onCollapseEvent = __mem_func__(event)
+
+		def SetOffset(self, offset):
+			self.offset = offset
+
+		def GetOffset(self):
+			return self.offset
+
+		def SetEvent(self, event):
+			self.event = event
+
+		def OnSelect(self):
+			self.parent.SelectItem(self)
+
+		def OnMouseLeftButtonDown(self):
+			self.OnSelect()
+
+	def __init__(self):
+		Window.__init__(self)
+
+		self.__curItemId = 0
+		self.viewItemCount = 10
+		self.basePos = 0
+		self.itemHeight = 29
+		self.isShopSearch = 0
+		self.itemStep = 29
+		self.selItem = 0
+		self.itemList = []
+		self.onSelectItemEvent = lambda *arg: None
+		self.itemWidth = 185
+
+		self.scrollBar = None
+
+	def __del__(self):
+		Window.__del__(self)
+
+	def IsEmpty(self):
+		return len(self.itemList) == 0
+
+	def OnMouseWheel(self, nLen):
+		if self.scrollBar:
+			if nLen > 0:
+				self.scrollBar.OnUp()
+			else:
+				self.scrollBar.OnDown()
+			return True
+		return False
+
+	def SetItemStep(self, itemStep):
+		self.itemStep = itemStep
+
+	def SetItemSize(self, itemWidth, itemHeight):
+		self.itemWidth = itemWidth
+		self.itemHeight = itemHeight
+
+	def SetViewItemCount(self, viewItemCount):
+		self.viewItemCount = viewItemCount
+
+	def SetSelectEvent(self, event):
+		self.onSelectItemEvent = event
+
+	def SetBasePos(self, basePos):
+		for oldItem in self.itemList:
+			oldItem.Hide()
+
+		self.basePos = basePos
+
+		skipCount = basePos
+		pos = basePos
+		for lItem in self.itemList:
+			if not lItem.IsVisible():
+				continue
+
+			if skipCount > 0:
+				skipCount -= 1
+				continue
+
+			if pos >= (self.basePos + self.viewItemCount):
+				break
+
+			(x, y) = self.GetItemViewCoord(pos, lItem.GetWidth())
+			lItem.SetPosition(x + lItem.GetOffset(), y)
+			lItem.Show()
+			pos += 1
+		self.UpdateScrollbar()
+
+	def GetItemIndex(self, argItem):
+		return self.itemList.index(argItem)
+
+	def GetSelectedItem(self):
+		return self.selItem
+
+	def SelectIndex(self, index):
+		if index >= len(self.itemList) or index < 0:
+			self.selItem = None
+			return
+		try:
+			self.selItem = self.itemList[index]
+		except:
+			pass
+
+	def ClearItem(self):
+		self.selItem = None
+		for lItem in self.itemList:
+			lItem.Hide()
+			lItem.Destroy()
+			lItem = 0
+		self.itemList = []
+		self.__curItemId = 0
+
+		if self.scrollBar:
+			self.scrollBar.SetPos(0)
+		self.SetBasePos(0)
+
+	def SelectItem(self, selItem):
+		if self.isShopSearch:
+			for item in self.itemList:
+				if selItem != item:
+					self.CloseTree(item, self.itemList)
+
+		self.selItem = selItem
+		if selItem.IsExpanded():
+			self.CloseTree(selItem, self.itemList)
+		else:
+			if selItem.event:
+				selItem.event()
+			self.OpenTree(selItem, self.itemList)
+		self.SetBasePos(self.basePos)
+
+	def __AppendItem(self, newItem, parentId):
+		curItemId = self.__curItemId
+		self.__curItemId += 1
+
+		newItem.SetParent(self)
+		newItem.SetParentId(parentId)
+		newItem.SetSize(self.itemWidth, self.itemHeight)
+		newItem.SetId(curItemId)
+
+		pos = self.__GetItemCount()
+		self.itemList.append(newItem)
+
+		if newItem.IsVisible() and self.__IsInViewRange(pos):
+			(x, y) = self.GetItemViewCoord(pos, newItem.GetWidth())
+			newItem.SetPosition(x, y)
+			newItem.Show()
+		else:
+			newItem.Hide()
+
+		self.UpdateScrollbar()
+
+		return curItemId
+
+	def AppendItemList(self, dict):
+		self.__AppendItemList(-1, dict)
+
+	def __AppendItemList(self, parentId, dict):
+		for lItem in dict:
+			if 'item' in lItem:
+				id = self.__AppendItem(lItem['item'], parentId)
+				if 'children' in lItem:
+					self.__AppendItemList(id, lItem['children'])
+
+	def SetScrollBar(self, scrollBar):
+		scrollBar.SetScrollEvent(__mem_func__(self.__OnScroll))
+		self.scrollBar = scrollBar
+
+	def __OnScroll(self):
+		self.SetBasePos(int(self.scrollBar.GetPos() * self.__GetScrollLen()))
+
+	def __GetScrollLen(self):
+		scrollLen = self.__GetItemCount() - self.__GetViewItemCount()
+		if scrollLen < 0:
+			return 0
+		return scrollLen
+
+	def __GetViewItemCount(self):
+		return self.viewItemCount
+
+	def __GetItemCount(self):
+		return sum(1 for lItem in self.itemList if lItem.IsVisible())
+
+	def GetItemViewCoord(self, pos, itemWidth):
+		return (0, (pos - self.basePos) * self.itemStep)
+
+	def __IsInViewRange(self, pos):
+		if pos < self.basePos:
+			return 0
+		if pos >= self.basePos + self.viewItemCount:
+			return 0
+		return 1
+
+	def UpdateScrollbar(self):
+		if not self.scrollBar:
+			return
+		if self.__GetViewItemCount() < self.__GetItemCount():
+			self.scrollBar.SetMiddleBarSize(float(self.__GetViewItemCount()) / self.__GetItemCount())
+			self.scrollBar.Show()
+		else:
+			self.scrollBar.Hide()
+
+	def CloseTree(self, curItem, list):
+		curItem.Collapse()
+		for listboxItem in list:
+			if listboxItem.GetParentId() == curItem.GetId():
+				listboxItem.SetVisible(False)
+				self.CloseTree(listboxItem, list)
+
+	def OpenTree(self, curItem, list):
+		curItem.Expand()
+		for listboxItem in list:
+			if listboxItem.GetParentId() == curItem.GetId():
+				listboxItem.SetVisible(True)
+
+class LastListItem(DropdownTree.Item):
+	def __init__(self, text):
+		DropdownTree.Item.__init__(self)
+		self.overLine = False
+
+		textLine = TextLine()
+		textLine.SetParent(self)
+		textLine.SetFontName(localeInfo.UI_DEF_FONT)
+		textLine.SetWindowHorizontalAlignLeft()
+		textLine.SetPosition(5, 5)
+		textLine.SetText(text)
+		textLine.Show()
+
+		self.textLine = textLine
+		self.text = text
+
+	def __del__(self):
+		DropdownTree.Item.__del__(self)
+
+	def Destroy(self):
+		DropdownTree.Item.Destroy(self)
+		self.overLine = 0
+		self.textLine = 0
+		self.text = 0
+
+	def GetText(self):
+		return self.text
+
+	def SetSize(self, width, height):
+		DropdownTree.Item.SetSize(self, width - self.GetOffset(), height)
+
+	def OnMouseOverIn(self):
+		self.overLine = True
+
+	def OnMouseOverOut(self):
+		self.overLine = False
+
+	def OnRender(self):
+		if self.overLine and self.parent.GetSelectedItem() != self:
+			x, y = self.GetGlobalPosition()
+			grp.SetColor(grp.GenerateColor(1.0, 1.0, 1.0, 0.2))
+			grp.RenderBar(x, y, self.GetWidth(), self.GetHeight())
+		elif self.parent.GetSelectedItem() == self:
+			x, y = self.GetGlobalPosition()
+			grp.SetColor(grp.GenerateColor(0.0, 0.0, 1.0, 1.0))
+			grp.RenderBar(x, y, self.GetWidth(), self.GetHeight())
+		else:
+			x, y = self.GetGlobalPosition()
+			grp.SetColor(grp.GenerateColor(0.0, 0.0, 0.0, 1.0))
+			grp.RenderBar(x, y, self.GetWidth(), self.GetHeight())
+
+## ComboBoxImage does not exist anywhere - not in this project's ui.py, and not in the
+## reference package that calls it either (confirmed by grep across the whole reference
+## drop). Built from how the reference actually calls it: a background-image button that
+## shows the current selection and toggles a popup list of rows on click.
+class ComboBoxImage(Window):
+	POPUP_ROW_HEIGHT = 20
+
+	def __init__(self, parent, image, x, y, width = 190, height = 29):
+		## Window.__init__() calls self.Hide() internally, which this class overrides to
+		## also call CloseListBox() - so every attribute CloseListBox touches must exist
+		## before Window.__init__() runs, not after.
+		self.itemDict = {}
+		self.itemOrder = []
+		self.event = None
+		self.isOpen = False
+		self.boxWidth = width
+		self.boxHeight = height
+		self.popupButtons = []
+		self.onOpenEvent = None
+
+		Window.__init__(self)
+
+		self.mainButton = Button()
+		self.mainButton.SetParent(self)
+		self.mainButton.SetSize(width, height)
+		self.mainButton.SetUpVisual(image)
+		self.mainButton.SetOverVisual(image)
+		self.mainButton.SetDownVisual(image)
+		self.mainButton.SetEvent(__mem_func__(self.__OnClickMain))
+		self.mainButton.Show()
+
+		self.currentText = TextLine()
+		self.currentText.SetParent(self.mainButton)
+		self.currentText.SetPosition(width / 2, height / 2)
+		self.currentText.SetHorizontalAlignCenter()
+		self.currentText.SetVerticalAlignCenter()
+		self.currentText.Show()
+
+		self.SetSize(width, height)
+		self.SetParent(parent)
+		self.SetPosition(x, y)
+		self.Show()
+
+	def __del__(self):
+		Window.__del__(self)
+
+	def Destroy(self):
+		self.itemDict = {}
+		self.itemOrder = []
+		self.event = None
+		self.onOpenEvent = None
+		self.mainButton = None
+		self.currentText = None
+		self.popupButtons = []
+
+	def SetCurrentItem(self, text):
+		self.currentText.SetText(text)
+
+	def GetCurrentItem(self):
+		return self.currentText.GetText()
+
+	def SetEvent(self, event):
+		self.event = event
+
+	def SetOpenEvent(self, event):
+		self.onOpenEvent = event
+
+	def InsertItem(self, index, text):
+		if index not in self.itemDict:
+			self.itemOrder.append(index)
+		self.itemDict[index] = text
+		self.__RebuildPopup()
+
+	def ClearItem(self):
+		self.itemDict = {}
+		self.itemOrder = []
+		self.__RebuildPopup()
+
+	def __RebuildPopup(self):
+		for btn in self.popupButtons:
+			btn.Hide()
+			btn.Destroy()
+		self.popupButtons = []
+
+		for row, index in enumerate(self.itemOrder):
+			btn = Button()
+			btn.SetParent(self)
+			btn.SetPosition(0, self.boxHeight + row * self.POPUP_ROW_HEIGHT)
+			btn.SetSize(self.boxWidth, self.POPUP_ROW_HEIGHT)
+			btn.SetUpVisual("d:/ymir work/ui/public/Middle_Button_01.sub")
+			btn.SetOverVisual("d:/ymir work/ui/public/Middle_Button_02.sub")
+			btn.SetDownVisual("d:/ymir work/ui/public/Middle_Button_03.sub")
+			btn.SetText(self.itemDict[index])
+			btn.SetEvent(__mem_func__(self.__OnClickItem), index)
+			btn.Hide()
+			self.popupButtons.append(btn)
+
+		if self.isOpen:
+			self.__ShowPopup()
+
+	def __OnClickMain(self):
+		if self.isOpen:
+			self.CloseListBox()
+		else:
+			self.OpenListBox()
+
+	def __OnClickItem(self, index):
+		if self.event:
+			self.event(index)
+
+	def __ShowPopup(self):
+		for btn in self.popupButtons:
+			btn.Show()
+
+	def OpenListBox(self):
+		if self.onOpenEvent:
+			self.onOpenEvent()
+		self.isOpen = True
+		self.__ShowPopup()
+
+	def CloseListBox(self):
+		self.isOpen = False
+		for btn in self.popupButtons:
+			btn.Hide()
+
+	def Show(self):
+		Window.Show(self)
+		self.mainButton.Show()
+
+	def Hide(self):
+		Window.Hide(self)
+		self.CloseListBox()

@@ -18,6 +18,10 @@ import localeInfo
 import constInfo
 import ime
 import wndMgr
+if app.ENABLE_OFFLINESHOP_SYSTEM:
+	import uiOfflineShop
+	import offlineShop
+	import offlineShopItemPrice
 if app.ENABLE_SORT_INVEN:
 	import uiToolTip
 
@@ -227,6 +231,7 @@ class InventoryWindow(ui.ScriptWindow):
 	wndEquipTab = None
 	dlgPickMoney = None
 	interface = None
+	quickAddPriceBoard = None
 
 	sellingSlotNumber = -1
 	isLoaded = 0
@@ -1223,9 +1228,102 @@ class InventoryWindow(ui.ScriptWindow):
 				self.wndDragonSoulRefine.AutoSetItem((player.INVENTORY, slotIndex), 1)
 				return
 
+		if app.ENABLE_OFFLINESHOP_SYSTEM and app.IsPressed(app.DIK_LCONTROL):
+			if self.__TryQuickAddToOfflineShop(slotIndex):
+				return
+
 		self.__UseItem(slotIndex)
 		mouseModule.mouseController.DeattachObject()
 		self.OverOutItem()
+
+	## Ctrl+right-click QOL: if this vnum is already listed in the currently-open
+	## owner offline shop, add this whole stack straight in at that listing's
+	## per-unit price x this stack's count - no price dialog, no drag-and-drop.
+	## The server (not this code) picks which slot it lands in, using the same
+	## bSize-aware occupancy check as the rest of the shop grid, so multi-row gear
+	## icons can't end up overlapping. If nothing matching is listed yet, falls
+	## back to opening the normal price dialog (same as a manual drag-and-drop
+	## onto an empty slot) instead of doing nothing. Falls through to normal
+	## item-use (returns False) only when there's no live owner shop at all.
+	def __TryQuickAddToOfflineShop(self, slotIndex):
+		if not offlineShop.IsOpen() or not offlineShop.IsOwner():
+			return False
+
+		itemVNum = player.GetItemIndex(slotIndex)
+		if itemVNum == 0:
+			return False
+
+		item.SelectItem(itemVNum)
+		if item.IsAntiFlag(item.ANTIFLAG_GIVE) or item.IsAntiFlag(item.ANTIFLAG_MYSHOP):
+			chat.AppendChat(chat.CHAT_TYPE_INFO, localeInfo.PRIVATE_SHOP_CANNOT_SELL_ITEM)
+			return True
+
+		itemCount = player.GetItemCount(slotIndex)
+		if itemCount <= 0:
+			itemCount = 1
+
+		attachedInvenType = player.SlotTypeToInvenType(player.SLOT_TYPE_INVENTORY)
+
+		unitPrice = uiOfflineShop.FindQuickAddUnitPrice(itemVNum)
+		if unitPrice > 0:
+			offlineShop.SendAddItemShortcut(attachedInvenType, slotIndex, unitPrice * itemCount)
+			offlineShopItemPrice.SetPrice(itemVNum, unitPrice)
+			snd.PlaySound("sound/ui/drop.wav")
+			return True
+
+		targetSlotPos = uiOfflineShop.FindEmptyUnlockedSlot()
+		if targetSlotPos is None:
+			chat.AppendChat(chat.CHAT_TYPE_INFO, localeInfo.OFFLINE_SHOP_CANT_SLOT_OPEN if hasattr(localeInfo, "OFFLINE_SHOP_CANT_SLOT_OPEN") else "The shop has no free slot.")
+			return True
+
+		priceInputBoard = uiCommon.MoneyInputDialog()
+		priceInputBoard.SetTitle(localeInfo.PRIVATE_SHOP_INPUT_PRICE_DIALOG_TITLE)
+		priceInputBoard.SetAcceptEvent(ui.__mem_func__(self.__AcceptQuickAddItemPrice))
+		priceInputBoard.SetCancelEvent(ui.__mem_func__(self.__CancelQuickAddItemPrice))
+		priceInputBoard.Open()
+
+		rememberedUnitPrice = offlineShopItemPrice.GetPrice(itemVNum)
+		if rememberedUnitPrice > 0:
+			priceInputBoard.SetValue(rememberedUnitPrice * itemCount)
+
+		self.quickAddPriceBoard = priceInputBoard
+		self.quickAddPriceBoard.itemVNum = itemVNum
+		self.quickAddPriceBoard.sourceWindowType = attachedInvenType
+		self.quickAddPriceBoard.sourceSlotPos = slotIndex
+		self.quickAddPriceBoard.targetSlotPos = targetSlotPos
+		offlineShop.SendGetAveragePrice(itemVNum)
+		return True
+
+	def __AcceptQuickAddItemPrice(self):
+		if not self.quickAddPriceBoard:
+			return True
+
+		text = self.quickAddPriceBoard.GetText()
+		if text and text.isdigit() and int(text) > 0:
+			price = int(text)
+			offlineShop.SendAddItem(self.quickAddPriceBoard.targetSlotPos, self.quickAddPriceBoard.sourceWindowType, self.quickAddPriceBoard.sourceSlotPos, price)
+
+			stockedCount = player.GetItemCount(self.quickAddPriceBoard.sourceSlotPos)
+			if stockedCount <= 0:
+				stockedCount = 1
+			offlineShopItemPrice.SetPrice(self.quickAddPriceBoard.itemVNum, price / stockedCount)
+			snd.PlaySound("sound/ui/drop.wav")
+
+		self.quickAddPriceBoard.Close()
+		self.quickAddPriceBoard = None
+		return True
+
+	def __CancelQuickAddItemPrice(self):
+		if self.quickAddPriceBoard:
+			self.quickAddPriceBoard.Close()
+			self.quickAddPriceBoard = None
+		return True
+
+	def SetQuickAddAveragePrice(self, vnum, price):
+		if not self.quickAddPriceBoard or getattr(self.quickAddPriceBoard, "itemVNum", None) != vnum:
+			return
+		if price > 0:
+			self.quickAddPriceBoard.SetAveragePrice(price)
 
 	def __UseItem(self, slotIndex):
 		ItemVNum = player.GetItemIndex(slotIndex)
@@ -1326,6 +1424,7 @@ class ExtendedInventoryWindow(ui.ScriptWindow):
 	interface = None
 	dlgPickMoney = None
 	dlgPickItem = None
+	quickAddPriceBoard = None
 	sellingSlotNumber = -1
 	isLoaded = 0
 
@@ -1804,9 +1903,107 @@ class ExtendedInventoryWindow(ui.ScriptWindow):
 			return
 
 		slotIndex = self.__LocalSlotToGlobalSlot(slotIndex)
+
+		if app.ENABLE_OFFLINESHOP_SYSTEM and app.IsPressed(app.DIK_LCONTROL):
+			if self.__TryQuickAddToOfflineShop(slotIndex):
+				return
+
 		self.__UseItem(slotIndex)
 		mouseModule.mouseController.DeattachObject()
 		self.OverOutItem()
+
+	## Ctrl+right-click QOL - same feature as InventoryWindow's (see there for the
+	## full rationale), just for the split skillbook/upgrade/stone/sandik tabs.
+	## uiofflineshop.OnSelectEmptySlot already accepts items dragged in from all
+	## of these slot types, so the shop side needs no changes for this to work.
+	def __TryQuickAddToOfflineShop(self, slotIndex):
+		if not offlineShop.IsOpen() or not offlineShop.IsOwner():
+			return False
+
+		itemVNum = player.GetItemIndex(slotIndex)
+		if itemVNum == 0:
+			return False
+
+		item.SelectItem(itemVNum)
+		if item.IsAntiFlag(item.ANTIFLAG_GIVE) or item.IsAntiFlag(item.ANTIFLAG_MYSHOP):
+			chat.AppendChat(chat.CHAT_TYPE_INFO, localeInfo.PRIVATE_SHOP_CANNOT_SELL_ITEM)
+			return True
+
+		if self.inventoryType == 0:
+			slotType = player.SLOT_TYPE_SKILL_BOOK_INVENTORY
+		elif self.inventoryType == 2:
+			slotType = player.SLOT_TYPE_STONE_INVENTORY
+		elif self.inventoryType == 3:
+			slotType = player.SLOT_TYPE_SANDIK_INVENTORY
+		else:
+			slotType = player.SLOT_TYPE_UPGRADE_ITEMS_INVENTORY
+
+		itemCount = player.GetItemCount(slotIndex)
+		if itemCount <= 0:
+			itemCount = 1
+
+		attachedInvenType = player.SlotTypeToInvenType(slotType)
+
+		unitPrice = uiOfflineShop.FindQuickAddUnitPrice(itemVNum)
+		if unitPrice > 0:
+			offlineShop.SendAddItemShortcut(attachedInvenType, slotIndex, unitPrice * itemCount)
+			offlineShopItemPrice.SetPrice(itemVNum, unitPrice)
+			snd.PlaySound("sound/ui/drop.wav")
+			return True
+
+		targetSlotPos = uiOfflineShop.FindEmptyUnlockedSlot()
+		if targetSlotPos is None:
+			chat.AppendChat(chat.CHAT_TYPE_INFO, localeInfo.OFFLINE_SHOP_CANT_SLOT_OPEN if hasattr(localeInfo, "OFFLINE_SHOP_CANT_SLOT_OPEN") else "The shop has no free slot.")
+			return True
+
+		priceInputBoard = uiCommon.MoneyInputDialog()
+		priceInputBoard.SetTitle(localeInfo.PRIVATE_SHOP_INPUT_PRICE_DIALOG_TITLE)
+		priceInputBoard.SetAcceptEvent(ui.__mem_func__(self.__AcceptQuickAddItemPrice))
+		priceInputBoard.SetCancelEvent(ui.__mem_func__(self.__CancelQuickAddItemPrice))
+		priceInputBoard.Open()
+
+		rememberedUnitPrice = offlineShopItemPrice.GetPrice(itemVNum)
+		if rememberedUnitPrice > 0:
+			priceInputBoard.SetValue(rememberedUnitPrice * itemCount)
+
+		self.quickAddPriceBoard = priceInputBoard
+		self.quickAddPriceBoard.itemVNum = itemVNum
+		self.quickAddPriceBoard.sourceWindowType = attachedInvenType
+		self.quickAddPriceBoard.sourceSlotPos = slotIndex
+		self.quickAddPriceBoard.targetSlotPos = targetSlotPos
+		offlineShop.SendGetAveragePrice(itemVNum)
+		return True
+
+	def __AcceptQuickAddItemPrice(self):
+		if not self.quickAddPriceBoard:
+			return True
+
+		text = self.quickAddPriceBoard.GetText()
+		if text and text.isdigit() and int(text) > 0:
+			price = int(text)
+			offlineShop.SendAddItem(self.quickAddPriceBoard.targetSlotPos, self.quickAddPriceBoard.sourceWindowType, self.quickAddPriceBoard.sourceSlotPos, price)
+
+			stockedCount = player.GetItemCount(self.quickAddPriceBoard.sourceSlotPos)
+			if stockedCount <= 0:
+				stockedCount = 1
+			offlineShopItemPrice.SetPrice(self.quickAddPriceBoard.itemVNum, price / stockedCount)
+			snd.PlaySound("sound/ui/drop.wav")
+
+		self.quickAddPriceBoard.Close()
+		self.quickAddPriceBoard = None
+		return True
+
+	def __CancelQuickAddItemPrice(self):
+		if self.quickAddPriceBoard:
+			self.quickAddPriceBoard.Close()
+			self.quickAddPriceBoard = None
+		return True
+
+	def SetQuickAddAveragePrice(self, vnum, price):
+		if not self.quickAddPriceBoard or getattr(self.quickAddPriceBoard, "itemVNum", None) != vnum:
+			return
+		if price > 0:
+			self.quickAddPriceBoard.SetAveragePrice(price)
 
 	def __UseItem(self, slotIndex):
 		ItemVNum = player.GetItemIndex(slotIndex)
