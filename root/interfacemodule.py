@@ -56,6 +56,8 @@ if app.RENEWAL_MISSION_BOOKS:
 	import uiMission
 if app.ENABLE_SWITCHBOT:
 	import uiswitchbot
+if app.ENABLE_EVENT_MANAGER:
+	import uiEventCalendar
 
 import event
 import localeInfo
@@ -302,6 +304,10 @@ class Interface(object):
 		self.tooltipSkill = uiToolTip.SkillToolTip()
 		self.tooltipSkill.Hide()
 
+		if app.ENABLE_EVENT_MANAGER:
+			self.wndEventCalendar = None
+			self.wndEventCalendarIcon = None
+
 		self.privateShopBuilder = uiPrivateShopBuilder.PrivateShopBuilder()
 		self.privateShopBuilder.Hide()
 
@@ -451,6 +457,17 @@ class Interface(object):
 	################################
 
 	def Close(self):
+		if app.ENABLE_EVENT_MANAGER:
+			if self.wndEventCalendar:
+				self.wndEventCalendar.Hide()
+				self.wndEventCalendar.Destroy()
+				self.wndEventCalendar = None
+
+			if self.wndEventCalendarIcon:
+				self.wndEventCalendarIcon.Hide()
+				self.wndEventCalendarIcon.Destroy()
+				self.wndEventCalendarIcon = None
+
 		if app.RENEWAL_MISSION_BOOKS:
 			if self.wndBookMission:
 				self.wndBookMission.Close()
@@ -1945,6 +1962,41 @@ class Interface(object):
 			def RefreshShopSearch(self):
 				if self.wndPrivateShopSearch:
 					self.wndPrivateShopSearch.RefreshMe()
+
+	if app.ENABLE_EVENT_MANAGER:
+		def MakeEventCalendarIcon(self):
+			if self.wndEventCalendarIcon == None:
+				self.wndEventCalendarIcon = uiEventCalendar.MovableImage()
+				self.wndEventCalendarIcon.Show()
+
+		def MakeEventCalendar(self):
+			if self.wndEventCalendar == None:
+				self.wndEventCalendar = uiEventCalendar.EventCalendarWindow()
+
+		def OpenEventCalendar(self):
+			self.MakeEventCalendar()
+			if self.wndEventCalendar.IsShow():
+				self.wndEventCalendar.Close()
+			else:
+				self.wndEventCalendar.Open()
+
+		def RefreshEventCalendarStatus(self, eventID, eventStatus, eventEndTime, eventEndTimeText):
+			uiEventCalendar.SetEventStatus(eventID, eventStatus, eventEndTime, eventEndTimeText)
+			self.RefreshEventCalendar()
+
+		def ClearEventCalendar(self):
+			uiEventCalendar.server_event_data = {}
+
+		def RefreshEventCalendar(self):
+			if self.wndEventCalendar:
+				self.wndEventCalendar.Refresh()
+			if self.wndEventCalendarIcon:
+				self.wndEventCalendarIcon.Refresh()
+
+		def AppendEventCalendarEntry(self, dayIndex, eventID, eventIndex, startTime, endTime, empireFlag, channelFlag, value0, value1, value2, value3, startRealTime, endRealTime, isAlreadyStart):
+			self.MakeEventCalendar()
+			self.MakeEventCalendarIcon()
+			uiEventCalendar.SetServerData(dayIndex, eventID, eventIndex, startTime, endTime, empireFlag, channelFlag, value0, value1, value2, value3, startRealTime, endRealTime, isAlreadyStart)
 
 	#####################################################################################
 

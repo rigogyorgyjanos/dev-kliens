@@ -915,3 +915,61 @@ MISSION_REWARD_TITLE	|cffF6A800Reward:|r
 NEW_AFFECT_AUTO_METIN_FARM	Metinkő kijelölés	SNA
 CHATTING_SETTING_SETTING	Beállítások
 CHATTING_SETTING_CLEAR_QUESTION	Visszaállítod az alapértelmezettre?
+CHATTING_SETTING_ADD	Új fül hozzáadása
+CHATTING_SETTING_ADD_MAX	Elérted a fülek maximális számát.
+CHATTING_SETTING_HIDE	Elrejtés
+CHATTING_SETTING_CHANGE_TITLE_NOT	Az alap fül neve nem módosítható.
+CHATTING_SETTING_CHANGE_TITLE_MAX	A fül neve legfeljebb 8 karakter lehet.
+CHATTING_SETTING_CHANGE_TITLE_NAME	Átnevezed a fület erre a névre?
+NPC_SEARCH	NPC Keresés
+NPC_SEARCH_TEXT	Az alábbi térképeken jelenik meg:
+MOUNT_SOHAN_MAP_NAME	Sohan-hegység
+MOUNT_DOYUMHWAN_MAP_NAME	Doyumhwan
+MOUNT_YONGBI_MAP_NAME	Yongbi sivatag
+TOURNAMENT_ALL_CHARACTER	Minden karakter
+CHARACTER_WARRIOR	Harcos
+CHARACTER_ASSASSIN	Nindzsa
+CHARACTER_SURA	Sura
+CHARACTER_SHAMAN	Sámán
+NORMAL_EVENT_TIME	Ettől: %s eddig: %s
+PVP_EVENT_TIME	Kezdés: %s
+NONE_AFFECT	Nincs hatás
+EVENT_COLORFULL_TEXT	|cFF84A5B9%s|h|r
+ALL_KINGDOMS	|cFF97AE99Minden királyság:|h|r
+RED_KINGDOM	|cFFFBB497Vörös Királyság:|h|r
+BLUE_KINGDOM	|cFF8CADDBKék Királyság:|h|r
+YELLOW_KINGDOM	|cFFFDE696Sárga Királyság:|h|r
+EVENT_TOOLTIP_TITLE	Események ezen a napon: %s
+EVENT_TOOLTIP_DOESNT_HAVE_EVENT	Ezen a napon nincs esemény.
+DOUBLE_BOSS_LOOT_EVENT	Dupla Boss Zsákmány
+DOUBLE_METIN_LOOT_EVENT	Dupla Kőszobor Zsákmány
+DOUBLE_MISSION_BOOK_EVENT	Dupla Küldetés Könyv Zsákmány
+DUNGEON_COOLDOWN_EVENT	Dungeon Várakozás Csökkentés
+DUNGEON_TICKET_LOOT_EVENT	Dungeon Jegy Dobás
+EMPIRE_WAR_EVENT	Birodalmi Háború (Lv %d - Lv %d)
+MOONLIGHT_EVENT	Holdfény Ládák
+TOURNAMENT_EVENT	PvP Torna (%s - Lv %d - Lv %d)
+WHELL_OF_FORTUNE_EVENT	Szerencsekerék
+HALLOWEEN_EVENT	Halloween Esemény
+EVENT_MANAGER_WINDOW_TITLE	Esemény Naptár: %s - %d
+ALL_CHANNEL	Minden Csatorna
+ONLY_CHANNEL	Csak %d. Csatorna
+BONUS_EVENT	Bónusz Esemény:
+BONUS_END_IN	Vége: %s múlva
+BONUS_START_IN	Kezdés: %s múlva
+BONUS_NEXT_EVENT	|Eemoji/key_rclick|e - Következő esemény
+ITEM_DROP_EVENT	Item Dobás Esemény: %d%%
+YANG_DROP_EVENT	Yang Dobás Esemény: %d%%
+EXP_EVENT	Exp Bónusz Esemény: %d%%
+EVENT_MONTH_1	Január
+EVENT_MONTH_2	Február
+EVENT_MONTH_3	Március
+EVENT_MONTH_4	Április
+EVENT_MONTH_5	Május
+EVENT_MONTH_6	Június
+EVENT_MONTH_7	Július
+EVENT_MONTH_8	Augusztus
+EVENT_MONTH_9	Szeptember
+EVENT_MONTH_10	Október
+EVENT_MONTH_11	November
+EVENT_MONTH_12	December

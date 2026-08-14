@@ -1307,6 +1307,12 @@ class EditLine(TextLine):
 		if app.DIK_V == key:
 			if app.IsPressed(app.DIK_LCONTROL):
 				ime.PasteTextFromClipBoard()
+		if app.DIK_C == key:
+			if app.IsPressed(app.DIK_LCONTROL):
+				ime.CopyTextToClipBoard()
+		if app.DIK_X == key:
+			if app.IsPressed(app.DIK_LCONTROL):
+				ime.CutTextToClipBoard()
 
 		return True
 
@@ -1328,31 +1334,64 @@ class EditLine(TextLine):
 
 		return True
 
-	def OnIMEKeyDown(self, key):		
+	def OnIMEKeyDown(self, key):
+		bShift = app.IsPressed(app.DIK_LSHIFT) or app.IsPressed(app.DIK_RSHIFT)
+		bCtrl = app.IsPressed(app.DIK_LCONTROL)
+
 		# Left
 		if app.VK_LEFT == key:
-			ime.MoveLeft()
+			if bCtrl and bShift:
+				ime.MoveWordLeftSelect()
+			elif bShift:
+				ime.MoveLeftSelect()
+			elif bCtrl:
+				ime.MoveWordLeft()
+			else:
+				ime.MoveLeft()
 			return True
 		# Right
 		if app.VK_RIGHT == key:
-			ime.MoveRight()
+			if bCtrl and bShift:
+				ime.MoveWordRightSelect()
+			elif bShift:
+				ime.MoveRightSelect()
+			elif bCtrl:
+				ime.MoveWordRight()
+			else:
+				ime.MoveRight()
 			return True
 
 		# Home
 		if app.VK_HOME == key:
-			ime.MoveHome()
+			if bShift:
+				ime.MoveHomeSelect()
+			else:
+				ime.MoveHome()
 			return True
 		# End
 		if app.VK_END == key:
-			ime.MoveEnd()
+			if bShift:
+				ime.MoveEndSelect()
+			else:
+				ime.MoveEnd()
 			return True
 
-		# Delete
+		# Delete / Ctrl+Delete
 		if app.VK_DELETE == key:
-			ime.Delete()
+			if bCtrl:
+				ime.DeleteWordForward()
+			else:
+				ime.Delete()
 			TextLine.SetText(self, ime.GetText(self.bCodePage))
 			return True
-			
+
+		# Ctrl+Backspace (plain Backspace is handled by WM_CHAR, not here)
+		if app.VK_BACK == key:
+			if bCtrl:
+				ime.DeleteWordBack()
+				TextLine.SetText(self, ime.GetText(self.bCodePage))
+			return True
+
 		return True
 
 	#def OnMouseLeftButtonDown(self):

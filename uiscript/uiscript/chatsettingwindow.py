@@ -11,10 +11,10 @@ CHATTING_PATH = "d:/ymir work/ui/chat/"
 ## split those out of plain Info). One header+row block (49px) shorter than
 ## the original reference layout because of that.
 WINDOW_WIDTH = 254
-WINDOW_HEIGHT = 301
+WINDOW_HEIGHT = 350
 
 PATTERN_WINDOW_WIDTH = 232
-PATTERN_WINDOW_HEIGHT = 231
+PATTERN_WINDOW_HEIGHT = 280
 
 PATTERN_X_COUNT = (PATTERN_WINDOW_WIDTH - 32) / 16
 PATTERN_Y_COUNT = (PATTERN_WINDOW_HEIGHT - 32) / 16
@@ -266,6 +266,51 @@ window = {
 					(
 						{ "name" : "chatting_setting_gold", "type" : "text", "x" : 0, "y" : 0, "text" : uiScriptLocale.CHATTING_SETTING_GOLD, "all_align":"center" },
 					),
+				},
+
+				## Tab name section header
+				{
+					"name" : "tabname_setting_menu_bg", "type" : "image", "x" : 15, "y" : 261,
+					"image" : CHATTING_PATH + "chattingoption_menu_bg.sub",
+					"children" :
+					(
+						{ "name" : "tabname_setting", "type" : "text", "x" : 0, "y" : 0, "text" : uiScriptLocale.CHATTING_SETTING_TABNAME, "all_align" : "center" },
+					),
+				},
+				## Tab name edit field
+				{
+					"name" : "tab_name_slot",
+					"type" : "slotbar",
+					"x" : 17,
+					"y" : 289,
+					"width" : 123,
+					"height" : 18,
+					"children" :
+					(
+						{
+							"name" : "tab_name_value",
+							"type" : "editline",
+							"x" : 2,
+							"y" : 3,
+							"width" : 160,
+							"height" : 15,
+							"input_limit" : 8,
+							"check_width" : 1,
+							"text" : "",
+						},
+					),
+				},
+				## Tab name accept button
+				{
+					"name" : "tabname_accept_button",
+					"type" : "button",
+
+					"x" : 143,
+					"y" : 288,
+
+					"default_image" : CHATTING_PATH + "chattingoption_enter_btn_01.sub",
+					"over_image" : CHATTING_PATH + "chattingoption_enter_btn_02.sub",
+					"down_image" : CHATTING_PATH + "chattingoption_enter_btn_03.sub",
 				},
 
 				## ResetButton

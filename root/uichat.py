@@ -429,6 +429,12 @@ class ChatInputSet(ui.Window):
 		chatLine.SetMax(512)
 		chatLine.SetUserMax(76)
 		chatLine.SetText("")
+		chatLine.SetMultiLine()
+		# Clips wrapped text to this box's own (small, unchanged - see RefreshPosition) footprint
+		# instead of letting it render past the box into the taskbar below. Only the current line
+		# is guaranteed visible while composing a longer message; the rest still sends correctly,
+		# it's just clipped from view (see RefreshPosition for why the box wasn't made taller).
+		chatLine.EnableScissorRect()
 		chatLine.SAFE_SetTabEvent(self.OnChangeChatMode)
 		chatLine.x = 0
 		chatLine.y = 0
@@ -496,10 +502,20 @@ class ChatInputSet(ui.Window):
 		self.chatLine.SetUserMax(max)
 
 	def RefreshPosition(self):
+		lineWidth = self.GetWidth() - 93
+
+		# Footprint kept at its original size on purpose: the taskbar sits directly below this
+		# row with very little verified clearance (ChatWindow's own position formula reserves
+		# only ~37px below it in __MakeChatWindow, and uitaskbar.py positions at least one of its
+		# own elements just a few px into that same margin), so growing this box risks visually
+		# overlapping the taskbar in a way that can't be confirmed without a live client. Wrap is
+		# still enabled below, so long text no longer overflows sideways past the box - it wraps
+		# and clips within this same footprint instead (EnableScissorRect(), set in __Create()).
 		if localeInfo.IsARABIC():
-			self.chatLine.SetSize(self.GetWidth() - 93, 18)
+			self.chatLine.SetSize(lineWidth, 18)
 		else:
-			self.chatLine.SetSize(self.GetWidth() - 93, 13)
+			self.chatLine.SetSize(lineWidth, 13)
+		self.chatLine.SetLimitWidth(lineWidth)
 
 		self.btnSend.SetPosition(self.GetWidth() - 25, 2)
 
@@ -525,7 +541,8 @@ class ChatWindow(ui.Window):
 
 	if app.ENABLE_CHATTING_WINDOW_RENEWAL:
 		EDIT_LINE_HIDE_HEIGHT = 20
-	
+		MAX_TAB_NUMBER = 9
+
 	class ChatBackBoard(ui.Window):
 		def __init__(self):
 			ui.Window.__init__(self)
@@ -574,6 +591,10 @@ class ChatWindow(ui.Window):
 		self.chatID = chat.CreateChatSet(chat.CHAT_SET_CHAT_WINDOW)
 		chat.SetBoardState(self.chatID, chat.BOARD_STATE_VIEW)
 
+		# Wrap width is global (shared by every chat line, see PythonChat.cpp), so size it once
+		# against the main chat window rather than per chat set.
+		chat.SetLimitWidth(self.CHAT_WINDOW_WIDTH - 40)
+
 		self.xBar = 0
 		self.yBar = 0
 		self.widthBar = 0
@@ -582,6 +603,7 @@ class ChatWindow(ui.Window):
 		self.visibleLineCount = 0
 		self.scrollBarPos = 1.0
 		self.scrollLock = False
+		self.interface = 0
 
 		chatInputSet = ChatInputSet()
 		chatInputSet.SetParent(self)
@@ -615,6 +637,10 @@ class ChatWindow(ui.Window):
 		self.btnChatSizing = btnChatSizing
 
 		if app.ENABLE_CHATTING_WINDOW_RENEWAL:
+			self.userDefinedTabs = {}
+			self.userDefinedTabLogs = {}
+			self.selectedTab = -1
+
 			imgChatBarLeft = ui.ImageBox()
 			imgChatBarLeft.SetParent(self.btnChatSizing)
 			imgChatBarLeft.AddFlag("not_pick")
@@ -636,13 +662,7 @@ class ChatWindow(ui.Window):
 			imgChatBarMiddle.Show()
 			self.imgChatBarMiddle = imgChatBarMiddle
 
-			btnChatTab = ui.Button()
-			btnChatTab.SetParent(self.btnChatSizing)
-			btnChatTab.SetUpVisual("d:/ymir work/ui/chat/chatmenutab_down.tga")
-			btnChatTab.SetOverVisual("d:/ymir work/ui/chat/chatmenutab_down.tga")
-			btnChatTab.SetDownVisual("d:/ymir work/ui/chat/chatmenutab_down.tga")
-			btnChatTab.SetToolTipText(uiScriptLocale.CHATTING_SETTING_TALKING, 0, -23)
-			btnChatTab.Show()
+			btnChatTab = self.CreateTab(uiScriptLocale.CHATTING_SETTING_TALKING)
 			btnChatTab.Down()
 			self.btnChatTab = btnChatTab
 
@@ -657,6 +677,18 @@ class ChatWindow(ui.Window):
 			self.btnChatSettingOption = btnChatSettingOption
 
 			self.wndChatSettingOption = ChatSettingWindow(self)
+			self.wndChatSettingOption.LoadGlobalFile()
+			self.__SelectTab(self.wndChatSettingOption.GetSelectedChat(), True)
+
+			btnChatAddTab = ui.Button()
+			btnChatAddTab.SetParent(self.btnChatSizing)
+			btnChatAddTab.SetUpVisual("d:/ymir work/ui/chat/btn_addtab01_default.tga")
+			btnChatAddTab.SetOverVisual("d:/ymir work/ui/chat/btn_addtab01_over.tga")
+			btnChatAddTab.SetDownVisual("d:/ymir work/ui/chat/btn_addtab01_down.tga")
+			btnChatAddTab.SetToolTipText(localeInfo.CHATTING_SETTING_ADD, 0, -23)
+			btnChatAddTab.SetEvent(ui.__mem_func__(self.__AddNewTab))
+			btnChatAddTab.Show()
+			self.btnChatAddTab = btnChatAddTab
 		else:
 			imgChatBarLeft = ui.ImageBox()
 			imgChatBarLeft.SetParent(self.btnChatSizing)
@@ -723,8 +755,18 @@ class ChatWindow(ui.Window):
 		self.btnChatSizing = 0
 
 		if app.ENABLE_CHATTING_WINDOW_RENEWAL:
+			for i in range(self.MAX_TAB_NUMBER):
+				if i in self.userDefinedTabs:
+					del self.userDefinedTabs[i]
+				if i in self.userDefinedTabLogs:
+					del self.userDefinedTabLogs[i]
+
+			self.userDefinedTabs = {}
+			self.userDefinedTabLogs = {}
+
 			self.btnChatTab = None
 			self.btnChatSettingOption = None
+			self.btnChatAddTab = None
 
 			if self.wndChatSettingOption:
 				self.wndChatSettingOption.Close()
@@ -733,7 +775,7 @@ class ChatWindow(ui.Window):
 	################
 	## Open & Close
 	def OpenChat(self):
-		self.SetSize(self.CHAT_WINDOW_WIDTH, 25)
+		self.SetSize(self.CHAT_WINDOW_WIDTH, self.EDIT_LINE_HEIGHT)
 		chat.SetBoardState(self.chatID, chat.BOARD_STATE_EDIT)
 		self.boardState = chat.BOARD_STATE_EDIT
 
@@ -742,7 +784,7 @@ class ChatWindow(ui.Window):
 
 		if localeInfo.IsARABIC():
 			chat.SetPosition(self.chatID, x + width - 10, y)
-		else:	
+		else:
 			chat.SetPosition(self.chatID, x + 10, y)
 
 		chat.SetHeight(self.chatID, y - btnY - self.EDIT_LINE_HEIGHT + 100)
@@ -752,7 +794,7 @@ class ChatWindow(ui.Window):
 
 		self.Refresh()
 		if app.ENABLE_CHATTING_WINDOW_RENEWAL:
-			self.RefreshChatWindow()
+			self.__SelectTab(self.selectedTab, True)
 
 		self.btnSendWhisper.SetPosition(self.GetWidth() - 50, 2)
 		self.btnSendWhisper.Show()
@@ -807,12 +849,23 @@ class ChatWindow(ui.Window):
 			self.imgChatBarLeft.SetPosition(0, 17)
 			self.imgChatBarRight.SetPosition(width - 57, 0)
 
-			self.imgChatBarMiddle.SetPosition(57.0, 0)
-			self.imgChatBarMiddle.SetRenderingRect(0.0, 0.0, float(width - 57.0 * 2) / 57.0 - 1.0, 0.0)
-
-			self.btnChatTab.SetTextAddPos(uiScriptLocale.CHATTING_SETTING_DEFAULT_TITLE, -2)
 			self.btnChatTab.SetPosition(4, 0)
+
+			index = 1
+			for i in range(self.MAX_TAB_NUMBER):
+				if i in self.userDefinedTabs:
+					tabBtn = self.userDefinedTabs[i]
+					if tabBtn.IsShow():
+						tabBtn.SetPosition(4 + 54 * index, 0)
+						index = index + 1
+
+			plusWidth = 54 * (index - 1)
+
+			self.imgChatBarMiddle.SetPosition(57.0 + plusWidth, 0)
+			self.imgChatBarMiddle.SetRenderingRect(0.0, 0.0, float(width - 57.0 * 2 - plusWidth) / 57.0 - 1.0, 0.0)
+
 			self.btnChatSettingOption.SetPosition(width - 27, 3)
+			self.btnChatAddTab.SetPosition(width - 27 - 22, 3)
 		else:
 			self.imgChatBarLeft.SetPosition(0, 0)
 			self.imgChatBarRight.SetPosition(width - 64, 0)
@@ -868,7 +921,9 @@ class ChatWindow(ui.Window):
 	def RefreshBoardViewState(self):
 		(x, y, width, height) = self.GetRect()
 		(btnX, btnY) = self.btnChatSizing.GetGlobalPosition()
-		textAreaHeight = self.visibleLineCount * chat.GetLineStep(self.chatID)
+		# GetTotalLineCount (not visibleLineCount) so wrapped multi-line messages get a
+		# background bar tall enough to actually cover every rendered line.
+		textAreaHeight = chat.GetTotalLineCount(self.chatID) * chat.GetLineStep(self.chatID)
 
 		if localeInfo.IsARABIC():
 			chat.SetPosition(self.chatID, x + width - 10, y + self.EDIT_LINE_HEIGHT)
@@ -941,24 +996,198 @@ class ChatWindow(ui.Window):
 		self.chatInputSet.SetChatFocus()			
 
 	def BindInterface(self, interface):
+		self.interface = interface
 		self.chatInputSet.BindInterface(interface)
 
 	if app.ENABLE_CHATTING_WINDOW_RENEWAL:
+		def CreateTab(self, tooltip, tabIndex = -1):
+			btnChatTab = ui.ToggleButton()
+			btnChatTab.SetParent(self.btnChatSizing)
+			btnChatTab.SetUpVisual("d:/ymir work/ui/chat/chatmenutab_default.tga")
+			btnChatTab.SetOverVisual("d:/ymir work/ui/chat/chatmenutab_down.tga")
+			btnChatTab.SetDownVisual("d:/ymir work/ui/chat/chatmenutab_down.tga")
+			btnChatTab.SetToolTipText(tooltip, 0, -23)
+			btnChatTab.SetTextAddPos(tooltip, -2)
+			btnChatTab.SetToggleUpEvent(ui.__mem_func__(self.__SelectTab), tabIndex)
+			btnChatTab.SetToggleDownEvent(ui.__mem_func__(self.__SelectTab), tabIndex)
+			btnChatTab.Show()
+			return btnChatTab
+
+		def HideTab(self, tabIndex):
+			self.userDefinedTabs[tabIndex].Hide()
+			self.__RefreshSizingBar()
+
+		def ShowTab(self, tabIndex):
+			self.userDefinedTabs[tabIndex].Show()
+			self.userDefinedTabs[tabIndex].SetUp()
+			self.__RefreshSizingBar()
+
+			if tabIndex in self.userDefinedTabLogs:
+				self.userDefinedTabLogs[tabIndex].Hide()
+				del self.userDefinedTabLogs[tabIndex]
+
+		def DeleteTab(self, tabIndex):
+			del self.userDefinedTabs[tabIndex]
+			self.__RefreshSizingBar()
+
+			self.wndChatSettingOption.DeleteOptionFile(tabIndex + 1)
+
+			if tabIndex in self.userDefinedTabLogs:
+				self.userDefinedTabLogs[tabIndex].Hide()
+				del self.userDefinedTabLogs[tabIndex]
+
+		def SetTabName(self, tabIndex, title):
+			if tabIndex in self.userDefinedTabs:
+				if title == "":
+					title = str(tabIndex + 1)
+				self.userDefinedTabs[tabIndex].SetToolTipText(title, 0, -23)
+				self.userDefinedTabs[tabIndex].SetTextAddPos(title, -2)
+				self.__RefreshSizingBar()
+
+		def GetTabName(self, tabIndex):
+			if tabIndex in self.userDefinedTabs:
+				return self.userDefinedTabs[tabIndex].GetText()
+			return ""
+
+		def __AddNewTab(self):
+			freeIndex = -1
+			for i in range(self.MAX_TAB_NUMBER):
+				if i not in self.userDefinedTabs:
+					freeIndex = i
+					break
+			if freeIndex == -1:
+				chat.AppendChat(chat.CHAT_TYPE_INFO, localeInfo.CHATTING_SETTING_ADD_MAX)
+				return
+
+			tab = self.CreateTab(str(freeIndex + 1), freeIndex)
+			self.userDefinedTabs[freeIndex] = tab
+			self.__RefreshSizingBar()
+
+			if self.wndChatSettingOption:
+				self.wndChatSettingOption.CreateTabFile(freeIndex + 1)
+
+		def AddTab(self, index, name):
+			if index == -1:
+				return
+			tab = self.CreateTab(name, index)
+			self.userDefinedTabs[index] = tab
+
+		def __SelectTab(self, tabIndex, forceSelect = False):
+			if not forceSelect and (app.IsPressed(app.DIK_LCONTROL) or (tabIndex > -1 and tabIndex == self.selectedTab)):
+				self.__OpenTab(tabIndex)
+				return
+
+			self.btnChatTab.SetUp()
+			for i in range(self.MAX_TAB_NUMBER):
+				if i in self.userDefinedTabs:
+					self.userDefinedTabs[i].SetUp()
+
+			if tabIndex in self.userDefinedTabs:
+				self.userDefinedTabs[tabIndex].Down()
+			else:
+				tabIndex = -1
+				self.btnChatTab.Down()
+
+			self.wndChatSettingOption.SetSelectedChat(tabIndex)
+			self.selectedTab = tabIndex
+			self.RefreshChatWindow()
+
+		def isOverlap(self, a, b):
+			return a[0] < b[0] + b[2] and a[0] + a[2] > b[0] and a[1] < b[1] + b[3] and a[1] + a[3] > b[1]
+
+		def __OpenTab(self, tabIndex):
+			self.HideTab(tabIndex)
+			newTab = ChatLogTabWindow(self, tabIndex)
+			newTab.BindInterface(self.interface)
+			newTab.Open()
+
+			xPosition = 0
+			yPosition = 0
+			screenWidth = wndMgr.GetScreenWidth()
+			screenHeight = wndMgr.GetScreenHeight()
+
+			if tabIndex == self.selectedTab:
+				leftTab = -1
+				if tabIndex > 0:
+					for i in range(tabIndex - 1, -1, -1):
+						if i in self.userDefinedTabs:
+							leftTab = i
+							break
+				self.__SelectTab(leftTab, True)
+
+			isDownOne = False
+			for i in range(self.MAX_TAB_NUMBER):
+				if i in self.userDefinedTabs:
+					if self.userDefinedTabs[i].IsDown():
+						isDownOne = True
+						break
+			if not isDownOne:
+				self.__SelectTab(-1, True)
+
+			usedPositions = []
+			for i in range(self.MAX_TAB_NUMBER):
+				if i in self.userDefinedTabLogs:
+					elem = self.userDefinedTabLogs[i]
+					ex, ey = elem.GetGlobalPosition()
+					ewidth = elem.GetWidth()
+					eheight = elem.GetHeight()
+					usedPositions.append([ex - 10, ey - 10, ewidth + 10, eheight + 10])
+
+			if len(usedPositions) > 0:
+				for y in range(20, screenHeight, 20):
+					for x in range(20, screenWidth, 10):
+						thisPosition = [x, y, newTab.GetWidth(), newTab.GetHeight()]
+
+						if x > screenWidth - thisPosition[2]:
+							break
+
+						maxXInRow = 0
+						posIsOk = True
+						for p in usedPositions:
+							if self.isOverlap(p, thisPosition):
+								posIsOk = False
+								if p[0] + p[2] > maxXInRow:
+									maxXInRow = p[0] + p[2]
+
+						if posIsOk:
+							xPosition = x
+							yPosition = y
+						else:
+							x = maxXInRow
+
+						if xPosition + yPosition > 0:
+							break
+
+					if xPosition + yPosition > 0:
+						break
+
+				if xPosition + yPosition > 0:
+					newTab.SetPosition(xPosition, yPosition)
+
+			self.userDefinedTabLogs[tabIndex] = newTab
+
 		def __SettingOptionWndOpen(self):
 			if self.wndChatSettingOption:
 				if self.wndChatSettingOption.IsShow():
 					self.wndChatSettingOption.Close()
 				else:
-					self.wndChatSettingOption.Open()
+					self.wndChatSettingOption.Open(self.selectedTab + 1)
 
-		def RefreshChatWindow(self):
+		def RefreshChatWindow(self, tabIndex = -1):
+			selectedChatId = self.chatID
+
+			if tabIndex == -1:
+				tabIndex = self.selectedTab
+			else:
+				selectedChatId = chat.CHAT_SET_LOG_WINDOW + tabIndex + 1
+
 			if self.wndChatSettingOption:
 				for mode in OPTION_CHECKBOX_MODE.iterkeys():
-					enable = self.wndChatSettingOption.GetChatModeSetting(mode)
+					enable = self.wndChatSettingOption.GetChatModeSetting(tabIndex + 1, mode)
 					if enable:
-						chat.EnableChatMode(self.chatID, mode)
+						chat.EnableChatMode(selectedChatId, mode)
 					else:
-						chat.DisableChatMode(self.chatID, mode)
+						chat.DisableChatMode(selectedChatId, mode)
 
 ## ChatLogWindow
 class ChatLogWindow(ui.Window):
@@ -1351,6 +1580,217 @@ if app.ENABLE_CHATTING_WINDOW_RENEWAL:
 		chat.CHAT_TYPE_MONEY_INFO : OPTION_CHECKBOX_MONEY_INFO,
 	}
 
+	## ChatLogTabWindow
+	class ChatLogTabWindow(ui.Window):
+
+		BLOCK_WIDTH = 32
+
+		CHAT_LOG_WINDOW_MINIMUM_WIDTH = 450
+		CHAT_LOG_WINDOW_MINIMUM_HEIGHT = 116
+
+		class ResizeButton(ui.DragButton):
+
+			def __init__(self):
+				ui.DragButton.__init__(self)
+
+			def __del__(self):
+				ui.DragButton.__del__(self)
+
+			def OnMouseOverIn(self):
+				app.SetCursor(app.HVSIZE)
+
+			def OnMouseOverOut(self):
+				app.SetCursor(app.NORMAL)
+
+		def __init__(self, chatWindow, chatIndex = 0):
+			ui.Window.__init__(self)
+			self.AddFlag("float")
+			self.AddFlag("movable")
+			self.SetWindowName("ChatLogTabWindow")
+
+			self.interface = 0
+			self.chatWindow = chatWindow
+			self.chatIndex = chatIndex
+
+			self.__CreateWindow()
+			self.__CreateScrollBar()
+
+			self.chatID = chat.CreateChatSet(chat.CHAT_SET_LOG_WINDOW + chatIndex + 1)
+			chat.SetBoardState(self.chatID, chat.BOARD_STATE_LOG)
+
+			self.chatWindow.RefreshChatWindow(self.chatIndex)
+
+			self.SetPosition(20, 20)
+			self.SetSize(self.CHAT_LOG_WINDOW_MINIMUM_WIDTH, self.CHAT_LOG_WINDOW_MINIMUM_HEIGHT)
+			self.btnSizing.SetPosition(self.CHAT_LOG_WINDOW_MINIMUM_WIDTH-self.btnSizing.GetWidth(), self.CHAT_LOG_WINDOW_MINIMUM_HEIGHT-self.btnSizing.GetHeight()+2)
+
+			self.OnResize()
+
+		def __CreateWindow(self):
+			imgLeft = ui.ImageBox()
+			imgLeft.AddFlag("not_pick")
+			imgLeft.SetParent(self)
+
+			imgCenter = ui.ExpandedImageBox()
+			imgCenter.AddFlag("not_pick")
+			imgCenter.SetParent(self)
+
+			imgRight = ui.ImageBox()
+			imgRight.AddFlag("not_pick")
+			imgRight.SetParent(self)
+
+			imgLeft.LoadImage("d:/ymir work/ui/chat/titlebar_chat_left.tga")
+			imgCenter.LoadImage("d:/ymir work/ui/chat/titlebar_chat_middle.tga")
+			imgRight.LoadImage("d:/ymir work/ui/chat/titlebar_chat_right.tga")
+
+			imgLeft.Show()
+			imgCenter.Show()
+			imgRight.Show()
+
+			btnClose = ui.Button()
+			btnClose.SetParent(self)
+			btnClose.SetUpVisual("d:/ymir work/ui/public/close_button_01.sub")
+			btnClose.SetOverVisual("d:/ymir work/ui/public/close_button_02.sub")
+			btnClose.SetDownVisual("d:/ymir work/ui/public/close_button_03.sub")
+			btnClose.SetToolTipText(localeInfo.UI_CLOSE, 0, -23)
+			btnClose.SetEvent(ui.__mem_func__(self.Close))
+			btnClose.Show()
+
+			btnHide = ui.Button()
+			btnHide.SetParent(self)
+			btnHide.SetUpVisual("d:/ymir work/ui/chat/btn_hide01_default.tga")
+			btnHide.SetOverVisual("d:/ymir work/ui/chat/btn_hide01_over.tga")
+			btnHide.SetDownVisual("d:/ymir work/ui/chat/btn_hide01_down.tga")
+			btnHide.SetToolTipText(localeInfo.CHATTING_SETTING_HIDE, 0, -23)
+			btnHide.SetEvent(ui.__mem_func__(self.OnPressHide))
+			btnHide.Show()
+
+			btnSizing = self.ResizeButton()
+			btnSizing.SetParent(self)
+			btnSizing.SetMoveEvent(ui.__mem_func__(self.OnResize))
+			btnSizing.SetSize(16, 16)
+			btnSizing.Show()
+
+			titleName = ui.TextLine()
+			titleName.SetParent(self)
+			titleName.SetPosition(20, 6)
+			titleName.SetText(self.chatWindow.GetTabName(self.chatIndex))
+			titleName.Show()
+
+			self.imgLeft = imgLeft
+			self.imgCenter = imgCenter
+			self.imgRight = imgRight
+			self.btnClose = btnClose
+			self.btnHide = btnHide
+			self.btnSizing = btnSizing
+			self.titleName = titleName
+
+		def __CreateScrollBar(self):
+			scrollBar = ui.SmallThinScrollBar()
+			scrollBar.SetParent(self)
+			scrollBar.Show()
+			scrollBar.SetScrollEvent(ui.__mem_func__(self.OnScroll))
+			self.scrollBar = scrollBar
+			self.scrollBarPos = 1.0
+
+		def __del__(self):
+			ui.Window.__del__(self)
+
+		def Destroy(self):
+			self.imgLeft = None
+			self.imgCenter = None
+			self.imgRight = None
+			self.btnClose = None
+			self.btnHide = None
+			self.btnSizing = None
+			self.scrollBar = None
+
+		def SetSize(self, width, height):
+			self.imgCenter.SetRenderingRect(0.0, 0.0, float((width - self.BLOCK_WIDTH*2) - self.BLOCK_WIDTH) / self.BLOCK_WIDTH, 0.0)
+			self.imgCenter.SetPosition(self.BLOCK_WIDTH, 0)
+			self.imgRight.SetPosition(width - self.BLOCK_WIDTH, 0)
+
+			self.btnClose.SetPosition(width - self.btnClose.GetWidth() - 5, 5)
+			self.btnHide.SetPosition(width - self.btnClose.GetWidth() - self.btnHide.GetWidth() - 5 - 2, 2)
+			self.scrollBar.SetPosition(width - 15, 25)
+
+			self.scrollBar.SetScrollBarSize(height - 25 - 12)
+			self.scrollBar.SetPos(self.scrollBarPos)
+			ui.Window.SetSize(self, width, height)
+
+		def Open(self):
+			self.OnResize()
+			self.Show()
+
+		def Close(self):
+			self.Hide()
+			if self.chatWindow:
+				self.chatWindow.DeleteTab(self.chatIndex)
+
+		def OnPressHide(self):
+			self.Hide()
+			if self.chatWindow:
+				self.chatWindow.ShowTab(self.chatIndex)
+
+		def OnResize(self):
+			x, y = self.btnSizing.GetLocalPosition()
+			width = self.btnSizing.GetWidth()
+			height = self.btnSizing.GetHeight()
+
+			if x < self.CHAT_LOG_WINDOW_MINIMUM_WIDTH - width:
+				self.btnSizing.SetPosition(self.CHAT_LOG_WINDOW_MINIMUM_WIDTH - width, y)
+				return
+			if y < self.CHAT_LOG_WINDOW_MINIMUM_HEIGHT - height:
+				self.btnSizing.SetPosition(x, self.CHAT_LOG_WINDOW_MINIMUM_HEIGHT - height)
+				return
+
+			self.scrollBar.LockScroll()
+			self.SetSize(x + width, y + height)
+			self.scrollBar.UnlockScroll()
+
+		def OnScroll(self):
+			self.scrollBarPos = self.scrollBar.GetPos()
+			chat.SetEndPos(self.chatID, self.scrollBarPos)
+
+		def OnUpdate(self):
+			chat.Update(self.chatID)
+
+		def OnRender(self):
+			(x, y, width, height) = self.GetRect()
+
+			grp.SetColor(0x77000000)
+			grp.RenderBar(x+width-15, y+25, 13, height-25)
+
+			grp.SetColor(0x77000000)
+			grp.RenderBar(x, y, width, height)
+			grp.SetColor(0x77000000)
+			grp.RenderBox(x, y, width-2, height)
+			grp.SetColor(0x77000000)
+			grp.RenderBox(x+1, y+1, width-2, height)
+
+			grp.SetColor(0xff989898)
+			grp.RenderLine(x+width-13, y+height-1, 11, -11)
+			grp.RenderLine(x+width-9, y+height-1, 7, -7)
+			grp.RenderLine(x+width-5, y+height-1, 3, -3)
+
+			chat.SetPosition(self.chatID, x + 10, y + height)
+			chat.SetHeight(self.chatID, height - 45)
+			chat.ArrangeShowingChat(self.chatID)
+
+			chat.Render(self.chatID)
+
+		def OnPressEscapeKey(self):
+			self.OnPressHide()
+			return True
+
+		def BindInterface(self, interface):
+			self.interface = interface
+
+		def OnMouseLeftButtonDown(self):
+			hyperlink = ui.GetHyperlink()
+			if hyperlink and self.interface:
+				self.interface.MakeHyperlinkTooltip(hyperlink)
+
 	## ChatSettingWindow
 	class ChatSettingWindow(ui.ScriptWindow):
 
@@ -1452,6 +1892,10 @@ if app.ENABLE_CHATTING_WINDOW_RENEWAL:
 
 			self.checkBoxSlotDict = {}
 			self.tmpCheckBoxSettingDict = {}
+			self.chatTabOptions = {}
+			self.globalOptions = {}
+
+			self.selectedTabIndex = -1
 
 			self.__LoadWindow()
 
@@ -1462,6 +1906,7 @@ if app.ENABLE_CHATTING_WINDOW_RENEWAL:
 			self.questionDialog = None
 			self.checkBoxSlotDict = {}
 			self.tmpCheckBoxSettingDict = {}
+			self.chatTabOptions = {}
 
 		def __LoadWindow(self):
 			if self.isLoaded:
@@ -1488,10 +1933,8 @@ if app.ENABLE_CHATTING_WINDOW_RENEWAL:
 				import exception
 				exception.Abort("ChatSettingWindow.LoadWindow.CreateObject")
 
-			try:
-				self.__LoadChattingOptionFile()
-			except:
-				self.__SaveDefault()
+			for i in range(0, self.parent.MAX_TAB_NUMBER + 1):
+				self.__LoadChattingOptionFile(i, True)
 
 		def __BindObject(self):
 			self.GetChild("board").SetCloseEvent(ui.__mem_func__(self.Close))
@@ -1505,6 +1948,10 @@ if app.ENABLE_CHATTING_WINDOW_RENEWAL:
 			self.cancelBtn = self.GetChild("cancle_button")
 			self.cancelBtn.SetEvent(ui.__mem_func__(self.Close))
 
+			self.tabNameValue = self.GetChild("tab_name_value")
+			self.tabNameAcceptBtn = self.GetChild("tabname_accept_button")
+			self.tabNameAcceptBtn.SetEvent(ui.__mem_func__(self.__OnClickTabNameAccept))
+
 		def __CreateObject(self):
 			for key in xrange(1, len(OPTION_CHECKBOX_MODE) + 1):
 				event = lambda index = key : ui.__mem_func__(self.SetCurrentChatOption)(index)
@@ -1516,15 +1963,53 @@ if app.ENABLE_CHATTING_WINDOW_RENEWAL:
 
 				self.checkBoxSlotDict[key] = self.CheckBox(self, CHECK_BOX_X_POS, yPos + (18 * (key - 1)), event)
 
-		def __OnClickSave(self):
-			self.__SaveFile()
+		def __OnClickTabNameAccept(self):
+			if self.selectedTabIndex == 0:
+				chat.AppendChat(chat.CHAT_TYPE_INFO, localeInfo.CHATTING_SETTING_CHANGE_TITLE_NOT)
+				return
+
+			name = self.tabNameValue.GetText()
+			if len(name) > 8:
+				chat.AppendChat(chat.CHAT_TYPE_INFO, localeInfo.CHATTING_SETTING_CHANGE_TITLE_MAX)
+				return
+
+			questionDialog = uiCommon.QuestionDialog()
+			questionDialog.SetText(localeInfo.CHATTING_SETTING_CHANGE_TITLE_NAME)
+			questionDialog.SetAcceptEvent(ui.__mem_func__(self.__QuestionNamePopupAccept))
+			questionDialog.SetCancelEvent(ui.__mem_func__(self.__QuestionNamePopupCancle))
+			questionDialog.Open()
+			questionDialog.set_name = name
+			self.questionDialog = questionDialog
+
+		def __QuestionNamePopupAccept(self):
+			if not self.questionDialog:
+				return
+
+			self.tmpCheckBoxSettingDict.update({'name': self.questionDialog.set_name})
+			self.__SaveFile(self.selectedTabIndex)
 
 			if self.parent:
-				self.parent.RefreshChatWindow()
+				self.parent.SetTabName(self.selectedTabIndex - 1, self.questionDialog.set_name)
 
+			self.__QuestionNamePopupCancle()
+
+		def __QuestionNamePopupCancle(self):
+			self.questionDialog.Close()
+			self.questionDialog = None
+
+		def __OnClickSave(self):
+			self.__SaveFile(self.selectedTabIndex)
 			self.Close()
 
-		def __GetChattingFile(self):
+		def __GetChattingFile(self, chatIndex):
+			path = ["UserData", "chatting"]
+			try:
+				if not os.path.exists(os.getcwd() + os.sep + path[0] + os.sep + path[1]):
+					os.makedirs(os.getcwd() + os.sep + "UserData" + os.sep + "chatting")
+			except WindowsError as error: pass
+			return "%s/%s/%s_%d" % (path[0], path[1], player.GetName(), chatIndex)
+
+		def __GetChattingGlobalFile(self):
 			path = ["UserData", "chatting"]
 			try:
 				if not os.path.exists(os.getcwd() + os.sep + path[0] + os.sep + path[1]):
@@ -1532,49 +2017,130 @@ if app.ENABLE_CHATTING_WINDOW_RENEWAL:
 			except WindowsError as error: pass
 			return "%s/%s/%s" % (path[0], path[1], player.GetName())
 
-		def __LoadChattingOptionFile(self):
-			load = False
+		def DeleteOptionFile(self, chatIndex):
 			try:
-				fileName = self.__GetChattingFile()
+				fileName = self.__GetChattingFile(chatIndex)
+				os.remove(fileName)
+				return True
+			except:
+				return False
+
+		def CreateTabFile(self, chatIndex):
+			self.tmpCheckBoxSettingDict = {}
+			self.__SaveDefault(chatIndex)
+
+		def __LoadTmpSettings(self, chatIndex, appendToChat):
+			for key in xrange(1, len(OPTION_CHECKBOX_MODE) + 1):
+				if key in self.tmpCheckBoxSettingDict:
+					self.chatTabOptions[chatIndex][key] = self.tmpCheckBoxSettingDict[key]
+				else:
+					self.chatTabOptions[chatIndex][key] = True
+				self.checkBoxSlotDict[key].SetCheck(self.chatTabOptions[chatIndex][key])
+
+			tabName = str(chatIndex)
+			if 'name' in self.tmpCheckBoxSettingDict:
+				tabName = self.tmpCheckBoxSettingDict['name']
+				self.tabNameValue.SetText("" if tabName == str(chatIndex) else tabName)
+			else:
+				self.tabNameValue.SetText("")
+
+			self.chatTabOptions[chatIndex]['name'] = tabName
+
+			if appendToChat:
+				self.parent.AddTab(chatIndex - 1, tabName)
+
+		def __LoadChattingOptionFile(self, chatIndex, appendToChat = False):
+			load = False
+			self.tmpCheckBoxSettingDict = {}
+			self.chatTabOptions[chatIndex] = {}
+			try:
+				fileName = self.__GetChattingFile(chatIndex)
 				file = open(fileName)
 				try:
 					load = True
 					self.tmpCheckBoxSettingDict = cPickle.load(file)
 				except (ValueError, EOFError, cPickle.PicklingError, cPickle.UnpicklingError): pass
+				file.close()
 			except IOError: pass
 
 			for key in xrange(1, len(OPTION_CHECKBOX_MODE) + 1):
-				if not load:
-					value = True
+				if key not in self.tmpCheckBoxSettingDict:
 					self.tmpCheckBoxSettingDict[key] = True
-				else:
-					value = self.tmpCheckBoxSettingDict[key]
-				self.checkBoxSlotDict[key].SetCheck(value)
 
-			if not load:
-				self.__SaveDefault()
+			self.__LoadTmpSettings(chatIndex, load and appendToChat)
 
-		def __SaveFile(self):
+		def __SaveFile(self, chatIndex):
 			if not self.tmpCheckBoxSettingDict:
 				return
 
 			try:
-				fileName = self.__GetChattingFile()
+				fileName = self.__GetChattingFile(chatIndex)
 				file = open(fileName, 'wb')
 				cPickle.dump(self.tmpCheckBoxSettingDict, file)
+				file.close()
 			except IOError:
 				return
 
-		def __SaveDefault(self):
+			self.__LoadTmpSettings(chatIndex, False)
+
+			if self.parent:
+				self.parent.RefreshChatWindow(chatIndex - 1)
+				self.parent.RefreshChatWindow()
+
+		def __SaveDefault(self, chatIndex):
 			for key in xrange(1, len(OPTION_CHECKBOX_MODE) + 1):
 				self.tmpCheckBoxSettingDict[key] = True
 
+			self.tmpCheckBoxSettingDict['name'] = str(chatIndex)
+
 			try:
-				fileName = self.__GetChattingFile()
+				fileName = self.__GetChattingFile(chatIndex)
 				file = open(fileName, 'wb')
 				cPickle.dump(self.tmpCheckBoxSettingDict, file)
+				file.close()
 			except IOError:
 				return
+
+			self.__LoadTmpSettings(chatIndex, False)
+
+			if self.parent:
+				self.parent.RefreshChatWindow(chatIndex - 1)
+				self.parent.RefreshChatWindow()
+
+		def LoadGlobalFile(self):
+			load = False
+			self.globalOptions = {}
+			try:
+				fileName = self.__GetChattingGlobalFile()
+				file = open(fileName)
+				try:
+					load = True
+					self.globalOptions = cPickle.load(file)
+				except (ValueError, EOFError, cPickle.PicklingError, cPickle.UnpicklingError): pass
+				file.close()
+			except IOError: pass
+
+			if not load:
+				self.globalOptions['selected'] = -1
+				self.SaveGlobalFile()
+
+		def SaveGlobalFile(self):
+			try:
+				fileName = self.__GetChattingGlobalFile()
+				file = open(fileName, 'wb')
+				cPickle.dump(self.globalOptions, file)
+				file.close()
+			except IOError:
+				return
+
+		def GetSelectedChat(self):
+			if 'selected' in self.globalOptions:
+				return int(self.globalOptions['selected'])
+			return -1
+
+		def SetSelectedChat(self, selected):
+			self.globalOptions['selected'] = selected
+			self.SaveGlobalFile()
 
 		def __OnClickPopUpSetting(self, text):
 			questionDialog = uiCommon.QuestionDialog()
@@ -1588,10 +2154,7 @@ if app.ENABLE_CHATTING_WINDOW_RENEWAL:
 			if not self.questionDialog:
 				return
 
-			self.__SaveDefault()
-
-			if self.parent:
-				self.parent.RefreshChatWindow()
+			self.__SaveDefault(self.selectedTabIndex)
 
 			self.__QuestionPopupCancle()
 			self.Close()
@@ -1608,10 +2171,10 @@ if app.ENABLE_CHATTING_WINDOW_RENEWAL:
 			self.checkBoxSlotDict[index].SetCheck(value)
 			self.tmpCheckBoxSettingDict.update({index: value})
 
-		def GetChatModeSetting(self, mode):
+		def GetChatModeSetting(self, tabIndex, mode):
 			try:
 				value = OPTION_CHECKBOX_MODE[mode]
-				return self.tmpCheckBoxSettingDict[value]
+				return self.chatTabOptions[tabIndex][value]
 			except KeyError:
 				return True
 
@@ -1619,14 +2182,15 @@ if app.ENABLE_CHATTING_WINDOW_RENEWAL:
 			self.Close()
 			return True
 
-		def Open(self):
+		def Open(self, tabIndex):
 			if not self.isLoaded:
 				self.__LoadWindow()
 
+			self.selectedTabIndex = tabIndex
 			try:
-				self.__LoadChattingOptionFile()
+				self.__LoadChattingOptionFile(tabIndex)
 			except:
-				self.__SaveDefault()
+				self.__SaveDefault(tabIndex)
 
 			self.Show()
 

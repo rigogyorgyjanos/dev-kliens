@@ -351,6 +351,8 @@ class GameWindow(ui.ScriptWindow):
 			onPressKeyDict[app.DIK_F7]	= lambda : offlineShop.SendOpen()
 		if app.ENABLE_SHOP_SEARCH_SYSTEM:
 			onPressKeyDict[app.DIK_F8]	= lambda : self.interface.OpenPrivateShopSearch()
+		if app.ENABLE_EVENT_MANAGER:
+			onPressKeyDict[app.DIK_F11]	= lambda : self.interface.OpenEventCalendar()
 
 		onPressKeyDict[app.DIK_LALT]		= lambda : self.ShowName()
 		onPressKeyDict[app.DIK_LCONTROL]	= lambda : self.ShowMouseImage()
@@ -2164,6 +2166,19 @@ class GameWindow(ui.ScriptWindow):
 
 		def RefreshShopSearch(self):
 			self.interface.RefreshShopSearch()
+
+	if app.ENABLE_EVENT_MANAGER:
+		def ClearEventCalendar(self):
+			self.interface.ClearEventCalendar()
+
+		def RefreshEventCalendar(self):
+			self.interface.RefreshEventCalendar()
+
+		def RefreshEventCalendarStatus(self, eventID, eventStatus, eventendTime, eventEndTimeText):
+			self.interface.RefreshEventCalendarStatus(int(eventID), int(eventStatus), int(eventendTime), str(eventEndTimeText))
+
+		def AppendEventCalendarEntry(self, dayIndex, eventID, eventIndex, startTime, endTime, empireFlag, channelFlag, value0, value1, value2, value3, startRealTime, endRealTime, isAlreadyStart):
+			self.interface.AppendEventCalendarEntry(int(dayIndex), int(eventID), int(eventIndex), str(startTime), str(endTime), int(empireFlag), int(channelFlag), int(value0), int(value1), int(value2), int(value3), int(startRealTime), int(endRealTime), int(isAlreadyStart))
 
 	def RefineSuceededMessage(self):
 		snd.PlaySound("sound/ui/make_soket.wav")
