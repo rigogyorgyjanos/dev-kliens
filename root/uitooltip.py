@@ -659,8 +659,11 @@ class ItemToolTip(ToolTip):
 				elif item.LIMIT_TIMER_BASED_ON_WEAR == limitType:
 					self.AppendTimerBasedOnWearLastTime(metinSlot)
 
+				elif item.LIMIT_TIME_KRIKAL == limitType:
+					self.AppendTimeKrikalLastTime(metinSlot)
+
 			self.ShowToolTip()
-			
+
 	def SetShopItem(self, slotIndex):
 		itemVnum = shop.GetItemID(slotIndex)
 		if 0 == itemVnum:
@@ -1575,12 +1578,15 @@ class ItemToolTip(ToolTip):
 			if item.LIMIT_REAL_TIME_START_FIRST_USE == limitType:
 				self.AppendRealTimeStartFirstUseLastTime(item, metinSlot, i)
 				#dbg.TraceError("2) REAL_TIME_START_FIRST_USE flag On ")
-				
+
 			elif item.LIMIT_TIMER_BASED_ON_WEAR == limitType:
 				self.AppendTimerBasedOnWearLastTime(metinSlot)
 				#dbg.TraceError("1) REAL_TIME flag On ")
-		
-		# GM uitooltip helper 
+
+			elif item.LIMIT_TIME_KRIKAL == limitType:
+				self.AppendTimeKrikalLastTime(metinSlot)
+
+		# GM uitooltip helper
 		
 		self.AppendAntiflagInformation()
 		
@@ -2220,8 +2226,17 @@ class ItemToolTip(ToolTip):
 			self.AppendTextLine(localeInfo.CANNOT_USE, self.DISABLE_COLOR)
 		else:
 			endTime = app.GetGlobalTimeStamp() + metinSlot[0]
-			self.AppendMallItemLastTime(endTime)		
-	
+			self.AppendMallItemLastTime(endTime)
+
+	def AppendTimeKrikalLastTime(self, metinSlot):
+		if 0 == metinSlot[0]:
+			self.AppendSpace(5)
+			self.AppendTextLine(localeInfo.CANNOT_USE, self.DISABLE_COLOR)
+		else:
+			endTime = app.GetGlobalTimeStamp() + metinSlot[0]
+			self.AppendMallItemLastTime(endTime)
+			self.AppendTextLine(localeInfo.LIMIT_TIME_KRIKAL_HINT, self.CONDITION_COLOR)
+
 	def AppendRealTimeStartFirstUseLastTime(self, item, metinSlot, limitIndex):		
 		useCount = metinSlot[1]
 		endTime = metinSlot[0]

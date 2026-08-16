@@ -174,10 +174,10 @@ window = {
 							"height" : 182,
 
 							"slot" : (
-										{"index":COSTUME_START_INDEX+0, "x":61, "y":45, "width":32, "height":64}, #body
-										{"index":COSTUME_START_INDEX+1, "x":61, "y": 8, "width":32, "height":32}, #hair
-										{"index":COSTUME_START_INDEX+2, "x":13, "y":15, "width":32, "height":96}, #weapon
-										{"index":COSTUME_START_INDEX+3, "x":61, "y":125, "width":32, "height":32}, #mount
+										{"index":COSTUME_START_INDEX+0, "x":62, "y":53, "width":32, "height":64}, #body
+										{"index":COSTUME_START_INDEX+1, "x":62, "y":16, "width":32, "height":32}, #hair
+										{"index":COSTUME_START_INDEX+2, "x":11, "y":20, "width":32, "height":96}, #weapon
+										{"index":COSTUME_START_INDEX+3, "x":110, "y":31, "width":32, "height":32}, #mount
 									),
 						},
 					),
