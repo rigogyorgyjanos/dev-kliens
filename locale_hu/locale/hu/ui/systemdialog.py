@@ -9,10 +9,10 @@ window = {
 	"style" : ("float",),
 
 	"x" : (SCREEN_WIDTH  - 200) /2,
-	"y" : (SCREEN_HEIGHT - (318 - 30)) /2,
+	"y" : (SCREEN_HEIGHT - (288 - 30)) /2,
 
 	"width" : 200,
-	"height" : 318 + VERSION_ADD_Y + 30,
+	"height" : 288 + VERSION_ADD_Y + 30,
 
 	"children" :
 	(
@@ -24,7 +24,7 @@ window = {
 			"y" : 0,
 
 			"width" : 200,
-			"height" : 318 - 30 + VERSION_ADD_Y + 30,
+			"height" : 288 - 30 + VERSION_ADD_Y + 30,
 
 			"children" :
 			(
@@ -68,24 +68,11 @@ window = {
 				},
 
 				{
-					"name" : "system_option_button",
-					"type" : "button",
-
-					"x" : 10,
-					"y" : 87 + VERSION_ADD_Y,
-
-					"text" : uiScriptLocale.SYSTEMOPTION_TITLE,
-
-					"default_image" : ROOT + "XLarge_Button_01.sub",
-					"over_image" : ROOT + "XLarge_Button_02.sub",
-					"down_image" : ROOT + "XLarge_Button_03.sub",
-				},
-				{
 					"name" : "game_option_button",
 					"type" : "button",
 
 					"x" : 10,
-					"y" : 117 + VERSION_ADD_Y,
+					"y" : 87 + VERSION_ADD_Y,
 
 					"text" : uiScriptLocale.GAMEOPTION_TITLE,
 
@@ -98,7 +85,7 @@ window = {
 					"type" : "button",
 
 					"x" : 10,
-					"y" : 147 + VERSION_ADD_Y,
+					"y" : 117 + VERSION_ADD_Y,
 
 					"text" : uiScriptLocale.SYSTEM_MOVE_CHANNEL,
 
@@ -111,7 +98,7 @@ window = {
 					"type" : "button",
 
 					"x" : 10,
-					"y" : 177 + VERSION_ADD_Y,
+					"y" : 147 + VERSION_ADD_Y,
 
 					"text" : uiScriptLocale.SYSTEM_CHANGE,
 
@@ -124,7 +111,7 @@ window = {
 					"type" : "button",
 
 					"x" : 10,
-					"y" : 207 + VERSION_ADD_Y,
+					"y" : 177 + VERSION_ADD_Y,
 
 					"text" : uiScriptLocale.SYSTEM_LOGOUT,
 
@@ -137,7 +124,7 @@ window = {
 					"type" : "button",
 
 					"x" : 10,
-					"y" : 247 + VERSION_ADD_Y,
+					"y" : 217 + VERSION_ADD_Y,
 
 					"text" : uiScriptLocale.SYSTEM_EXIT,
 
@@ -150,7 +137,7 @@ window = {
 					"type" : "button",
 
 					"x" : 10,
-					"y" : 277 + VERSION_ADD_Y,
+					"y" : 247 + VERSION_ADD_Y,
 
 					"text" : uiScriptLocale.CANCEL,
 

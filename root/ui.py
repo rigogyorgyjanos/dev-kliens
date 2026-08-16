@@ -1751,6 +1751,28 @@ class Button(Window):
 			self.ButtonText = textLine
 		self.ButtonText.SetText(text)
 
+	def SetTextAlignLeft(self, text, x_add = 0, y_add = 0):
+		if not self.ButtonText:
+			textLine = TextLine()
+			textLine.SetParent(self)
+			textLine.SetPosition(x_add, self.GetHeight() / 2 + y_add)
+			textLine.SetVerticalAlignCenter()
+			textLine.SetHorizontalAlignLeft()
+			textLine.Show()
+			self.ButtonText = textLine
+		self.ButtonText.SetText(text)
+
+	def SetListText(self, text, x = 8):
+		if not self.ButtonText:
+			textLine = TextLine()
+			textLine.SetParent(self)
+			textLine.SetPosition(x, self.GetHeight()/2)
+			textLine.SetVerticalAlignCenter()
+			textLine.SetHorizontalAlignLeft()
+			textLine.Show()
+			self.ButtonText = textLine
+		self.ButtonText.SetText(text)
+
 	def SetText(self, text, height = 4):
 
 		if not self.ButtonText:
@@ -1758,6 +1780,17 @@ class Button(Window):
 			textLine.SetParent(self)
 			textLine.SetPosition(self.GetWidth()/2, self.GetHeight()/2)
 			textLine.SetVerticalAlignCenter()
+			textLine.SetHorizontalAlignCenter()
+			textLine.Show()
+			self.ButtonText = textLine
+
+		self.ButtonText.SetText(text)
+
+	def SetTextBelow(self, text, x_add = 0, y_add = 2):
+		if not self.ButtonText:
+			textLine = TextLine()
+			textLine.SetParent(self)
+			textLine.SetPosition(self.GetWidth()/2 + x_add, self.GetHeight() + y_add)
 			textLine.SetHorizontalAlignCenter()
 			textLine.Show()
 			self.ButtonText = textLine
@@ -3261,6 +3294,106 @@ class SmallThinScrollBar(ScrollBar):
 	def UpdateBarSlot(self):
 		pass
 
+def calculateRect(curValue, maxValue):
+	try:
+		return -1.0 + float(curValue) / float(maxValue)
+	except:
+		return 0.0
+
+class SliderBar_AdvancedGameOptions(Window):
+
+	def __init__(self):
+		Window.__init__(self)
+
+		self.curPos = 1.0
+		self.pageSize = 1.0
+		self.eventChange = None
+
+		self.__CreateBackGroundImage()
+		self.__CreateCursor()
+		self.__CreatePercentage()
+
+	def __del__(self):
+		Window.__del__(self)
+
+	def __CreateBackGroundImage(self):
+		img = ExpandedImageBox()
+		img.SetParent(self)
+		img.LoadImage("d:/ymir work/ui/game/advanced_game_options/sliderbar.png")
+		img.Show()
+		self.backGroundImage = img
+
+		##
+		self.SetSize(self.backGroundImage.GetWidth(), self.backGroundImage.GetHeight())
+
+	def __CreateCursor(self):
+		cursor = DragButton()
+		cursor.AddFlag("movable")
+		cursor.AddFlag("restrict_y")
+		cursor.SetParent(self)
+		cursor.SetMoveEvent(__mem_func__(self.__OnMove))
+		cursor.SetUpVisual("d:/ymir work/ui/game/advanced_game_options/sliderbar_cursor.png")
+		cursor.SetOverVisual("d:/ymir work/ui/game/advanced_game_options/sliderbar_cursor.png")
+		cursor.SetDownVisual("d:/ymir work/ui/game/advanced_game_options/sliderbar_cursor.png")
+		cursor.Show()
+		self.cursor = cursor
+
+		##
+		self.cursor.SetRestrictMovementArea(0, 0, self.backGroundImage.GetWidth(), 0)
+		self.pageSize = self.backGroundImage.GetWidth() - self.cursor.GetWidth()
+
+	def __CreatePercentage(self):
+		text = TextLine()
+		text.SetParent(self)
+		text.SetPosition(self.backGroundImage.GetWidth() + 10, 0)
+		(xLocal, yLocal) = self.cursor.GetLocalPosition()
+		self.curPos = float(xLocal) / float(self.pageSize)
+		text.SetText(str(int(self.curPos * 100)) + "%")
+		text.SetText("0%")
+		text.Show()
+		self.percentage = text
+
+	def __OnMove(self):
+		(xLocal, yLocal) = self.cursor.GetLocalPosition()
+		self.curPos = float(xLocal) / float(self.pageSize)
+		self.percentage.SetText(str(int(self.curPos * 100)) + "%")
+
+		if self.eventChange:
+			self.eventChange()
+
+	def SetSliderPos(self, pos):
+		self.curPos = pos
+		self.cursor.SetPosition(int(self.pageSize * pos), 0)
+		self.percentage.SetText(str(int(self.curPos * 100)) + "%")
+
+	def GetSliderPos(self):
+		return self.curPos
+
+	def SetEvent(self, event):
+		self.eventChange = event
+
+	def Enable(self):
+		self.cursor.Show()
+
+	def Disable(self):
+		self.cursor.Hide()
+
+	def SetBackgroundVisual(self, filename):
+		if self.backGroundImage:
+			self.backGroundImage.LoadImage(filename)
+
+			self.SetSize(self.backGroundImage.GetWidth(), self.backGroundImage.GetHeight())
+			self.pageSize = self.backGroundImage.GetWidth() - self.cursor.GetWidth()
+
+		if self.cursor:
+			self.cursor.SetRestrictMovementArea(0, 0, self.backGroundImage.GetWidth(), 0)
+
+	def SetButtonVisual(self, path, up, over, down):
+		if self.cursor:
+			self.cursor.SetUpVisual(path + up)
+			self.cursor.SetOverVisual(path + over)
+			self.cursor.SetDownVisual(path + down)
+
 class SliderBar(Window):
 
 	def __init__(self):
@@ -4107,6 +4240,11 @@ class PythonScriptLoader(object):
 				parent.Children[Index].SetParent(parent)
 				self.LoadElementSliderBar(parent.Children[Index], ElementValue, parent)
 
+			elif Type == "sliderbar_advancedgameoptions":
+				parent.Children[Index] = SliderBar_AdvancedGameOptions()
+				parent.Children[Index].SetParent(parent)
+				self.LoadElementSliderBar(parent.Children[Index], ElementValue, parent)
+
 			elif Type == "listbox":
 				parent.Children[Index] = ListBox()
 				parent.Children[Index].SetParent(parent)
@@ -4206,7 +4344,13 @@ class PythonScriptLoader(object):
 			window.SetDisableVisual(value["disable_image"])
 
 		if True == value.has_key("text"):
-			if True == value.has_key("text_height"):
+			if True == value.has_key("text_x"):
+				# text_x (optionally text_y) on a button/radio_button/toggle_button means:
+				# render the label centered BELOW the button graphic instead of the default
+				# dead-center-on-top placement, for compact checkbox-style icons that have no
+				# room for text inside them.
+				window.SetTextBelow(value["text"], int(value["text_x"]), int(value.get("text_y", 2)))
+			elif True == value.has_key("text_height"):
 				window.SetText(value["text"], value["text_height"])
 			else:
 				window.SetText(value["text"])

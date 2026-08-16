@@ -3,8 +3,8 @@ import app
 import ui
 import uiOption
 
-import uiSystemOption
 import uiGameOption
+import uiAdvancedGameOptions
 import uiScriptLocale
 import networkModule
 import constInfo
@@ -23,7 +23,6 @@ class SystemDialog(ui.ScriptWindow):
 	
 	def __Initialize(self):
 		self.eventOpenHelpWindow = None
-		self.systemOptionDlg = None
 		self.gameOptionDlg = None
 		if app.BL_MOVE_CHANNEL:
 			self.moveChannelDlg = None
@@ -41,7 +40,6 @@ class SystemDialog(ui.ScriptWindow):
 		else:
 			pyScrLoader.LoadScriptFile(self, "uiscript/systemdialog.py")
 
-		self.GetChild("system_option_button").SAFE_SetEvent(self.__ClickSystemOptionButton)
 		self.GetChild("game_option_button").SAFE_SetEvent(self.__ClickGameOptionButton)
 		self.GetChild("change_button").SAFE_SetEvent(self.__ClickChangeCharacterButton)
 		self.GetChild("logout_button").SAFE_SetEvent(self.__ClickLogOutButton)
@@ -58,7 +56,6 @@ class SystemDialog(ui.ScriptWindow):
 		pyScrLoader = ui.PythonScriptLoader()
 		pyScrLoader.LoadScriptFile(self, "uiscript/systemdialog_forportal.py")
 
-		self.GetChild("system_option_button").SAFE_SetEvent(self.__ClickSystemOptionButton)
 		self.GetChild("game_option_button").SAFE_SetEvent(self.__ClickGameOptionButton)
 		self.GetChild("change_button").SAFE_SetEvent(self.__ClickChangeCharacterButton)
 		self.GetChild("exit_button").SAFE_SetEvent(self.__ClickExitButton)
@@ -72,10 +69,7 @@ class SystemDialog(ui.ScriptWindow):
 		
 		if self.gameOptionDlg:
 			self.gameOptionDlg.Destroy()
-			
-		if self.systemOptionDlg:
-			self.systemOptionDlg.Destroy()
-			
+
 		self.__Initialize()
 
 	def SetOpenHelpWindowEvent(self, event):
@@ -109,19 +103,14 @@ class SystemDialog(ui.ScriptWindow):
 		self.Close()
 		net.ExitApplication()
 		
-	def __ClickSystemOptionButton(self):
-		self.Close()
-
-		if not self.systemOptionDlg:
-			self.systemOptionDlg = uiSystemOption.OptionDialog()
-
-		self.systemOptionDlg.Show()
-
 	def __ClickGameOptionButton(self):
 		self.Close()
 
 		if not self.gameOptionDlg:
-			self.gameOptionDlg = uiGameOption.OptionDialog()
+			if uiAdvancedGameOptions.ENABLE_ADVANCED_GAME_OPTIONS:
+				self.gameOptionDlg = uiAdvancedGameOptions.AdvancedGameOptionsWindow()
+			else:
+				self.gameOptionDlg = uiGameOption.OptionDialog()
 
 		self.gameOptionDlg.Show()
 

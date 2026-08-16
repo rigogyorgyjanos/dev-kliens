@@ -69,9 +69,9 @@ window = {
 			"tooltip_x" : -40,
 			"tooltip_y" : 9,
 
-			"default_image" : ROOT + "Mouse_Button_Attack_01.sub",
-			"over_image" : ROOT + "Mouse_Button_Attack_02.sub",
-			"down_image" : ROOT + "Mouse_Button_Attack_03.sub",
+			"default_image" : ROOT + "mouse_button_metin_farm_01.sub",
+			"over_image" : ROOT + "mouse_button_metin_farm_02.sub",
+			"down_image" : ROOT + "mouse_button_metin_farm_03.sub",
 		},
 	),
 }
