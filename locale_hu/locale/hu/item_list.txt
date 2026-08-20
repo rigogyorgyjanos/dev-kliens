@@ -4243,6 +4243,7 @@
 50511	ETC	icon/item/book_18.tga
 50512	ETC	icon/item/50512.tga
 50513	ETC	icon/item/50513.tga
+50569	ETC	icon/item/50569.tga
 50600	ETC	icon/item/book_45.tga
 50601	ETC	icon/item/50601.tga
 50602	ETC	icon/item/50602.tga

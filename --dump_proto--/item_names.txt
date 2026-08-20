@@ -4598,6 +4598,7 @@ VNUM	LOCALE_NAME
 50511	Támadás+ könyve
 50512	Szivárvány kő
 50513	Lélekkő
+50569	Bölcs lélekkő
 50600	Bányászati könyv
 50601	Gyémánt kő
 50602	Borostyánkő

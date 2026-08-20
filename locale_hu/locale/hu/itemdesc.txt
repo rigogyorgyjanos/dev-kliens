@@ -1438,6 +1438,7 @@
 50511	Támadás+ könyve	Ez a könyv a támadás+ készség fejlesztésére használatos. A könyv eltűnik olvasás után.
 50512	Szivárvány kő	A kő, mely felnyitja a spirituális szemeket és minden képességet felfed.
 50513	Lélekkő	A legendás kő nagymester készséged fejlesztésére használható. A kő eltűnik használat után.
+50569	Bölcs lélekkő	A legendás kő, mellyel a tökéletes mester szinten álló készséged bölcs mesterré fejlesztheted. A kő eltűnik használat után.
 50600	Bányászati könyv	A bányászati szint növelésére szolgál. A könyv eltűnik olvasás után.
 50601	Gyémánt kő	A céh gyémántkohójának segítségével gyémánttá változtatható.
 50602	Borostyánkő	A céh borostyánkohójának segítségével borostyánná változtatható.
