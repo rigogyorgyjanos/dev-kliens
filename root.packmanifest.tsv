@@ -104,4 +104,10 @@ root/uiweb.py	uiweb.py	1
 root/uiwhisper.py	uiwhisper.py	1
 root/utils.py	utils.py	1
 root/warrior_m.msm	warrior_m.msm	1
+root/uimaintenance.py	uimaintenance.py	1
+root/animations_maintenance/pc_1.tga	animations_maintenance/pc_1.tga	1
+root/animations_maintenance/pc_2.tga	animations_maintenance/pc_2.tga	1
+root/animations_maintenance/pc_3.tga	animations_maintenance/pc_3.tga	1
+root/animations_maintenance/pc_4.tga	animations_maintenance/pc_4.tga	1
 root/__pycache__/uiprivateshopsearch.cpython-313.pyc	__pycache__/uiprivateshopsearch.cpython-313.pyc	1
+root/uiSkillColor.py	uiSkillColor.py	1

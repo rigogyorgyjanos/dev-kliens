@@ -975,3 +975,17 @@ EVENT_MONTH_9	Szeptember
 EVENT_MONTH_10	Október
 EVENT_MONTH_11	November
 EVENT_MONTH_12	December
+SKILL_COLOR_SELECT_FIRST	Először válassz egy színt.
+SKILL_COLOR_PICK_TOOLTIP	Válaszd ki a kívánt színt ehhez: %s. (HEX kód: %s)
+SKILL_COLOR_PRESET_TOOLTIP_TITLE	Szín preset
+SKILL_COLOR_PRESET_TOOLTIP_1	Elmentheted a kiválasztott színt a skilledhez.
+SKILL_COLOR_PRESET_TOOLTIP_2	Mentsd el a színt, és ha később szükséged van rá,
+SKILL_COLOR_PRESET_TOOLTIP_3	csak válaszd ki a színkódot a listából.
+SKILL_COLOR_CUSTOM_HEX_CODE_TOOLTIP_TITLE	Színkód
+SKILL_COLOR_CUSTOM_HEX_CODE_TOOLTIP_1	Egyedi HEX színkódot is megadhatsz.
+SKILL_COLOR_CUSTOM_HEX_CODE_TOOLTIP_2	Például: #FFFFFF (fehér)
+SKILL_COLOR_DO_YOU_RESET	Vissza akarod állítani a skill színét?
+SKILL_COLOR_DO_YOU_CHANGE	Meg akarod változtatni a skill színét?
+SKILL_COLOR_SELECT_PRESET	Válassz egy színt
+SKILL_COLOR_SELECT_PRESET_NONE	Nincs mentett szín
+SKILL_COLOR_CANNOT_SAVE	Nem menthetsz több színt.

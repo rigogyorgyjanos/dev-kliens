@@ -17,6 +17,8 @@ import emotion
 import chr
 if app.ENABLE_LOADING_PERFORMANCE:
 	import loading
+if app.ENABLE_SKILL_COLOR_SYSTEM:
+	import uiSkillColor
 
 
 SHOW_ONLY_ACTIVE_SKILL = False
@@ -104,6 +106,10 @@ class CharacterWindow(ui.ScriptWindow):
 		self.refreshToolTip = 0
 		self.curSelectedSkillGroup = 0
 		self.canUseHorseSkill = -1
+
+		if app.ENABLE_SKILL_COLOR_SYSTEM:
+			self.skillColorWnd = None
+			self.skillColorButtonDict = {}
 
 		self.toolTip = None
 		self.toolTipJob = None
@@ -435,6 +441,10 @@ class CharacterWindow(ui.ScriptWindow):
 	def Close(self):
 		if 0 != self.toolTipSkill:
 			self.toolTipSkill.Hide()
+
+		if app.ENABLE_SKILL_COLOR_SYSTEM:
+			if self.skillColorWnd and self.skillColorWnd.IsShow():
+				self.skillColorWnd.Hide()
 
 		self.Hide()
 
@@ -816,6 +826,10 @@ class CharacterWindow(ui.ScriptWindow):
 			for j in xrange(3):
 				skillPage.ClearSlot(self.__GetRealSkillSlot(j, i))
 
+			isJobSkillPage = "ACTIVE" == name and self.PAGE_HORSE != self.curSelectedSkillGroup
+			if app.ENABLE_SKILL_COLOR_SYSTEM and isJobSkillPage:
+				self.__HideSkillColorButton(i)
+
 			if 0 == skillIndex:
 				continue
 
@@ -856,6 +870,9 @@ class CharacterWindow(ui.ScriptWindow):
 					else:
 						skillPage.SetSlotCountNew(realSlotIndex, skillGrade, skillLevel)
 
+				if app.ENABLE_SKILL_COLOR_SYSTEM and isJobSkillPage:
+					self.__UpdateSkillColorButton(i, skillPage, slotIndex, skillIndex, skillGrade)
+
 			## �׿�
 			else:
 				if not SHOW_LIMIT_SUPPORT_SKILL_LIST or skillIndex in SHOW_LIMIT_SUPPORT_SKILL_LIST:
@@ -868,6 +885,50 @@ class CharacterWindow(ui.ScriptWindow):
 
 			skillPage.RefreshSlot()
 
+	if app.ENABLE_SKILL_COLOR_SYSTEM:
+		# Pixel offsets of the S-grade (column 2) icon for each of the 8 ACTIVE slots,
+		# read straight from characterwindow.py's "Skill_Active_Slot" slot table
+		# (indices 41-48 = column-2 icons for real slots 1-8): two columns of skills
+		# at x=75/187, four rows at y=4/40/76/112, each icon 32x32.
+		def __GetSkillColorButtonPosition(self, i):
+			row = (i - 1) / 2
+			x = 75 if (i % 2 == 1) else 187
+			y = (4, 40, 76, 112)[row]
+			return (x + 20, y + 18)
+
+		def __HideSkillColorButton(self, i):
+			if i in self.skillColorButtonDict:
+				self.skillColorButtonDict[i].Hide()
+
+		def __UpdateSkillColorButton(self, i, skillPage, slotIndex, skillIndex, skillGrade):
+			# Only a skill actually at Sage Master grade may have its color changed.
+			if skillGrade != player.SKILL_GRADE_SAGE_MASTER:
+				self.__HideSkillColorButton(i)
+				return
+
+			if i in self.skillColorButtonDict:
+				button = self.skillColorButtonDict[i]
+			else:
+				button = ui.Button()
+				button.SetParent(skillPage)
+				button.SetUpVisual("d:/ymir work/ui/skillcolor/skill_color_button_default.tga")
+				button.SetOverVisual("d:/ymir work/ui/skillcolor/skill_color_button_over.tga")
+				button.SetDownVisual("d:/ymir work/ui/skillcolor/skill_color_button_down.tga")
+				self.skillColorButtonDict[i] = button
+
+			x, y = self.__GetSkillColorButtonPosition(i)
+			button.SetPosition(x, y)
+			# i (1..6 for real per-job skills) mirrors the server's 0-based MAX_SKILL_COUNT=6 slot.
+			button.SetEvent(lambda arg=i - 1, arg2=skillIndex: self.__OnPressSkillColorButton(arg, arg2))
+			button.Show()
+			button.SetTop()
+
+		def __OnPressSkillColorButton(self, skillSlot, skillIndex):
+			if self.skillColorWnd and self.skillColorWnd.IsShow():
+				self.skillColorWnd.Close()
+
+			self.skillColorWnd = uiSkillColor.SkillColorWindow(skillSlot, skillIndex)
+			self.skillColorWnd.Show()
 
 	def RefreshSkill(self):
 
