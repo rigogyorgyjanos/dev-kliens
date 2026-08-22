@@ -43,6 +43,7 @@ import uiPrivateShopBuilder
 # END_OF_PRIVATE_SHOP_PRICE_LIST
 
 import mouseModule
+import multiSelectModule
 import consoleModule
 import localeInfo
 
@@ -135,6 +136,7 @@ class GameWindow(ui.ScriptWindow):
 		
 		#wj 2014.1.2. ESCŰ�� ���� �� �켱������ DropQuestionDialog�� ������ �������. ������ ó���� itemDropQuestionDialog�� ����Ǿ� ���� �ʾ� ERROR�� �߻��Ͽ� init���� ����� ���ÿ� �ʱ�ȭ ��Ŵ.
 		self.itemDropQuestionDialog = None
+		self.bulkDropList = []
 
 		self.__SetQuickSlotMode()
 
@@ -363,7 +365,7 @@ class GameWindow(ui.ScriptWindow):
 			onPressKeyDict[app.DIK_F11]	= lambda : self.interface.OpenEventCalendar()
 
 		onPressKeyDict[app.DIK_LALT]		= lambda : self.ShowName()
-		onPressKeyDict[app.DIK_LCONTROL]	= lambda : self.ShowMouseImage()
+		onPressKeyDict[app.DIK_LCONTROL]	= lambda : (self.ShowMouseImage(), player.SetSingleDIKKeyState(app.DIK_LCONTROL, True))
 		onPressKeyDict[app.DIK_SYSRQ]		= lambda : self.SaveScreen()
 		onPressKeyDict[app.DIK_SPACE]		= lambda : self.StartAttack()
 
@@ -406,7 +408,7 @@ class GameWindow(ui.ScriptWindow):
 		onPressKeyDict[app.DIK_SUBTRACT]	= lambda : self.interface.MiniMapScaleDown()
 		onPressKeyDict[app.DIK_L]			= lambda : self.interface.ToggleChatLogWindow()
 		onPressKeyDict[app.DIK_COMMA]		= lambda : self.ShowConsole()		# "`" key
-		onPressKeyDict[app.DIK_LSHIFT]		= lambda : self.__SetQuickPageMode()
+		onPressKeyDict[app.DIK_LSHIFT]		= lambda : (self.__SetQuickPageMode(), player.SetSingleDIKKeyState(app.DIK_LSHIFT, True))
 
 		onPressKeyDict[app.DIK_J]			= lambda : self.__PressJKey()
 		onPressKeyDict[app.DIK_H]			= lambda : self.__PressHKey()
@@ -445,8 +447,8 @@ class GameWindow(ui.ScriptWindow):
 		onClickKeyDict[app.DIK_NUMPAD8] = lambda: app.MoviePitchCamera(app.CAMERA_STOP)
 		onClickKeyDict[app.DIK_NUMPAD2] = lambda: app.MoviePitchCamera(app.CAMERA_STOP)
 		onClickKeyDict[app.DIK_LALT] = lambda: self.HideName()
-		onClickKeyDict[app.DIK_LCONTROL] = lambda: self.HideMouseImage()
-		onClickKeyDict[app.DIK_LSHIFT] = lambda: self.__SetQuickSlotMode()
+		onClickKeyDict[app.DIK_LCONTROL] = lambda: (self.HideMouseImage(), player.SetSingleDIKKeyState(app.DIK_LCONTROL, False))
+		onClickKeyDict[app.DIK_LSHIFT] = lambda: (self.__SetQuickSlotMode(), player.SetSingleDIKKeyState(app.DIK_LSHIFT, False))
 
 		#if constInfo.PVPMODE_ACCELKEY_ENABLE:
 		#	onClickKeyDict[app.DIK_B] = lambda: self.ChangePKMode()
@@ -1419,6 +1421,9 @@ class GameWindow(ui.ScriptWindow):
 			self.stream.popupWindow.Close()
 			self.stream.popupWindow.Open(localeInfo.DROP_ITEM_FAILURE_EQUIP_ITEM, 0, localeInfo.UI_OK)
 
+		elif multiSelectModule.dragSnapshot:
+			self.__DropBulkItems()
+
 		else:
 			if player.SLOT_TYPE_INVENTORY == attachedType or\
 				player.SLOT_TYPE_SKILL_BOOK_INVENTORY == attachedType or\
@@ -1468,6 +1473,47 @@ class GameWindow(ui.ScriptWindow):
 				self.itemDropQuestionDialog = itemDropQuestionDialog
 
 				constInfo.SET_ITEM_QUESTION_DIALOG_STATUS(1)
+
+	def __DropBulkItems(self):
+		# Bulk drop: one aggregate confirmation instead of a per-item "how many"
+		# dialog - drops the full stack of every selected item at once.
+		snapshot = multiSelectModule.PopDragSnapshot()
+		dropList = [(slotType, slotIndex) for (slotType, slotIndex) in snapshot
+			if not (player.SLOT_TYPE_INVENTORY == slotType and player.IsEquipmentSlot(slotIndex))]
+
+		if not dropList:
+			return
+
+		itemDropQuestionDialog = uiCommon.QuestionDialog()
+		itemDropQuestionDialog.SetText("Eldobod a kijelolt %d itemet?" % len(dropList))
+		itemDropQuestionDialog.SetAcceptEvent(lambda arg=True: self.RequestBulkDropItem(arg))
+		itemDropQuestionDialog.SetCancelEvent(lambda arg=False: self.RequestBulkDropItem(arg))
+		itemDropQuestionDialog.Open()
+		self.bulkDropList = dropList
+		self.itemDropQuestionDialog = itemDropQuestionDialog
+
+		constInfo.SET_ITEM_QUESTION_DIALOG_STATUS(1)
+
+	def RequestBulkDropItem(self, answer):
+		if answer and not uiPrivateShopBuilder.IsBuildingPrivateShop():
+			itemList = []
+			for (dropType, dropSlot) in self.bulkDropList:
+				if player.GetItemCount(dropSlot) > 0:
+					if player.SLOT_TYPE_DRAGON_SOUL_INVENTORY == dropType:
+						itemList.append((player.DRAGON_SOUL_INVENTORY, dropSlot))
+					else:
+						itemList.append((player.INVENTORY, dropSlot))
+
+			if itemList:
+				net.SendItemDropPacketBulk(itemList)
+
+		self.bulkDropList = []
+
+		if self.itemDropQuestionDialog:
+			self.itemDropQuestionDialog.Close()
+			self.itemDropQuestionDialog = None
+
+		constInfo.SET_ITEM_QUESTION_DIALOG_STATUS(0)
 
 	def RequestDestroyItem(self, answer):
 		if not self.itemDropQuestionDialog:

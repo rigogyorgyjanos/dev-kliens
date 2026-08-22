@@ -69,6 +69,7 @@ root/uiguild.py	uiguild.py	1
 root/uihelp.py	uihelp.py	1
 root/uiinventory.py	uiinventory.py	1
 root/uimapnameshower.py	uimapnameshower.py	1
+root/multiSelectModule.py	multiSelectModule.py	1
 root/uimessenger.py	uimessenger.py	1
 root/uiplayergauge.py	uiplayergauge.py	1
 root/uiminimap.py	uiminimap.py	1
